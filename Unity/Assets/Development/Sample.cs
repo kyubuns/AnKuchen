@@ -11,17 +11,13 @@ namespace AnKuchen.Sample
         public void Start()
         {
             var hogeButton = root.GetChild("HogeButton");
-            var fugaButton = root.GetChild("FugaButton");
-            var piyoButton = root.GetChild("PiyoButton");
+            hogeButton.Get<Text>("Text").text = "Hoge";
 
-            SetButtonText(hogeButton, "Hoge");
-            SetButtonText(fugaButton, "Fuga");
-            SetButtonText(piyoButton, "Piyo");
-        }
+            var fugaButton = hogeButton.Clone();
+            fugaButton.Get<Text>("Text").text = "Fuga";
 
-        private void SetButtonText(IMapper button, string text)
-        {
-            button.Get<Text>("Text").text = text;
+            var piyoButton = hogeButton.Clone();
+            piyoButton.Get<Text>("Text").text = "Piyo";
         }
     }
 }
