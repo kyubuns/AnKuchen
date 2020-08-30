@@ -7,14 +7,16 @@ namespace AnKuchen.UIMapper
         public static IMapper Clone(this IMapper self)
         {
             var rootObject = self.Get();
-            var clone = Object.Instantiate(rootObject, rootObject.transform.parent, true);
-            var uiCache = clone.GetComponent<UICache>();
+
+            var uiCache = rootObject.GetComponent<UICache>();
             if (uiCache == null)
             {
-                uiCache = clone.AddComponent<UICache>();
+                uiCache = rootObject.AddComponent<UICache>();
+                uiCache.CreateCache();
             }
-            uiCache.CreateCache();
-            return uiCache;
+
+            var clone = Object.Instantiate(rootObject, rootObject.transform.parent, true);
+            return clone.GetComponent<UICache>();
         }
     }
 }
