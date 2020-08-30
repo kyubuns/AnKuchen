@@ -45,7 +45,6 @@ namespace AnKuchen.UIMapper
 
         public IMapper GetChild(string rootObjectPath)
         {
-            Debug.Log($"GetChild({rootObjectPath})");
             var target = GetInternal(rootObjectPath);
             Assert.AreEqual(1, target.Length, $"{rootObjectPath} is not found");
 
