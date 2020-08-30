@@ -59,10 +59,10 @@ namespace AnKuchen.UIMapper
             return cachedMapper.Get<T>(objectPath);
         }
 
-        public IMapper GetChild(string rootObjectPath)
+        public IMapper GetMapper(string rootObjectPath)
         {
             if (cachedMapper == null) cachedMapper = new Mapper(Elements);
-            return cachedMapper.GetChild(rootObjectPath);
+            return cachedMapper.GetMapper(rootObjectPath);
         }
 
         public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()

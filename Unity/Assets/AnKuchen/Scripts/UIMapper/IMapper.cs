@@ -10,9 +10,9 @@ namespace AnKuchen.UIMapper
         GameObject Get(string objectPath);
         GameObject[] GetAll(string objectPath);
         T Get<T>(string objectPath) where T : Component;
-
-        IMapper GetChild(string rootObjectPath);
         T GetChild<T>(string rootObjectPath) where T : IMappedObject, new();
+
+        IMapper GetMapper(string rootObjectPath);
 
         CachedObject[] GetRawElements();
         void Copy(IMapper other);

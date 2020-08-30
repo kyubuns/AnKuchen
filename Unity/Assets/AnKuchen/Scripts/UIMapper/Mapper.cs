@@ -49,7 +49,7 @@ namespace AnKuchen.UIMapper
             return target.Length > 0 ? target[0].GameObject.GetComponent<T>() : null;
         }
 
-        public IMapper GetChild(string rootObjectPath)
+        public IMapper GetMapper(string rootObjectPath)
         {
             var target = GetInternal(rootObjectPath);
             Assert.AreEqual(1, target.Length, $"{rootObjectPath} is not found");
@@ -77,7 +77,7 @@ namespace AnKuchen.UIMapper
 
         public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
         {
-            var newMapper = GetChild(rootObjectPath);
+            var newMapper = GetMapper(rootObjectPath);
             var newObject = new T();
             newObject.Initialize(newMapper);
             return newObject;
