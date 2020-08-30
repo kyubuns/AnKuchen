@@ -104,12 +104,19 @@ namespace AnKuchen.UIMapper
                 return Array.Empty<CachedObject>();
             }
 
+            var start = false;
+            if (stringPath.StartsWith("./", StringComparison.OrdinalIgnoreCase))
+            {
+                stringPath = stringPath.Remove(0, 2);
+                start = true;
+            }
             var pathElements = stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).Reverse().ToArray();
 
             var result = new List<CachedObject>();
             foreach (var e in elements)
             {
                 if (e.Path.Length < pathElements.Length) continue;
+                if (start && e.Path.Length != pathElements.Length) continue;
 
                 var pass = true;
                 for (var i = 0; i < pathElements.Length; ++i)

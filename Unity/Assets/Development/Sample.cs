@@ -13,6 +13,7 @@ namespace AnKuchen.Sample
         {
             var ui = new UIElements(root);
 
+            ui.Text.text = "Main Text";
             using (var editor = Layouter.TopToBottom(ui.HogeButton))
             {
                 foreach (var buttonLabel in new[] { "Hoge", "Fuga", "Piyo" })
@@ -27,6 +28,8 @@ namespace AnKuchen.Sample
     public class UIElements : IMappedObject
     {
         public IMapper Mapper { get; private set; }
+        public GameObject Root { get; private set; }
+        public Text Text { get; private set; }
         public ButtonElements HogeButton { get; private set; }
 
         public UIElements(IMapper mapper)
@@ -37,18 +40,23 @@ namespace AnKuchen.Sample
         public void Initialize(IMapper mapper)
         {
             Mapper = mapper;
+            Root = mapper.Get();
+            Text = mapper.Get<Text>("./Text");
             HogeButton = mapper.GetChild<ButtonElements>("HogeButton");
         }
     }
 
+
     public class ButtonElements : IMappedObject
     {
         public IMapper Mapper { get; private set; }
+        public Button Button { get; private set; }
         public Text Text { get; private set; }
 
         public void Initialize(IMapper mapper)
         {
             Mapper = mapper;
+            Button = mapper.Get<Button>();
             Text = mapper.Get<Text>("Text");
         }
     }

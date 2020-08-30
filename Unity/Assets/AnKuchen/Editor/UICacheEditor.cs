@@ -35,7 +35,7 @@ namespace AnKuchen.Editor.UIMapper
         {
             var targetTypes = new[] { typeof(Button), typeof(Text), typeof(Image) };
 
-            var elements = new List<(string[] Path, string Type)>();
+            var elements = new List<(string Name, string[] Path, string Type)>();
             foreach (var e in stringElements)
             {
                 if (e.Path.Length == 0) continue;
@@ -43,14 +43,14 @@ namespace AnKuchen.Editor.UIMapper
                 {
                     if (e.GameObject.GetComponent(targetType) == null) continue;
 
-                    var uniquePath = e.Path.ToArray();
+                    var uniquePath = e.Path.Concat(new[] { "." }).ToArray();
                     while (uniquePath.Length > 1)
                     {
                         var next = uniquePath.Take(uniquePath.Length - 1).ToArray();
                         if (uiCache.GetAll(string.Join("/", next.Reverse())).Length != 1) break;
                         uniquePath = next;
                     }
-                    elements.Add((uniquePath.Reverse().ToArray(), targetType.Name));
+                    elements.Add((string.Join("", uniquePath.Where(x => x != ".").Reverse()), uniquePath.Reverse().ToArray(), targetType.Name));
                     break;
                 }
             }
@@ -61,9 +61,9 @@ namespace AnKuchen.Editor.UIMapper
             {
                 text += $"    public IMapper Mapper {{ get; private set; }}\n";
                 text += $"    public GameObject Root {{ get; private set; }}\n";
-                foreach (var (p, t) in elements)
+                foreach (var (n, _, t) in elements)
                 {
-                    text += $"    public {t} {string.Join("", p)} {{ get; private set; }}\n";
+                    text += $"    public {t} {n} {{ get; private set; }}\n";
                 }
                 text += "\n";
                 text += "    public UIElements(IMapper mapper)\n";
@@ -78,10 +78,10 @@ namespace AnKuchen.Editor.UIMapper
                 {
                     text += $"        Mapper = mapper;\n";
                     text += $"        Root = mapper.Get();\n";
-                    foreach (var (p, t) in elements)
+                    foreach (var (n, p, t) in elements)
                     {
-                        if (t == "GameObject") text += $"        {string.Join("", p)} = mapper.Get(\"{string.Join("/", p)}\");\n";
-                        else text += $"        {string.Join("", p)} = mapper.Get<{t}>(\"{string.Join("/", p)}\");\n";
+                        if (t == "GameObject") text += $"        {n} = mapper.Get(\"{string.Join("/", p)}\");\n";
+                        else text += $"        {n} = mapper.Get<{t}>(\"{string.Join("/", p)}\");\n";
                     }
                 }
                 text += "    }\n";
