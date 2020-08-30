@@ -1,9 +1,7 @@
-﻿using System.Diagnostics;
-using AnKuchen.UILayouter;
+﻿using AnKuchen.UILayouter;
 using AnKuchen.UIMapper;
 using UnityEngine;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 namespace AnKuchen.Sample
 {
@@ -13,31 +11,43 @@ namespace AnKuchen.Sample
 
         public void Start()
         {
-            var sw = Stopwatch.StartNew();
-            for (var i = 0; i < 10000; ++i)
+            var ui = new UIElements(root);
+
+            using (var editor = Layouter.TopToBottom(ui.HogeButton))
             {
-                var result = root.GetChild("HogeButton (285)");
+                foreach (var buttonLabel in new[] { "Hoge", "Fuga", "Piyo" })
+                {
+                    var newObject = editor.Create();
+                    newObject.Text.text = buttonLabel;
+                }
             }
-            sw.Stop();
-            Debug.Log(sw.Elapsed.TotalSeconds);
         }
     }
 
-    public class UIElements
+    public class UIElements : IInitializable
     {
-        public GameObject Root { get; }
-        public Button HogeButton { get; }
-        public Text HogeButtonText { get; }
-        public Button FugaButton { get; }
-        public Text FugaButtonText { get; }
+        public ButtonElements HogeButton { get; private set; }
 
         public UIElements(IMapper mapper)
         {
-            Root = mapper.Get();
-            HogeButton = mapper.Get<Button>("HogeButton");
-            HogeButtonText = mapper.Get<Text>("HogeButton/Text");
-            FugaButton = mapper.Get<Button>("FugaButton");
-            FugaButtonText = mapper.Get<Text>("FugaButton/Text");
+            Initialize(mapper);
+        }
+
+        public void Initialize(IMapper mapper)
+        {
+            HogeButton = mapper.GetChild<ButtonElements>("HogeButton");
+        }
+    }
+
+    public class ButtonElements : IDuplicatable
+    {
+        public IMapper Mapper { get; private set; }
+        public Text Text { get; private set; }
+
+        public void Initialize(IMapper mapper)
+        {
+            Mapper = mapper;
+            Text = mapper.Get<Text>("Text");
         }
     }
 }

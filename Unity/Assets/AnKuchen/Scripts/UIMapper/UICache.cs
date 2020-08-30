@@ -7,20 +7,20 @@ namespace AnKuchen.UIMapper
     public class UICache : MonoBehaviour, IMapper
     {
         [SerializeField]
-        public UIElement[] Elements;
+        public CachedObject[] Elements;
 
         private IMapper cachedMapper;
 
         public void CreateCache()
         {
-            var elements = new List<UIElement>();
+            var elements = new List<CachedObject>();
             CreateCacheInternal(elements, transform, new List<ulong>());
             Elements = elements.ToArray();
         }
 
-        private void CreateCacheInternal(List<UIElement> elements, Transform t, List<ulong> basePath)
+        private void CreateCacheInternal(List<CachedObject> elements, Transform t, List<ulong> basePath)
         {
-            elements.Add(new UIElement { GameObject = t.gameObject, Path = basePath.ToArray() });
+            elements.Add(new CachedObject { GameObject = t.gameObject, Path = basePath.ToArray() });
             foreach (Transform child in t)
             {
                 basePath.Insert(0, FastHash.CalculateHash(child.name));
@@ -65,7 +65,13 @@ namespace AnKuchen.UIMapper
             return cachedMapper.GetChild(rootObjectPath);
         }
 
-        public UIElement[] GetRawElements()
+        public T GetChild<T>(string rootObjectPath) where T : IDuplicatable, new()
+        {
+            if (cachedMapper == null) cachedMapper = new Mapper(Elements);
+            return cachedMapper.GetChild<T>(rootObjectPath);
+        }
+
+        public CachedObject[] GetRawElements()
         {
             if (cachedMapper == null) cachedMapper = new Mapper(Elements);
             return cachedMapper.GetRawElements();
@@ -80,7 +86,7 @@ namespace AnKuchen.UIMapper
     }
 
     [Serializable]
-    public class UIElement
+    public class CachedObject
     {
         public GameObject GameObject;
         public ulong[] Path;

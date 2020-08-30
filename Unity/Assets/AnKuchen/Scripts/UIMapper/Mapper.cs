@@ -8,9 +8,9 @@ namespace AnKuchen.UIMapper
 {
     public class Mapper : IMapper
     {
-        private UIElement[] elements;
+        private CachedObject[] elements;
 
-        public Mapper(UIElement[] elements)
+        public Mapper(CachedObject[] elements)
         {
             this.elements = elements;
         }
@@ -55,7 +55,7 @@ namespace AnKuchen.UIMapper
             Assert.AreEqual(1, target.Length, $"{rootObjectPath} is not found");
 
             var pathElements = target[0].Path.Reverse().ToArray();
-            var result = new List<UIElement>();
+            var result = new List<CachedObject>();
             foreach (var e in elements)
             {
                 if (e.Path.Length < pathElements.Length) continue;
@@ -69,13 +69,21 @@ namespace AnKuchen.UIMapper
                 }
                 if (pass)
                 {
-                    result.Add(new UIElement { GameObject = e.GameObject, Path = e.Path.Take(e.Path.Length - pathElements.Length).ToArray() });
+                    result.Add(new CachedObject { GameObject = e.GameObject, Path = e.Path.Take(e.Path.Length - pathElements.Length).ToArray() });
                 }
             }
             return new Mapper(result.ToArray());
         }
 
-        public UIElement[] GetRawElements()
+        public T GetChild<T>(string rootObjectPath) where T : IDuplicatable, new()
+        {
+            var newMapper = GetChild(rootObjectPath);
+            var newObject = new T();
+            newObject.Initialize(newMapper);
+            return newObject;
+        }
+
+        public CachedObject[] GetRawElements()
         {
             return elements;
         }
@@ -85,7 +93,7 @@ namespace AnKuchen.UIMapper
             elements = other.GetRawElements();
         }
 
-        private UIElement[] GetInternal(string stringPath)
+        private CachedObject[] GetInternal(string stringPath)
         {
             if (string.IsNullOrWhiteSpace(stringPath))
             {
@@ -93,12 +101,12 @@ namespace AnKuchen.UIMapper
                 {
                     if (e.Path.Length == 0) return new[] { e };
                 }
-                return Array.Empty<UIElement>();
+                return Array.Empty<CachedObject>();
             }
 
             var pathElements = stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).Reverse().ToArray();
 
-            var result = new List<UIElement>();
+            var result = new List<CachedObject>();
             foreach (var e in elements)
             {
                 if (e.Path.Length < pathElements.Length) continue;

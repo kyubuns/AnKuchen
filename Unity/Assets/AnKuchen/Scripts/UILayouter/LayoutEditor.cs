@@ -4,33 +4,33 @@ using AnKuchen.UIMapper;
 
 namespace AnKuchen.UILayouter
 {
-    public class LayoutEditor : IDisposable
+    public class LayoutEditor<T> : IDisposable where T : IDuplicatable, new()
     {
         private readonly ILayouter layouter;
-        private readonly IMapper original;
+        private readonly T original;
         private readonly List<IMapper> elements;
 
-        public LayoutEditor(ILayouter layouter, IMapper original)
+        public LayoutEditor(ILayouter layouter, T original)
         {
             this.layouter = layouter;
 
             this.original = original;
-            this.original.Get().SetActive(false);
+            this.original.Mapper.Get().SetActive(false);
 
             elements = new List<IMapper>();
         }
 
-        public IMapper Create()
+        public T Create()
         {
             var newObject = original.Duplicate();
-            newObject.Get().SetActive(true);
-            elements.Add(newObject);
+            newObject.Mapper.Get().SetActive(true);
+            elements.Add(newObject.Mapper);
             return newObject;
         }
 
         public void Dispose()
         {
-            layouter.Layout(original, elements.ToArray());
+            layouter.Layout(original.Mapper, elements.ToArray());
         }
     }
 

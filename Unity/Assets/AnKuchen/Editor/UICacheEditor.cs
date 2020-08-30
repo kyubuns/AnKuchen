@@ -59,13 +59,20 @@ namespace AnKuchen.Editor.UIMapper
             var text = "public class UIElements\n";
             text += "{\n";
             {
-                text += $"    public GameObject Root {{ get; }}\n";
+                text += $"    public GameObject Root {{ get; private set; }}\n";
                 foreach (var (p, t) in elements)
                 {
-                    text += $"    public {t} {string.Join("", p)} {{ get; }}\n";
+                    text += $"    public {t} {string.Join("", p)} {{ get; private set; }}\n";
                 }
                 text += "\n";
                 text += "    public UIElements(IMapper mapper)\n";
+                text += "    {\n";
+                {
+                    text += "        Initialize(mapper);\n";
+                }
+                text += "    }\n";
+                text += "\n";
+                text += "    public void Initialize(IMapper mapper)\n";
                 text += "    {\n";
                 {
                     text += $"        Root = mapper.Get();\n";
