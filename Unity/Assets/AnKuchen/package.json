@@ -1,0 +1,16 @@
+{
+  "name": "dev.kyubuns.ankuchen",
+  "displayName": "AnKuchen",
+  "version": "0.1.0",
+  "unity": "2019.4",
+  "description": "Task Animation Library for Unity",
+  "documentationUrl": "https://github.com/kyubuns/AnimeTask",
+  "dependencies": {
+  },
+  "author": {
+    "name": "kyubuns",
+    "email": "kyubuns@gmail.com",
+    "url": "https://kyubuns.dev/"
+  },
+  "type": "library"
+}
