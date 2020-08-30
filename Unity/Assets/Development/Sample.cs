@@ -1,7 +1,9 @@
-﻿using AnKuchen.UILayouter;
+﻿using System.Diagnostics;
+using AnKuchen.UILayouter;
 using AnKuchen.UIMapper;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 namespace AnKuchen.Sample
 {
@@ -11,14 +13,13 @@ namespace AnKuchen.Sample
 
         public void Start()
         {
-            var hogeButton = root.GetChild("HogeButton");
-            hogeButton.Get<Text>("Text").text = "Hoge";
-
-            var fugaButton = hogeButton.Duplicate();
-            fugaButton.Get<Text>("Text").text = "Fuga";
-
-            var piyoButton = hogeButton.Duplicate();
-            piyoButton.Get<Text>("Text").text = "Piyo";
+            var sw = Stopwatch.StartNew();
+            for (var i = 0; i < 1000; ++i)
+            {
+                var result = root.GetChild("HogeButton (285)");
+            }
+            sw.Stop();
+            Debug.Log(sw.Elapsed.TotalSeconds);
         }
     }
 
