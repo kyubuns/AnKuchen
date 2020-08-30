@@ -63,7 +63,7 @@ namespace AnKuchen.UIMapper
                 var pass = true;
                 for (var i = 0; i < pathElements.Length; ++i)
                 {
-                    if (e.Path[e.Path.Length - i - 1].Equals(pathElements[i], StringComparison.OrdinalIgnoreCase)) continue;
+                    if (e.Path[e.Path.Length - i - 1] == pathElements[i]) continue;
                     pass = false;
                     break;
                 }
@@ -85,9 +85,9 @@ namespace AnKuchen.UIMapper
             elements = other.GetRawElements();
         }
 
-        private UIElement[] GetInternal(string path)
+        private UIElement[] GetInternal(string stringPath)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(stringPath))
             {
                 foreach (var e in elements)
                 {
@@ -96,8 +96,7 @@ namespace AnKuchen.UIMapper
                 return Array.Empty<UIElement>();
             }
 
-            var pathElements = path.Split('/');
-            Array.Reverse(pathElements);
+            var pathElements = stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).Reverse().ToArray();
 
             var result = new List<UIElement>();
             foreach (var e in elements)
@@ -107,7 +106,7 @@ namespace AnKuchen.UIMapper
                 var pass = true;
                 for (var i = 0; i < pathElements.Length; ++i)
                 {
-                    if (e.Path[i].Equals(pathElements[i], StringComparison.OrdinalIgnoreCase)) continue;
+                    if (e.Path[i] == pathElements[i]) continue;
                     pass = false;
                     break;
                 }

@@ -14,16 +14,16 @@ namespace AnKuchen.UIMapper
         public void CreateCache()
         {
             var elements = new List<UIElement>();
-            CreateCacheInternal(elements, transform, new List<string>());
+            CreateCacheInternal(elements, transform, new List<ulong>());
             Elements = elements.ToArray();
         }
 
-        private void CreateCacheInternal(List<UIElement> elements, Transform t, List<string> basePath)
+        private void CreateCacheInternal(List<UIElement> elements, Transform t, List<ulong> basePath)
         {
             elements.Add(new UIElement { GameObject = t.gameObject, Path = basePath.ToArray() });
             foreach (Transform child in t)
             {
-                basePath.Insert(0, child.name);
+                basePath.Insert(0, FastHash.CalculateHash(child.name));
                 CreateCacheInternal(elements, child, basePath);
                 basePath.RemoveAt(0);
             }
@@ -83,6 +83,6 @@ namespace AnKuchen.UIMapper
     public class UIElement
     {
         public GameObject GameObject;
-        public string[] Path;
+        public ulong[] Path;
     }
 }

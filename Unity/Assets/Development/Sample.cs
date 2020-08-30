@@ -14,7 +14,7 @@ namespace AnKuchen.Sample
         public void Start()
         {
             var sw = Stopwatch.StartNew();
-            for (var i = 0; i < 1000; ++i)
+            for (var i = 0; i < 10000; ++i)
             {
                 var result = root.GetChild("HogeButton (285)");
             }

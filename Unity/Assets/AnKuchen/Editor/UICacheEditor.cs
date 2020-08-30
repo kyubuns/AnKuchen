@@ -23,19 +23,20 @@ namespace AnKuchen.Editor.UIMapper
             {
                 var uiCache = (UICache) target;
                 uiCache.CreateCache();
-                EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache);
+                var stringElements = CreateStringCache(uiCache.Get<Transform>());
+                EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
                 Debug.Log("Copied!");
             }
 
             base.OnInspectorGUI();
         }
 
-        private string GenerateTemplate(UICache uiCache)
+        private string GenerateTemplate(UICache uiCache, UIStringElement[] stringElements)
         {
             var targetTypes = new[] { typeof(Button), typeof(Text), typeof(Image) };
 
             var elements = new List<(string[] Path, string Type)>();
-            foreach (var e in uiCache.Elements)
+            foreach (var e in stringElements)
             {
                 if (e.Path.Length == 0) continue;
                 foreach (var targetType in targetTypes)
@@ -78,6 +79,30 @@ namespace AnKuchen.Editor.UIMapper
             }
             text += "}\n";
             return text;
+        }
+
+        private UIStringElement[] CreateStringCache(Transform parent)
+        {
+            var elements = new List<UIStringElement>();
+            CreateStringCacheInternal(elements, parent, new List<string>());
+            return elements.ToArray();
+        }
+
+        private void CreateStringCacheInternal(List<UIStringElement> elements, Transform t, List<string> basePath)
+        {
+            elements.Add(new UIStringElement { GameObject = t.gameObject, Path = basePath.ToArray() });
+            foreach (Transform child in t)
+            {
+                basePath.Insert(0, child.name);
+                CreateStringCacheInternal(elements, child, basePath);
+                basePath.RemoveAt(0);
+            }
+        }
+
+        public class UIStringElement
+        {
+            public GameObject GameObject;
+            public string[] Path;
         }
     }
 }
