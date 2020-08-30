@@ -5,7 +5,7 @@ namespace AnKuchen.UILayouter
 {
     public static partial class Layouter
     {
-        public static LayoutEditor<T> TopToBottom<T>(T original) where T : IDuplicatable, new()
+        public static LayoutEditor<T> TopToBottom<T>(T original) where T : IMappedObject, new()
         {
             return new LayoutEditor<T>(new TopToBottomLayouter(), original);
         }

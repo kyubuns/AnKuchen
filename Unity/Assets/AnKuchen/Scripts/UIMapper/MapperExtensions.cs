@@ -19,7 +19,7 @@ namespace AnKuchen.UIMapper
             return clone.GetComponent<UICache>();
         }
 
-        public static T Duplicate<T>(this T self) where T : IDuplicatable, new()
+        public static T Duplicate<T>(this T self) where T : IMappedObject, new()
         {
             var newMapper = self.Mapper.Duplicate();
             var newObject = new T();

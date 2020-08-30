@@ -4,7 +4,7 @@ using AnKuchen.UIMapper;
 
 namespace AnKuchen.UILayouter
 {
-    public class LayoutEditor<T> : IDisposable where T : IDuplicatable, new()
+    public class LayoutEditor<T> : IDisposable where T : IMappedObject, new()
     {
         private readonly ILayouter layouter;
         private readonly T original;

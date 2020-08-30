@@ -75,7 +75,7 @@ namespace AnKuchen.UIMapper
             return new Mapper(result.ToArray());
         }
 
-        public T GetChild<T>(string rootObjectPath) where T : IDuplicatable, new()
+        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
         {
             var newMapper = GetChild(rootObjectPath);
             var newObject = new T();

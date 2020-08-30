@@ -12,19 +12,15 @@ namespace AnKuchen.UIMapper
         T Get<T>(string objectPath) where T : Component;
 
         IMapper GetChild(string rootObjectPath);
-        T GetChild<T>(string rootObjectPath) where T : IDuplicatable, new();
+        T GetChild<T>(string rootObjectPath) where T : IMappedObject, new();
 
         CachedObject[] GetRawElements();
         void Copy(IMapper other);
     }
 
-    public interface IInitializable
-    {
-        void Initialize(IMapper mapper);
-    }
-
-    public interface IDuplicatable : IInitializable
+    public interface IMappedObject
     {
         IMapper Mapper { get; }
+        void Initialize(IMapper mapper);
     }
 }

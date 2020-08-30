@@ -24,8 +24,9 @@ namespace AnKuchen.Sample
         }
     }
 
-    public class UIElements : IInitializable
+    public class UIElements : IMappedObject
     {
+        public IMapper Mapper { get; private set; }
         public ButtonElements HogeButton { get; private set; }
 
         public UIElements(IMapper mapper)
@@ -35,11 +36,12 @@ namespace AnKuchen.Sample
 
         public void Initialize(IMapper mapper)
         {
+            Mapper = mapper;
             HogeButton = mapper.GetChild<ButtonElements>("HogeButton");
         }
     }
 
-    public class ButtonElements : IDuplicatable
+    public class ButtonElements : IMappedObject
     {
         public IMapper Mapper { get; private set; }
         public Text Text { get; private set; }
@@ -51,4 +53,3 @@ namespace AnKuchen.Sample
         }
     }
 }
-

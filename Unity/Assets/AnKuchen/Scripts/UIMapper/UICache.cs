@@ -65,7 +65,7 @@ namespace AnKuchen.UIMapper
             return cachedMapper.GetChild(rootObjectPath);
         }
 
-        public T GetChild<T>(string rootObjectPath) where T : IDuplicatable, new()
+        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
         {
             if (cachedMapper == null) cachedMapper = new Mapper(Elements);
             return cachedMapper.GetChild<T>(rootObjectPath);

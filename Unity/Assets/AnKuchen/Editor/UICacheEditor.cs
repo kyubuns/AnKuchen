@@ -56,9 +56,10 @@ namespace AnKuchen.Editor.UIMapper
             }
 
             // コード生成
-            var text = "public class UIElements\n";
+            var text = "public class UIElements : IMappedObject\n";
             text += "{\n";
             {
+                text += $"    public IMapper Mapper {{ get; private set; }}\n";
                 text += $"    public GameObject Root {{ get; private set; }}\n";
                 foreach (var (p, t) in elements)
                 {
@@ -75,6 +76,7 @@ namespace AnKuchen.Editor.UIMapper
                 text += "    public void Initialize(IMapper mapper)\n";
                 text += "    {\n";
                 {
+                    text += $"        Mapper = mapper;\n";
                     text += $"        Root = mapper.Get();\n";
                     foreach (var (p, t) in elements)
                     {
