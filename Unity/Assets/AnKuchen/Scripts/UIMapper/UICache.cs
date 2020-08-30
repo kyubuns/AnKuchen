@@ -47,6 +47,12 @@ namespace AnKuchen.UIMapper
             return cachedMapper.Get(objectPath);
         }
 
+        public GameObject[] GetAll(string objectPath)
+        {
+            if (cachedMapper == null) cachedMapper = new Mapper(Elements);
+            return cachedMapper.GetAll(objectPath);
+        }
+
         public T Get<T>(string objectPath) where T : Component
         {
             if (cachedMapper == null) cachedMapper = new Mapper(Elements);

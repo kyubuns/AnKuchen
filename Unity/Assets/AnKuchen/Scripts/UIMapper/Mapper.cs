@@ -36,6 +36,12 @@ namespace AnKuchen.UIMapper
             return target.Length > 0 ? target[0].GameObject : null;
         }
 
+        public GameObject[] GetAll(string objectPath)
+        {
+            var target = GetInternal(objectPath);
+            return target.Select(x => x.GameObject).ToArray();
+        }
+
         public T Get<T>(string objectPath) where T : Component
         {
             var target = GetInternal(objectPath);
