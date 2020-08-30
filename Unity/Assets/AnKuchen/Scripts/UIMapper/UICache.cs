@@ -18,10 +18,10 @@ namespace AnKuchen.UIMapper
             Elements = elements.ToArray();
         }
 
-        private void CreateCacheInternal(List<UIElement> elements, Transform target, List<string> basePath)
+        private void CreateCacheInternal(List<UIElement> elements, Transform t, List<string> basePath)
         {
-            elements.Add(new UIElement { GameObject = target.gameObject, Path = basePath.ToArray() });
-            foreach (Transform child in target)
+            elements.Add(new UIElement { GameObject = t.gameObject, Path = basePath.ToArray() });
+            foreach (Transform child in t)
             {
                 basePath.Insert(0, child.name);
                 CreateCacheInternal(elements, child, basePath);
@@ -63,6 +63,19 @@ namespace AnKuchen.UIMapper
         {
             if (cachedMapper == null) cachedMapper = new Mapper(Elements);
             return cachedMapper.GetChild(rootObjectPath);
+        }
+
+        public UIElement[] GetRawElements()
+        {
+            if (cachedMapper == null) cachedMapper = new Mapper(Elements);
+            return cachedMapper.GetRawElements();
+        }
+
+        public void Copy(IMapper other)
+        {
+            if (cachedMapper == null) cachedMapper = new Mapper(Elements);
+            cachedMapper.Copy(other);
+            Elements = cachedMapper.GetRawElements();
         }
     }
 

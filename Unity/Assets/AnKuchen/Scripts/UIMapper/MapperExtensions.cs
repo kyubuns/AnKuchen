@@ -4,7 +4,7 @@ namespace AnKuchen.UIMapper
 {
     public static class MapperExtensions
     {
-        public static IMapper Clone(this IMapper self)
+        public static IMapper Duplicate(this IMapper self)
         {
             var rootObject = self.Get();
 
@@ -12,7 +12,7 @@ namespace AnKuchen.UIMapper
             if (uiCache == null)
             {
                 uiCache = rootObject.AddComponent<UICache>();
-                uiCache.CreateCache();
+                uiCache.Copy(self);
             }
 
             var clone = Object.Instantiate(rootObject, rootObject.transform.parent, true);

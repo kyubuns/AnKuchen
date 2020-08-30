@@ -11,7 +11,14 @@ namespace AnKuchen.Sample
 
         public void Start()
         {
-            root.Get("Text").SetActive(false);
+            var hogeButton = root.GetChild("HogeButton");
+            hogeButton.Get<Text>("Text").text = "Hoge";
+
+            var fugaButton = hogeButton.Duplicate();
+            fugaButton.Get<Text>("Text").text = "Fuga";
+
+            var piyoButton = hogeButton.Duplicate();
+            piyoButton.Get<Text>("Text").text = "Piyo";
         }
     }
 

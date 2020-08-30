@@ -22,7 +22,7 @@ namespace AnKuchen.UILayouter
 
         public IMapper Create()
         {
-            var newObject = original.Clone();
+            var newObject = original.Duplicate();
             newObject.Get().SetActive(true);
             elements.Add(newObject);
             return newObject;

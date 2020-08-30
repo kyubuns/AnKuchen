@@ -8,7 +8,7 @@ namespace AnKuchen.UIMapper
 {
     public class Mapper : IMapper
     {
-        private readonly UIElement[] elements;
+        private UIElement[] elements;
 
         public Mapper(UIElement[] elements)
         {
@@ -73,6 +73,16 @@ namespace AnKuchen.UIMapper
                 }
             }
             return new Mapper(result.ToArray());
+        }
+
+        public UIElement[] GetRawElements()
+        {
+            return elements;
+        }
+
+        public void Copy(IMapper other)
+        {
+            elements = other.GetRawElements();
         }
 
         private UIElement[] GetInternal(string path)

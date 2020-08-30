@@ -12,5 +12,8 @@ namespace AnKuchen.UIMapper
         T Get<T>(string objectPath) where T : Component;
 
         IMapper GetChild(string rootObjectPath);
+
+        UIElement[] GetRawElements();
+        void Copy(IMapper other);
     }
 }
