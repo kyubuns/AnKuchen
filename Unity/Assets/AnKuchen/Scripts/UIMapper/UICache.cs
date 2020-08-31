@@ -14,11 +14,11 @@ namespace AnKuchen.UIMapper
         public void CreateCache()
         {
             var elements = new List<CachedObject>();
-            CreateCacheInternal(elements, transform, new List<ulong>());
+            CreateCacheInternal(elements, transform, new List<uint>());
             Elements = elements.ToArray();
         }
 
-        private void CreateCacheInternal(List<CachedObject> elements, Transform t, List<ulong> basePath)
+        private void CreateCacheInternal(List<CachedObject> elements, Transform t, List<uint> basePath)
         {
             elements.Add(new CachedObject { GameObject = t.gameObject, Path = basePath.ToArray() });
             foreach (Transform child in t)
@@ -89,6 +89,6 @@ namespace AnKuchen.UIMapper
     public class CachedObject
     {
         public GameObject GameObject;
-        public ulong[] Path;
+        public uint[] Path;
     }
 }

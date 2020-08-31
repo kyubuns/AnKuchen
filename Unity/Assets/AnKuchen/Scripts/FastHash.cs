@@ -2,24 +2,24 @@ namespace AnKuchen
 {
     public static class FastHash
     {
-        public static ulong CalculateHash(string read)
+        public static uint CalculateHash(string read)
         {
-            var hashedValue = 3074457345618258791ul;
+            var hashedValue = 2654435761;
             foreach (var t in read)
             {
                 hashedValue += t;
-                hashedValue *= 3074457345618258799ul;
+                hashedValue *= 2654435761;
             }
             return hashedValue;
         }
 
-        public static ulong CalculateHash(ulong[] read)
+        public static uint CalculateHash(uint[] read)
         {
-            var hashedValue = 3074457345618258791ul;
+            var hashedValue = 2654435761;
             foreach (var t in read)
             {
                 hashedValue += t;
-                hashedValue *= 3074457345618258799ul;
+                hashedValue *= 2654435761;
             }
             return hashedValue;
         }
