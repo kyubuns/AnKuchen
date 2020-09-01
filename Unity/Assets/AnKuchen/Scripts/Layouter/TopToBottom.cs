@@ -5,6 +5,11 @@ namespace AnKuchen.Layouter
 {
     public static partial class Layouter
     {
+        public static LayoutEditor TopToBottom(IMapper original, float margin = 0f)
+        {
+            return new LayoutEditor(new TopToBottomLayouter(margin), original);
+        }
+
         public static LayoutEditor<T> TopToBottom<T>(T original, float margin = 0f) where T : IMappedObject, new()
         {
             return new LayoutEditor<T>(new TopToBottomLayouter(margin), original);

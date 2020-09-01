@@ -4,6 +4,36 @@ using AnKuchen.Mapper;
 
 namespace AnKuchen.Layouter
 {
+    public class LayoutEditor : IDisposable
+    {
+        private readonly ILayouter layouter;
+        private readonly IMapper original;
+        private readonly List<IMapper> elements;
+
+        public LayoutEditor(ILayouter layouter, IMapper original)
+        {
+            this.layouter = layouter;
+
+            this.original = original;
+            this.original.Get().SetActive(false);
+
+            elements = new List<IMapper>();
+        }
+
+        public IMapper Create()
+        {
+            var newObject = original.Duplicate();
+            newObject.Get().SetActive(true);
+            elements.Add(newObject);
+            return newObject;
+        }
+
+        public void Dispose()
+        {
+            layouter.Layout(original, elements.ToArray());
+        }
+    }
+
     public class LayoutEditor<T> : IDisposable where T : IMappedObject, new()
     {
         private readonly ILayouter layouter;

@@ -5,6 +5,11 @@ namespace AnKuchen.Layouter
 {
     public static partial class Layouter
     {
+        public static LayoutEditor LeftToRight(IMapper original, float margin = 0f)
+        {
+            return new LayoutEditor(new LeftToRightLayouter(margin), original);
+        }
+
         public static LayoutEditor<T> LeftToRight<T>(T original, float margin = 0f) where T : IMappedObject, new()
         {
             return new LayoutEditor<T>(new LeftToRightLayouter(margin), original);
