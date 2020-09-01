@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using AnKuchen.Mapper;
+using AnKuchen.Map;
 
-namespace AnKuchen.Layouter
+namespace AnKuchen.Layout
 {
     public class LayoutEditor : IDisposable
     {

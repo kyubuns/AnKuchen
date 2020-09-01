@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace AnKuchen.Mapper
+namespace AnKuchen.Map
 {
     public class Mapper : IMapper
     {

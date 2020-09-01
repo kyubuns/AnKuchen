@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AnKuchen.Mapper
+namespace AnKuchen.Map
 {
     public class UICache : MonoBehaviour, IMapper
     {

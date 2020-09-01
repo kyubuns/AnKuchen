@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AnKuchen.Layouter;
-using AnKuchen.Mapper;
+using AnKuchen.Layout;
+using AnKuchen.Map;
 using UnityEngine;
 using UnityEngine.UI;
 

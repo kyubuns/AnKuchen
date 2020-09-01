@@ -1,7 +1,7 @@
-using AnKuchen.Mapper;
+using AnKuchen.Map;
 using UnityEngine;
 
-namespace AnKuchen.Layouter
+namespace AnKuchen.Layout
 {
     public static partial class Layouter
     {
