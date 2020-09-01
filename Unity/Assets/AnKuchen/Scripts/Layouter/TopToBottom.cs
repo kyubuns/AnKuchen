@@ -1,21 +1,21 @@
-using AnKuchen.UIMapper;
+using AnKuchen.Mapper;
 using UnityEngine;
 
-namespace AnKuchen.UILayouter
+namespace AnKuchen.Layouter
 {
     public static partial class Layouter
     {
-        public static LayoutEditor<T> LeftToRight<T>(T original, float margin = 0f) where T : IMappedObject, new()
+        public static LayoutEditor<T> TopToBottom<T>(T original, float margin = 0f) where T : IMappedObject, new()
         {
-            return new LayoutEditor<T>(new LeftToRightLayouter(margin), original);
+            return new LayoutEditor<T>(new TopToBottomLayouter(margin), original);
         }
     }
 
-    public class LeftToRightLayouter : ILayouter
+    public class TopToBottomLayouter : ILayouter
     {
         private readonly float margin;
 
-        public LeftToRightLayouter(float margin)
+        public TopToBottomLayouter(float margin)
         {
             this.margin = margin;
         }
@@ -27,8 +27,8 @@ namespace AnKuchen.UILayouter
             {
                 var rectTransform = e.Get<RectTransform>();
                 rectTransform.anchoredPosition = position;
-                position.x += rectTransform.sizeDelta.x;
-                position.x += margin;
+                position.y -= rectTransform.sizeDelta.y;
+                position.y -= margin;
             }
         }
     }

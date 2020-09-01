@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AnKuchen.UIMapper;
+using AnKuchen.Mapper;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AnKuchen.UIMapper
+namespace AnKuchen.Mapper
 {
     public interface IMapper
     {

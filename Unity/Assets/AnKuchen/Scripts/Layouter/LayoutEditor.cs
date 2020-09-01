@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using AnKuchen.UIMapper;
+using AnKuchen.Mapper;
 
-namespace AnKuchen.UILayouter
+namespace AnKuchen.Layouter
 {
     public class LayoutEditor<T> : IDisposable where T : IMappedObject, new()
     {

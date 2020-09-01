@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AnKuchen.UIMapper
+namespace AnKuchen.Mapper
 {
     public static class MapperExtensionsBatch
     {
