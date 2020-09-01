@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AnKuchen.Map;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AnKuchen.Map
+namespace AnKuchen.Extensions
 {
     public static class MapperExtensionsBatch
     {

@@ -1,6 +1,7 @@
+using AnKuchen.Map;
 using UnityEngine;
 
-namespace AnKuchen.Map
+namespace AnKuchen.Extensions
 {
     public static class MapperExtensionsDuplicate
     {
