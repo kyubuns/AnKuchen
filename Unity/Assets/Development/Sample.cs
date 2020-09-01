@@ -31,14 +31,13 @@ namespace AnKuchen.Sample
             });
 
             var ui = new UIElements(root);
-            using (var editor = Layouter.LeftToRight(ui.HogeButton, 10f))
+            using (var editor = Layouter.Edit(ui.HogeButton))
             {
                 foreach (var a in new[] { "h1", "h2", "h3" })
                 {
                     var button = editor.Create();
                     button.Text.text = a;
                 }
-                editor.Elements[1].Root.SetActive(false);
             }
         }
     }
