@@ -8,25 +8,23 @@ namespace AnKuchen.Map
 {
     public class Mapper : IMapper
     {
+        private GameObject root;
         private CachedObject[] elements;
 
-        public Mapper(CachedObject[] elements)
+        public Mapper(GameObject root, CachedObject[] elements)
         {
+            this.root = root;
             this.elements = elements;
         }
 
         public GameObject Get()
         {
-            var target = GetInternal(new uint[] { });
-            Assert.AreEqual(1, target.Length, $"Root object is not found");
-            return target.Length > 0 ? target[0].GameObject : null;
+            return root;
         }
 
         public T Get<T>() where T : Component
         {
-            var target = GetInternal(new uint[] { });
-            Assert.AreEqual(1, target.Length, $"Root object is not found");
-            return target.Length > 0 ? target[0].GameObject.GetComponent<T>() : null;
+            return root.GetComponent<T>();
         }
 
         public GameObject Get(string objectPath)
@@ -105,7 +103,7 @@ namespace AnKuchen.Map
                     result.Add(new CachedObject { GameObject = e.GameObject, Path = e.Path.Take(e.Path.Length - pathElements.Length).ToArray() });
                 }
             }
-            return new Mapper(result.ToArray());
+            return new Mapper(target[0].GameObject, result.ToArray());
         }
 
         public CachedObject[] GetRawElements()

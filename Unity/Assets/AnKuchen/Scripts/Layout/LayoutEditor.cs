@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AnKuchen.Map;
 
 namespace AnKuchen.Layout
@@ -8,7 +9,7 @@ namespace AnKuchen.Layout
     {
         private readonly ILayouter layouter;
         private readonly IMapper original;
-        private readonly List<IMapper> elements;
+        public List<IMapper> Elements { get; }
 
         public LayoutEditor(ILayouter layouter, IMapper original)
         {
@@ -17,20 +18,20 @@ namespace AnKuchen.Layout
             this.original = original;
             this.original.Get().SetActive(false);
 
-            elements = new List<IMapper>();
+            Elements = new List<IMapper>();
         }
 
         public IMapper Create()
         {
             var newObject = original.Duplicate();
             newObject.Get().SetActive(true);
-            elements.Add(newObject);
+            Elements.Add(newObject);
             return newObject;
         }
 
         public void Dispose()
         {
-            layouter.Layout(original, elements.ToArray());
+            layouter.Layout(original, Elements.ToArray());
         }
     }
 
@@ -38,7 +39,7 @@ namespace AnKuchen.Layout
     {
         private readonly ILayouter layouter;
         private readonly T original;
-        private readonly List<IMapper> elements;
+        public List<T> Elements { get; }
 
         public LayoutEditor(ILayouter layouter, T original)
         {
@@ -47,20 +48,20 @@ namespace AnKuchen.Layout
             this.original = original;
             this.original.Mapper.Get().SetActive(false);
 
-            elements = new List<IMapper>();
+            Elements = new List<T>();
         }
 
         public T Create()
         {
             var newObject = original.Duplicate();
             newObject.Mapper.Get().SetActive(true);
-            elements.Add(newObject.Mapper);
+            Elements.Add(newObject);
             return newObject;
         }
 
         public void Dispose()
         {
-            layouter.Layout(original.Mapper, elements.ToArray());
+            layouter.Layout(original.Mapper, Elements.Select(x => x.Mapper).ToArray());
         }
     }
 
