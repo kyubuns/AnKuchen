@@ -1,4 +1,6 @@
-﻿using AnKuchen.UILayouter;
+﻿using System;
+using System.Collections.Generic;
+using AnKuchen.UILayouter;
 using AnKuchen.UIMapper;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,17 +13,21 @@ namespace AnKuchen.Sample
 
         public void Start()
         {
-            var ui = new UIElements(root);
-
-            ui.Text.text = "Main Text";
-            using (var editor = Layouter.TopToBottom(ui.HogeButton))
+            root.SetText(new Dictionary<string, string>
             {
-                foreach (var buttonLabel in new[] { "Hoge", "Fuga", "Piyo" })
-                {
-                    var newObject = editor.Create();
-                    newObject.Text.text = buttonLabel;
-                }
-            }
+                { "./Text", "Title" },
+                { "HogeButton/Text", "Hoge" },
+                { "FugaButton/Text", "Fuga" },
+                { "PiyoButton/Text", "Piyo" },
+            });
+
+            root.Batch(new Dictionary<string, Action<Text>>
+            {
+                { "./Text", x => x.text = "Title" },
+                { "HogeButton/Text", x => x.text = "Hoge" },
+                { "FugaButton/Text", x => x.text = "Fuga" },
+                { "PiyoButton/Text", x => x.text = "Piyo" },
+            });
         }
     }
 

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AnKuchen.UIMapper
 {
-    public static class MapperExtensions
+    public static class MapperExtensionsDuplicate
     {
         public static IMapper Duplicate(this IMapper self)
         {
