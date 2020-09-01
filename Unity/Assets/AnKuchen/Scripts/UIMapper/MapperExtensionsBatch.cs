@@ -26,7 +26,7 @@ namespace AnKuchen.UIMapper
             self.Batch(texts.ToDictionary(x => x.Key, x => (Action<Text>) (ui => ui.text = x.Value)));
         }
 
-        public static void SetText<T1, T2>(this T1 self, Dictionary<string, string> texts) where T1 : IMappedObject
+        public static void SetText<T1>(this T1 self, Dictionary<string, string> texts) where T1 : IMappedObject
         {
             self.Mapper.SetText(texts);
         }
