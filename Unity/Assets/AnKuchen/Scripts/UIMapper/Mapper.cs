@@ -17,19 +17,24 @@ namespace AnKuchen.UIMapper
 
         public GameObject Get()
         {
-            var target = GetInternal(null);
+            var target = GetInternal(new uint[] { });
             Assert.AreEqual(1, target.Length, $"Root object is not found");
             return target.Length > 0 ? target[0].GameObject : null;
         }
 
         public T Get<T>() where T : Component
         {
-            var target = GetInternal(null);
+            var target = GetInternal(new uint[] { });
             Assert.AreEqual(1, target.Length, $"Root object is not found");
             return target.Length > 0 ? target[0].GameObject.GetComponent<T>() : null;
         }
 
         public GameObject Get(string objectPath)
+        {
+            return Get(ToHash(objectPath));
+        }
+
+        public GameObject Get(uint[] objectPath)
         {
             var target = GetInternal(objectPath);
             Assert.AreEqual(1, target.Length, $"{objectPath} is not found");
@@ -38,18 +43,46 @@ namespace AnKuchen.UIMapper
 
         public GameObject[] GetAll(string objectPath)
         {
+            return GetAll(ToHash(objectPath));
+        }
+
+        public GameObject[] GetAll(uint[] objectPath)
+        {
             var target = GetInternal(objectPath);
             return target.Select(x => x.GameObject).ToArray();
         }
 
         public T Get<T>(string objectPath) where T : Component
         {
+            return Get<T>(ToHash(objectPath));
+        }
+
+        public T Get<T>(uint[] objectPath) where T : Component
+        {
             var target = GetInternal(objectPath);
             Assert.AreEqual(1, target.Length, $"{objectPath} is not found");
             return target.Length > 0 ? target[0].GameObject.GetComponent<T>() : null;
         }
 
+        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
+        {
+            return GetChild<T>(ToHash(rootObjectPath));
+        }
+
+        public T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new()
+        {
+            var newMapper = GetMapper(rootObjectPath);
+            var newObject = new T();
+            newObject.Initialize(newMapper);
+            return newObject;
+        }
+
         public IMapper GetMapper(string rootObjectPath)
+        {
+            return GetMapper(ToHash(rootObjectPath));
+        }
+
+        public IMapper GetMapper(uint[] rootObjectPath)
         {
             var target = GetInternal(rootObjectPath);
             Assert.AreEqual(1, target.Length, $"{rootObjectPath} is not found");
@@ -75,14 +108,6 @@ namespace AnKuchen.UIMapper
             return new Mapper(result.ToArray());
         }
 
-        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
-        {
-            var newMapper = GetMapper(rootObjectPath);
-            var newObject = new T();
-            newObject.Initialize(newMapper);
-            return newObject;
-        }
-
         public CachedObject[] GetRawElements()
         {
             return elements;
@@ -93,9 +118,17 @@ namespace AnKuchen.UIMapper
             elements = other.GetRawElements();
         }
 
-        private CachedObject[] GetInternal(string stringPath)
+        private uint[] ToHash(string stringPath)
         {
-            if (string.IsNullOrWhiteSpace(stringPath))
+            if (string.IsNullOrEmpty(stringPath)) return new uint[] { };
+            return stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).ToArray();
+        }
+
+        private static readonly uint CachedHashDot = FastHash.CalculateHash(".");
+
+        private CachedObject[] GetInternal(uint[] path)
+        {
+            if (path.Length == 0)
             {
                 foreach (var e in elements)
                 {
@@ -104,24 +137,23 @@ namespace AnKuchen.UIMapper
                 return Array.Empty<CachedObject>();
             }
 
-            var start = false;
-            if (stringPath.StartsWith("./", StringComparison.OrdinalIgnoreCase))
-            {
-                stringPath = stringPath.Remove(0, 2);
-                start = true;
-            }
-            var pathElements = stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).Reverse().ToArray();
-
             var result = new List<CachedObject>();
+            var start = false;
+            if (path[0] == CachedHashDot)
+            {
+                start = true;
+                path = path.Skip(1).ToArray();
+            }
+            Array.Reverse(path);
             foreach (var e in elements)
             {
-                if (e.Path.Length < pathElements.Length) continue;
-                if (start && e.Path.Length != pathElements.Length) continue;
+                if (e.Path.Length < path.Length) continue;
+                if (start && e.Path.Length != path.Length) continue;
 
                 var pass = true;
-                for (var i = 0; i < pathElements.Length; ++i)
+                for (var i = 0; i < path.Length; ++i)
                 {
-                    if (e.Path[i] == pathElements[i]) continue;
+                    if (e.Path[i] == path[i]) continue;
                     pass = false;
                     break;
                 }
