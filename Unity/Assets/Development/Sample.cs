@@ -6,7 +6,7 @@ using AnKuchen.Map;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AnKuchen.Sample
+namespace AnKuchen.Development
 {
     public class Sample : MonoBehaviour
     {

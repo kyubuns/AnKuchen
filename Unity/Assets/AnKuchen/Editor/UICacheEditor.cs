@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AnKuchen.Editor.UIMapper
+namespace AnKuchen.Editor
 {
     [CustomEditor(typeof(UICache))]
     public class UICacheEditor : UnityEditor.Editor
