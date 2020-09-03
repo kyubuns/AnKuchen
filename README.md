@@ -36,15 +36,15 @@ If you want to get the Text under the HogeButton, you can do this.
 As before, it works whether the HogeButton is directly under the Root or not.
 
 ```csharp
-var hogeButtonText = root.Get<Button>("HogeButton/Text");
+var hogeButtonText = root.Get<Text>("HogeButton/Text");
 hogeButtonText.text = "Hoge!";
 ```
 
 ### Get Text directly under the root
 
 ```csharp
-var text = root.Get<Button>("Text"); // This is an error." There are four names for "Text".
-var text = root.Get<Button>("./Text"); // Root/Text
+var text = root.Get<Text>("Text"); // This is an error." There are four names for "Text".
+var text = root.Get<Text>("./Text"); // Root/Text
 ```
 
 ### Create children map
