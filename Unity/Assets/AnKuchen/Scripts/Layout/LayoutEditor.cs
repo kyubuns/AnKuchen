@@ -32,6 +32,11 @@ namespace AnKuchen.Layout
 
         public void Dispose()
         {
+            Layout();
+        }
+
+        public void Layout()
+        {
             layouter.Layout(original, Elements.ToArray());
         }
     }
@@ -61,6 +66,11 @@ namespace AnKuchen.Layout
         }
 
         public void Dispose()
+        {
+            Layout();
+        }
+
+        public void Layout()
         {
             layouter.Layout(original.Mapper, Elements.Select(x => x.Mapper).ToArray());
         }
