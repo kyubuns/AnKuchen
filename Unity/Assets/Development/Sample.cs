@@ -14,26 +14,19 @@ namespace AnKuchen.Development
 
         public void Start()
         {
-            root.SetText(new Dictionary<string, string>
-            {
-                { "./Text", "Title" },
-                { "HogeButton/Text", "Hoge" },
-                { "FugaButton/Text", "Fuga" },
-                { "PiyoButton/Text", "Piyo" },
-            });
-
-            root.Batch(new Dictionary<string, Action<Text>>
-            {
-                { "./Text", x => x.text = "Title" },
-                { "HogeButton/Text", x => x.text = "Hoge" },
-                { "FugaButton/Text", x => x.text = "Fuga" },
-                { "PiyoButton/Text", x => x.text = "Piyo" },
-            });
-
             var ui = new UIElements(root);
             using (var editor = Layouter.Edit(ui.HogeButton))
             {
                 foreach (var a in new[] { "h1", "h2", "h3" })
+                {
+                    var button = editor.Create();
+                    button.Text.text = a;
+                }
+            }
+
+            using (var editor = Layouter.Edit(ui.HogeButton))
+            {
+                foreach (var a in new[] { "h4", "h5", "h6" })
                 {
                     var button = editor.Create();
                     button.Text.text = a;
