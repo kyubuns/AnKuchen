@@ -3,14 +3,10 @@
 Control UI Prefab from Script Library  
 You won't have to drag and drop on Inspector when you create your UI.
 
-## Setup
-
-- Install "AnKuchen" by UnityPackageManager. `https://git@github.com/kyubuns/AnKuchen.git?path=Unity/Assets/AnKuchen`
-- Add a UICacheComponent to the Root of the UI and press the Update button.
-  - We recommend that you automate the process of pressing the Update button to fit your workflow.
-<img width="640" alt="Screen Shot 2020-09-03 at 20 49 27" src="https://user-images.githubusercontent.com/961165/92111226-f6806900-ee26-11ea-9718-beb328af5038.png">
-
 ## Sample
+
+Sample GameObject  
+<img width="640" alt="Screen Shot 2020-09-03 at 20 49 27" src="https://user-images.githubusercontent.com/961165/92111226-f6806900-ee26-11ea-9718-beb328af5038.png">
 
 ### Get Button
 
@@ -222,9 +218,13 @@ var test1Object = Resources.Load<GameObject>("Test1");
 Assert.DoesNotThrow(() => UIElementTester.Test<UIElements>(test1Object));
 ```
 
-## Instructions
 
-- Package Manager `https://git@github.com/kyubuns/AnKuchen.git?path=Unity/Assets/AnKuchen`
+## Setup
+
+- Install "AnKuchen" by UnityPackageManager. `https://git@github.com/kyubuns/AnKuchen.git?path=Unity/Assets/AnKuchen`
+- Add a UICacheComponent to the Root of the UI and press the Update button.
+  - We recommend that you automate the process of pressing the Update button to fit your workflow.
+<img width="640" alt="Screen Shot 2020-09-03 at 20 49 27" src="https://user-images.githubusercontent.com/961165/92111226-f6806900-ee26-11ea-9718-beb328af5038.png">
 - To update, rewrite the Hash in Packages/packages-lock.json.
 
 ## Requirements
