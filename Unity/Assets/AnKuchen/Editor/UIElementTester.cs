@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using AnKuchen.Map;
-using Boo.Lang.Runtime;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -25,7 +24,7 @@ namespace AnKuchen.Editor
                 wdt--;
                 if (wdt < 0)
                 {
-                    throw new RuntimeException("wdt < 0");
+                    throw new System.Exception("wdt < 0");
                 }
 
                 var o = testTargets.First();
