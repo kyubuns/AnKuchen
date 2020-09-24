@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AnKuchen.Map;
 using UnityEditor;
 using UnityEngine;
@@ -31,6 +33,11 @@ namespace AnKuchen.Editor
             base.OnInspectorGUI();
         }
 
+        private static string ToSafeVariableName(string originalName)
+        {
+            return Regex.Replace(originalName, @"[^\w_]", "", RegexOptions.None);
+        }
+
         private string GenerateTemplate(UICache uiCache, UIStringElement[] stringElements)
         {
             var targetTypes = new[] { typeof(Button), typeof(Text), typeof(Image) };
@@ -50,7 +57,7 @@ namespace AnKuchen.Editor
                         if (uiCache.GetAll(string.Join("/", next.Reverse())).Length != 1) break;
                         uniquePath = next;
                     }
-                    elements.Add((string.Join("", uniquePath.Where(x => x != ".").Reverse()), uniquePath.Reverse().ToArray(), targetType.Name));
+                    elements.Add((ToSafeVariableName(string.Join("", uniquePath.Where(x => x != ".").Reverse())), uniquePath.Reverse().ToArray(), targetType.Name));
                     break;
                 }
             }
