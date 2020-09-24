@@ -35,7 +35,7 @@ namespace AnKuchen.Editor
 
         private static string ToSafeVariableName(string originalName)
         {
-            return Regex.Replace(originalName, @"[^\w_]", "", RegexOptions.None);
+            return Regex.Replace(originalName, @"[^\w_]", "_", RegexOptions.None);
         }
 
         private string GenerateTemplate(UICache uiCache, UIStringElement[] stringElements)
