@@ -15,26 +15,12 @@ namespace AnKuchen.Development
         public void Start()
         {
             var ui = new UIElements(root);
-            using (var editor = Layouter.Edit(ui.HogeButton))
-            {
-                foreach (var a in new[] { "h1", "h2", "h3" })
-                {
-                    var button = editor.Create();
-                    button.Text.text = a;
-                }
-            }
-
-            using (var editor = Layouter.Edit(ui.HogeButton))
-            {
-                foreach (var a in new[] { "h4", "h5", "h6" })
-                {
-                    var button = editor.Create();
-                    button.Text.text = a;
-                }
-            }
+            ui.HogeButton.onClick.AddListener(() => Debug.Log("Hoge"));
+            ui.SomeButton.onClick.AddListener(() => Debug.Log("Some"));
         }
     }
 
+    /*
     public class UIElements : IMappedObject
     {
         public IMapper Mapper { get; private set; }
@@ -72,4 +58,33 @@ namespace AnKuchen.Development
             Text = mapper.Get<Text>("Text");
         }
     }
+    */
+
+    public class UIElements : IMappedObject
+    {
+        public IMapper Mapper { get; private set; }
+        public GameObject Root { get; private set; }
+        public Text Text { get; private set; }
+        public Button HogeButton { get; private set; }
+        public Text HogeButtonText { get; private set; }
+        public Button SomeButton { get; private set; }
+        public Text SomeButtonText { get; private set; }
+
+        public UIElements(IMapper mapper)
+        {
+            Initialize(mapper);
+        }
+
+        public void Initialize(IMapper mapper)
+        {
+            Mapper = mapper;
+            Root = mapper.Get();
+            Text = mapper.Get<Text>("./Text");
+            HogeButton = mapper.Get<Button>("HogeButton");
+            HogeButtonText = mapper.Get<Text>("HogeButton/Text");
+            SomeButton = mapper.Get<Button>("Some Button");
+            SomeButtonText = mapper.Get<Text>("Some Button/Text");
+        }
+    }
+
 }
