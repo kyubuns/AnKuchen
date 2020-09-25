@@ -16,6 +16,7 @@ namespace AnKuchen.Map
             var elements = new List<CachedObject>();
             CreateCacheInternal(elements, transform, new List<uint>());
             Elements = elements.ToArray();
+            cachedMapper = null;
         }
 
         private void CreateCacheInternal(List<CachedObject> elements, Transform t, List<uint> basePath)
