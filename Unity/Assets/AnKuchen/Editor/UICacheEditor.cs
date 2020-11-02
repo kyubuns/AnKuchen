@@ -40,7 +40,7 @@ namespace AnKuchen.Editor
 
         private string GenerateTemplate(UICache uiCache, UIStringElement[] stringElements)
         {
-            var targetTypes = new[] { typeof(Button), typeof(Text), typeof(Image) };
+            var targetTypes = new[] { typeof(Button), typeof(InputField), typeof(Text), typeof(Image) };
 
             var elements = new List<(string Name, string[] Path, string Type)>();
             foreach (var e in stringElements)
