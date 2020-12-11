@@ -8,12 +8,12 @@ namespace AnKuchen.KuchenList
 
         public void OnDestroy()
         {
-            List.OnDestroy();
+            List.DeactivateAll();
         }
     }
 
     public interface IKuchenList
     {
-        void OnDestroy();
+        void DeactivateAll();
     }
 }

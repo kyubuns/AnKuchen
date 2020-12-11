@@ -13,14 +13,27 @@ namespace AnKuchen.Development
         public void Start()
         {
             var ui = new UIElements(root);
-            ui.HogeButton.onClick.AddListener(() => Debug.Log("Hoge"));
-            ui.SomeButton.onClick.AddListener(() => Debug.Log("Some"));
+            var num = 10;
+            ui.HogeButton.onClick.AddListener(() =>
+            {
+                num++;
+                CreateList(ui, num);
+            });
+            ui.SomeButton.onClick.AddListener(() =>
+            {
+                num--;
+                if (num < 0) num = 0;
+                CreateList(ui, num);
+            });
+            CreateList(ui, num);
+        }
 
-            // List
+        private void CreateList(UIElements ui, int num)
+        {
             using (var editor = ui.List.Edit())
             {
                 editor.Spacing = 10f;
-                editor.Margin.Top = 10f;
+                editor.Margin.TopBottom = 10f;
 
                 editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
                 {
@@ -53,7 +66,7 @@ namespace AnKuchen.Development
                     }),
                 };
 
-                for (var i = 0; i < 10; ++i)
+                for (var i = 0; i < num; ++i)
                 {
                     var i1 = i;
                     editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Text.text = $"Test {i1}"));
@@ -110,12 +123,10 @@ namespace AnKuchen.Development
 
         public void Activate()
         {
-            Debug.Log("Activate");
         }
 
         public void Deactivate()
         {
-            Debug.Log("Deactivate");
         }
     }
 
