@@ -7,4 +7,9 @@ namespace AnKuchen.KuchenList
         void Activate();
         void Deactivate();
     }
+
+    public interface IListRowHeight
+    {
+        float Height { get; }
+    }
 }
