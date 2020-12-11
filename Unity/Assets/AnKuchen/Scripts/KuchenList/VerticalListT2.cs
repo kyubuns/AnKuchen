@@ -12,7 +12,7 @@ namespace AnKuchen.KuchenList
         private readonly T1 original1;
         private readonly T2 original2;
         private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
-        private readonly List<(RectTransform, IReusableMappedObject, float Position)> items = new List<(RectTransform, IReusableMappedObject, float Position)>();
+        private readonly List<(IReusableMappedObject, float Position)> items = new List<(IReusableMappedObject, float Position)>();
         public float Spacing { get; private set; }
 
         private Margin margin = new Margin();
@@ -35,9 +35,25 @@ namespace AnKuchen.KuchenList
         {
             foreach (var item in items)
             {
-                item.Item2.Deactivate();
+                item.Item1?.Deactivate();
             }
             items.Clear();
+        }
+
+        private readonly Vector3[] fourCornersArray = new Vector3[4];
+        private readonly Vector2[] worldCornersEdge = new Vector2[2];
+        public void UpdateView()
+        {
+            {
+                var viewPort = scrollRect.viewport;
+                viewPort.GetWorldCorners(fourCornersArray);
+                Debug.Log($"{fourCornersArray[0]}, {fourCornersArray[2]}");
+            }
+            {
+                var viewPort = scrollRect.content;
+                viewPort.GetWorldCorners(fourCornersArray);
+                Debug.Log($"- {fourCornersArray[0]}, {fourCornersArray[2]}");
+            }
         }
 
         private void UpdateListContents()
@@ -45,8 +61,11 @@ namespace AnKuchen.KuchenList
             // clear elements
             foreach (var item in items)
             {
-                item.Item2.Deactivate();
-                UnityEngine.Object.Destroy(item.Item1.gameObject);
+                if (item.Item1 != null)
+                {
+                    item.Item1.Deactivate();
+                    UnityEngine.Object.Destroy(item.Item1.Mapper.Get());
+                }
             }
             items.Clear();
 
@@ -54,14 +73,17 @@ namespace AnKuchen.KuchenList
             var calcHeight = Margin.Top;
             foreach (var content in contents)
             {
-                RectTransform newObject = null;
+                /*
+                RectTranform newObject = null;
                 IReusableMappedObject newMappedObject = null;
                 if (content.Callback1 != null) (newObject, newMappedObject) = CreateNewObject(original1, content.Callback1);
                 if (content.Callback2 != null) (newObject, newMappedObject) = CreateNewObject(original2, content.Callback2);
                 if (newObject == null || newMappedObject == null) continue;
+                */
 
-                items.Add((newObject, newMappedObject, calcHeight));
-                calcHeight += newObject.rect.height;
+                items.Add((null, calcHeight));
+                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
@@ -72,6 +94,7 @@ namespace AnKuchen.KuchenList
             var s = contentRectTransform.sizeDelta;
             contentRectTransform.sizeDelta = new Vector2(s.x, calcHeight);
 
+            /*
             // move elements position
             var baseY = calcHeight / 2f;
             foreach (var (rectTransform, _, position) in items)
@@ -80,6 +103,7 @@ namespace AnKuchen.KuchenList
                 var r = rectTransform.rect;
                 rectTransform.anchoredPosition = new Vector3(p.x, baseY - position - r.height / 2f, 0f);
             }
+            */
         }
 
         private (RectTransform, IReusableMappedObject) CreateNewObject<T>(T original, Action<T> contentCallback) where T : IReusableMappedObject, new()

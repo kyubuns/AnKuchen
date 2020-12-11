@@ -6,6 +6,11 @@ namespace AnKuchen.KuchenList
     {
         public IKuchenList List { get; set; }
 
+        public void LateUpdate()
+        {
+            List.UpdateView();
+        }
+
         public void OnDestroy()
         {
             List.DeactivateAll();
@@ -15,5 +20,6 @@ namespace AnKuchen.KuchenList
     public interface IKuchenList
     {
         void DeactivateAll();
+        void UpdateView();
     }
 }
