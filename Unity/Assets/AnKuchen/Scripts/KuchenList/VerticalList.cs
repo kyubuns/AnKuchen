@@ -92,10 +92,12 @@ namespace AnKuchen.KuchenList
         private (RectTransform, IReusableMappedObject) CreateNewObject<T>(T original, Action<T> contentCallback) where T : IReusableMappedObject, new()
         {
             var newObject = original.Duplicate();
+            var newRectTransform = newObject.Mapper.Get<RectTransform>();
+            newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
             newObject.Activate();
             contentCallback(newObject);
-            return (newObject.Mapper.Get<RectTransform>(), newObject);
+            return (newRectTransform, newObject);
         }
 
         public ListContentEditor Edit()
