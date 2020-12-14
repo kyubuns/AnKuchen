@@ -61,14 +61,7 @@ namespace AnKuchen.KuchenList
                 if (newObject == null || newMappedObject == null) continue;
 
                 items.Add((newObject, newMappedObject, calcHeight));
-                if (newMappedObject is IListRowHeight listRowHeight)
-                {
-                    calcHeight += listRowHeight.Height;
-                }
-                else
-                {
-                    calcHeight += newObject.rect.height;
-                }
+                calcHeight += newObject.rect.height;
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
