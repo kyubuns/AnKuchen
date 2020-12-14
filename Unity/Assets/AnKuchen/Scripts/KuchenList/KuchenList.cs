@@ -4,7 +4,7 @@ namespace AnKuchen.KuchenList
 {
     public class KuchenList : MonoBehaviour
     {
-        public IKuchenList List { get; set; }
+        public IKuchenListMonoBehaviourBridge List { get; set; }
 
         public void LateUpdate()
         {
@@ -17,7 +17,7 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public interface IKuchenList
+    public interface IKuchenListMonoBehaviourBridge
     {
         void DeactivateAll();
         void UpdateView();

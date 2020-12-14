@@ -4,10 +4,11 @@ using AnKuchen.Extensions;
 using AnKuchen.Map;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace AnKuchen.KuchenList
 {
-    public class VerticalList<T1> : IKuchenList
+    public class VerticalList<T1>
         where T1 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -31,13 +32,33 @@ namespace AnKuchen.KuchenList
             cachedObjects.Add(typeof(T1), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
-            kuchenList.List = this;
+            kuchenList.List = new ListOperator(this);
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
         }
 
-        public void DeactivateAll()
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1> list;
+
+            public ListOperator(VerticalList<T1> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
         {
             foreach (var item in createdObjects.Values)
             {
@@ -46,7 +67,7 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
-        public void UpdateView()
+        private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
@@ -183,9 +204,21 @@ namespace AnKuchen.KuchenList
                 parent.UpdateListContents();
             }
         }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
     }
 
-    public class VerticalList<T1, T2> : IKuchenList
+    public class VerticalList<T1, T2>
         where T1 : IMappedObject, new() where T2 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -214,13 +247,33 @@ namespace AnKuchen.KuchenList
             cachedObjects.Add(typeof(T2), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
-            kuchenList.List = this;
+            kuchenList.List = new ListOperator(this);
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
         }
 
-        public void DeactivateAll()
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1, T2> list;
+
+            public ListOperator(VerticalList<T1, T2> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
         {
             foreach (var item in createdObjects.Values)
             {
@@ -229,7 +282,7 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
-        public void UpdateView()
+        private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
@@ -369,9 +422,21 @@ namespace AnKuchen.KuchenList
                 parent.UpdateListContents();
             }
         }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
     }
 
-    public class VerticalList<T1, T2, T3> : IKuchenList
+    public class VerticalList<T1, T2, T3>
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -405,13 +470,33 @@ namespace AnKuchen.KuchenList
             cachedObjects.Add(typeof(T3), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
-            kuchenList.List = this;
+            kuchenList.List = new ListOperator(this);
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
         }
 
-        public void DeactivateAll()
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1, T2, T3> list;
+
+            public ListOperator(VerticalList<T1, T2, T3> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
         {
             foreach (var item in createdObjects.Values)
             {
@@ -420,7 +505,7 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
-        public void UpdateView()
+        private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
@@ -563,9 +648,21 @@ namespace AnKuchen.KuchenList
                 parent.UpdateListContents();
             }
         }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
     }
 
-    public class VerticalList<T1, T2, T3, T4> : IKuchenList
+    public class VerticalList<T1, T2, T3, T4>
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new() where T4 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -604,13 +701,33 @@ namespace AnKuchen.KuchenList
             cachedObjects.Add(typeof(T4), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
-            kuchenList.List = this;
+            kuchenList.List = new ListOperator(this);
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
         }
 
-        public void DeactivateAll()
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1, T2, T3, T4> list;
+
+            public ListOperator(VerticalList<T1, T2, T3, T4> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
         {
             foreach (var item in createdObjects.Values)
             {
@@ -619,7 +736,7 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
-        public void UpdateView()
+        private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
@@ -763,6 +880,18 @@ namespace AnKuchen.KuchenList
                 parent.Spacing = Spacing;
                 parent.margin = Margin;
                 parent.UpdateListContents();
+            }
+        }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
             }
         }
     }

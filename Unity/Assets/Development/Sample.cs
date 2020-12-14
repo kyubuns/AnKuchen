@@ -25,6 +25,10 @@ namespace AnKuchen.Development
                 if (num < 0) num = 0;
                 CreateList(ui, num);
             });
+            ui.DeleteAllButton.onClick.AddListener(() =>
+            {
+                ui.List.DestroyCachedGameObjects();
+            });
             CreateList(ui, num);
         }
 
@@ -84,6 +88,7 @@ namespace AnKuchen.Development
         public Text HogeButtonText { get; private set; }
         public Button SomeButton { get; private set; }
         public Text SomeButtonText { get; private set; }
+        public Button DeleteAllButton { get; private set; }
         public VerticalList<ListElements1, ListElements2> List { get; private set; }
 
         public UIElements(IMapper mapper)
@@ -100,6 +105,7 @@ namespace AnKuchen.Development
             HogeButtonText = mapper.Get<Text>("HogeButton/Text");
             SomeButton = mapper.Get<Button>("Some Button");
             SomeButtonText = mapper.Get<Text>("Some Button/Text");
+            DeleteAllButton = mapper.Get<Button>("DeleteAllButton");
             List = new VerticalList<ListElements1, ListElements2>(
                 mapper.Get<ScrollRect>("List"),
                 mapper.GetChild<ListElements1>("Element1"),
