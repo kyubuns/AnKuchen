@@ -1,3 +1,6 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Linq" #>
+<#@ assembly name="System.Core" #>
 using System;
 using System.Collections.Generic;
 using AnKuchen.Extensions;
@@ -6,26 +9,28 @@ using UnityEngine.UI;
 
 namespace AnKuchen.KuchenList
 {
-    public class VerticalList<T1, T2> : IKuchenList where T1 : IReusableMappedObject, new() where T2 : IReusableMappedObject, new()
+<# for (var t = 1; t <= 2; ++t) { #>
+    public class VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> : IKuchenList <#= string.Join(" ", Enumerable.Range(1, t).Select(i => $"where T{i} : IReusableMappedObject, new()")) #>
     {
         private readonly ScrollRect scrollRect;
-        private readonly T1 original1;
-        private readonly T2 original2;
-        private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
+<# for (var i = 1; i <= t; ++i) { #>
+        private readonly T<#= i #> original<#= i #>;
+<# } #>
+        private List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> contents = new List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>>();
         private readonly List<(IReusableMappedObject, float Position)> items = new List<(IReusableMappedObject, float Position)>();
         public float Spacing { get; private set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
-        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2)
+        public VerticalList(ScrollRect scrollRect, <#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i} original{i}")) #>)
         {
             this.scrollRect = scrollRect;
-            this.original1 = original1;
-            this.original2 = original2;
 
-            this.original1.Mapper.Get().SetActive(false);
-            this.original2.Mapper.Get().SetActive(false);
+<# for (var i = 1; i <= t; ++i) { #>
+            this.original<#= i #> = original<#= i #>;
+            this.original<#= i #>.Mapper.Get().SetActive(false);
+<# } #>
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = this;
@@ -44,6 +49,7 @@ namespace AnKuchen.KuchenList
         private readonly Vector2[] worldCornersEdge = new Vector2[2];
         public void UpdateView()
         {
+            /*
             {
                 var viewPort = scrollRect.viewport;
                 viewPort.GetWorldCorners(fourCornersArray);
@@ -54,6 +60,7 @@ namespace AnKuchen.KuchenList
                 viewPort.GetWorldCorners(fourCornersArray);
                 Debug.Log($"- {fourCornersArray[0]}, {fourCornersArray[2]}");
             }
+            */
         }
 
         private void UpdateListContents()
@@ -82,8 +89,9 @@ namespace AnKuchen.KuchenList
                 */
 
                 items.Add((null, calcHeight));
-                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
+<# for (var i = 1; i <= t; ++i) { #>
+                if (content.Callback<#= i #> != null) calcHeight += original<#= i #>.Mapper.Get<RectTransform>().rect.height;
+<# } #>
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
@@ -124,12 +132,12 @@ namespace AnKuchen.KuchenList
 
         public class ListContentEditor : IDisposable
         {
-            private readonly VerticalList<T1, T2> parent;
-            public List<UIFactory<T1, T2>> Contents { get; set; }
+            private readonly VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent;
+            public List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2> parent)
+            public ListContentEditor(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent)
             {
                 this.parent = parent;
                 Contents = parent.contents;
@@ -146,4 +154,6 @@ namespace AnKuchen.KuchenList
             }
         }
     }
+
+<# } #>
 }
