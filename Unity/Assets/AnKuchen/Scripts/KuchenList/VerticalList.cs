@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using AnKuchen.Extensions;
+using AnKuchen.Map;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace AnKuchen.KuchenList
 {
     public class VerticalList<T1> : IKuchenList
-        where T1 : IReusableMappedObject, new()
+        where T1 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private List<UIFactory<T1>> contents = new List<UIFactory<T1>>();
         private readonly List<float> contentPositions = new List<float>();
-        private readonly Dictionary<int, IReusableMappedObject> createdObjects = new Dictionary<int, IReusableMappedObject>();
-        private readonly Dictionary<Type, List<IReusableMappedObject>> cachedObjects = new Dictionary<Type, List<IReusableMappedObject>>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
 
@@ -27,7 +28,7 @@ namespace AnKuchen.KuchenList
 
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T1), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = this;
@@ -40,7 +41,7 @@ namespace AnKuchen.KuchenList
         {
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
             }
             createdObjects.Clear();
         }
@@ -86,7 +87,7 @@ namespace AnKuchen.KuchenList
                 if (createdObjects.ContainsKey(i)) continue;
 
                 RectTransform newObject = null;
-                IReusableMappedObject newMappedObject = null;
+                IMappedObject newMappedObject = null;
                 var content = contents[i];
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
                 if (newObject == null) throw new Exception($"newObject == null");
@@ -102,7 +103,7 @@ namespace AnKuchen.KuchenList
             // clear elements
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
                 UnityEngine.Object.Destroy(item.Mapper.Get());
             }
             createdObjects.Clear();
@@ -125,16 +126,16 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IReusableMappedObject target)
+        private void CollectObject(int index, IMappedObject target)
         {
-            target.Deactivate();
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
             var content = contents[index];
             if (content.Callback1 != null) cachedObjects[typeof(T1)].Add(target);
         }
 
-        private (RectTransform, IReusableMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IReusableMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -151,7 +152,7 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
-            newObject.Activate();
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
             return (newRectTransform, newObject);
         }
@@ -187,15 +188,15 @@ namespace AnKuchen.KuchenList
     }
 
     public class VerticalList<T1, T2> : IKuchenList
-        where T1 : IReusableMappedObject, new() where T2 : IReusableMappedObject, new()
+        where T1 : IMappedObject, new() where T2 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private readonly T2 original2;
         private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
         private readonly List<float> contentPositions = new List<float>();
-        private readonly Dictionary<int, IReusableMappedObject> createdObjects = new Dictionary<int, IReusableMappedObject>();
-        private readonly Dictionary<Type, List<IReusableMappedObject>> cachedObjects = new Dictionary<Type, List<IReusableMappedObject>>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
 
@@ -208,11 +209,11 @@ namespace AnKuchen.KuchenList
 
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T1), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
 
             this.original2 = original2;
             this.original2.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T2), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T2), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = this;
@@ -225,7 +226,7 @@ namespace AnKuchen.KuchenList
         {
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
             }
             createdObjects.Clear();
         }
@@ -271,7 +272,7 @@ namespace AnKuchen.KuchenList
                 if (createdObjects.ContainsKey(i)) continue;
 
                 RectTransform newObject = null;
-                IReusableMappedObject newMappedObject = null;
+                IMappedObject newMappedObject = null;
                 var content = contents[i];
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
                 if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
@@ -288,7 +289,7 @@ namespace AnKuchen.KuchenList
             // clear elements
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
                 UnityEngine.Object.Destroy(item.Mapper.Get());
             }
             createdObjects.Clear();
@@ -312,9 +313,9 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IReusableMappedObject target)
+        private void CollectObject(int index, IMappedObject target)
         {
-            target.Deactivate();
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
             var content = contents[index];
@@ -322,7 +323,7 @@ namespace AnKuchen.KuchenList
             if (content.Callback2 != null) cachedObjects[typeof(T2)].Add(target);
         }
 
-        private (RectTransform, IReusableMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IReusableMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -339,7 +340,7 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
-            newObject.Activate();
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
             return (newRectTransform, newObject);
         }
@@ -375,7 +376,7 @@ namespace AnKuchen.KuchenList
     }
 
     public class VerticalList<T1, T2, T3> : IKuchenList
-        where T1 : IReusableMappedObject, new() where T2 : IReusableMappedObject, new() where T3 : IReusableMappedObject, new()
+        where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
@@ -383,8 +384,8 @@ namespace AnKuchen.KuchenList
         private readonly T3 original3;
         private List<UIFactory<T1, T2, T3>> contents = new List<UIFactory<T1, T2, T3>>();
         private readonly List<float> contentPositions = new List<float>();
-        private readonly Dictionary<int, IReusableMappedObject> createdObjects = new Dictionary<int, IReusableMappedObject>();
-        private readonly Dictionary<Type, List<IReusableMappedObject>> cachedObjects = new Dictionary<Type, List<IReusableMappedObject>>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
 
@@ -397,15 +398,15 @@ namespace AnKuchen.KuchenList
 
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T1), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
 
             this.original2 = original2;
             this.original2.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T2), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T2), new List<IMappedObject>());
 
             this.original3 = original3;
             this.original3.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T3), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T3), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = this;
@@ -418,7 +419,7 @@ namespace AnKuchen.KuchenList
         {
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
             }
             createdObjects.Clear();
         }
@@ -464,7 +465,7 @@ namespace AnKuchen.KuchenList
                 if (createdObjects.ContainsKey(i)) continue;
 
                 RectTransform newObject = null;
-                IReusableMappedObject newMappedObject = null;
+                IMappedObject newMappedObject = null;
                 var content = contents[i];
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
                 if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
@@ -482,7 +483,7 @@ namespace AnKuchen.KuchenList
             // clear elements
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
                 UnityEngine.Object.Destroy(item.Mapper.Get());
             }
             createdObjects.Clear();
@@ -507,9 +508,9 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IReusableMappedObject target)
+        private void CollectObject(int index, IMappedObject target)
         {
-            target.Deactivate();
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
             var content = contents[index];
@@ -518,7 +519,7 @@ namespace AnKuchen.KuchenList
             if (content.Callback3 != null) cachedObjects[typeof(T3)].Add(target);
         }
 
-        private (RectTransform, IReusableMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IReusableMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -535,7 +536,7 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
-            newObject.Activate();
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
             return (newRectTransform, newObject);
         }
@@ -571,7 +572,7 @@ namespace AnKuchen.KuchenList
     }
 
     public class VerticalList<T1, T2, T3, T4> : IKuchenList
-        where T1 : IReusableMappedObject, new() where T2 : IReusableMappedObject, new() where T3 : IReusableMappedObject, new() where T4 : IReusableMappedObject, new()
+        where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new() where T4 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
@@ -580,8 +581,8 @@ namespace AnKuchen.KuchenList
         private readonly T4 original4;
         private List<UIFactory<T1, T2, T3, T4>> contents = new List<UIFactory<T1, T2, T3, T4>>();
         private readonly List<float> contentPositions = new List<float>();
-        private readonly Dictionary<int, IReusableMappedObject> createdObjects = new Dictionary<int, IReusableMappedObject>();
-        private readonly Dictionary<Type, List<IReusableMappedObject>> cachedObjects = new Dictionary<Type, List<IReusableMappedObject>>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
 
@@ -594,19 +595,19 @@ namespace AnKuchen.KuchenList
 
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T1), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
 
             this.original2 = original2;
             this.original2.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T2), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T2), new List<IMappedObject>());
 
             this.original3 = original3;
             this.original3.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T3), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T3), new List<IMappedObject>());
 
             this.original4 = original4;
             this.original4.Mapper.Get().SetActive(false);
-            cachedObjects.Add(typeof(T4), new List<IReusableMappedObject>());
+            cachedObjects.Add(typeof(T4), new List<IMappedObject>());
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = this;
@@ -619,7 +620,7 @@ namespace AnKuchen.KuchenList
         {
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
             }
             createdObjects.Clear();
         }
@@ -665,7 +666,7 @@ namespace AnKuchen.KuchenList
                 if (createdObjects.ContainsKey(i)) continue;
 
                 RectTransform newObject = null;
-                IReusableMappedObject newMappedObject = null;
+                IMappedObject newMappedObject = null;
                 var content = contents[i];
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
                 if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
@@ -684,7 +685,7 @@ namespace AnKuchen.KuchenList
             // clear elements
             foreach (var item in createdObjects.Values)
             {
-                item.Deactivate();
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
                 UnityEngine.Object.Destroy(item.Mapper.Get());
             }
             createdObjects.Clear();
@@ -710,9 +711,9 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IReusableMappedObject target)
+        private void CollectObject(int index, IMappedObject target)
         {
-            target.Deactivate();
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
             var content = contents[index];
@@ -722,7 +723,7 @@ namespace AnKuchen.KuchenList
             if (content.Callback4 != null) cachedObjects[typeof(T4)].Add(target);
         }
 
-        private (RectTransform, IReusableMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IReusableMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -739,7 +740,7 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
-            newObject.Activate();
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
             return (newRectTransform, newObject);
         }

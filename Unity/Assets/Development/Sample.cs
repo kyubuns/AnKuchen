@@ -120,7 +120,7 @@ namespace AnKuchen.Development
         }
     }
 
-    public class ListElements1 : IReusableMappedObject
+    public class ListElements1 : IMappedObject
     {
         public IMapper Mapper { get; private set; }
         public GameObject Root { get; private set; }
@@ -131,14 +131,6 @@ namespace AnKuchen.Development
             Mapper = mapper;
             Root = mapper.Get();
             Text = mapper.Get<Text>("./Text");
-        }
-
-        public void Activate()
-        {
-        }
-
-        public void Deactivate()
-        {
         }
     }
 
