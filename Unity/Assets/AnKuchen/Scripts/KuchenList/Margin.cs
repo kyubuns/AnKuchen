@@ -20,4 +20,14 @@ namespace AnKuchen.KuchenList
             }
         }
     }
+
+    public class Spacer
+    {
+        public Spacer(float size)
+        {
+            Size = size;
+        }
+
+        public float Size { get; }
+    }
 }

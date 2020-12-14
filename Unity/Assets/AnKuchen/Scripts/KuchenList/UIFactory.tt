@@ -12,6 +12,7 @@ namespace AnKuchen.KuchenList
 <# for (var i = 1; i <= t; ++i) { #>
         public Action<T<#= i #>> Callback<#= i #> { get; }
 <# } #>
+        public Spacer Spacer { get; }
 
 <# for (var i = 1; i <= t; ++i) { #>
         public UIFactory(Action<T<#= i #>> callback<#= i #>)
@@ -20,6 +21,10 @@ namespace AnKuchen.KuchenList
         }
 
 <# } #>
+        public UIFactory(Spacer spacer)
+        {
+            Spacer = spacer;
+        }
     }
 
 <# } #>

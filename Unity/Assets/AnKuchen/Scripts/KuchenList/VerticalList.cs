@@ -111,6 +111,7 @@ namespace AnKuchen.KuchenList
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
+                if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 var p = newObject.anchoredPosition;
                 var r = newObject.rect;
@@ -135,6 +136,7 @@ namespace AnKuchen.KuchenList
             {
                 contentPositions.Add(calcHeight);
                 if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
@@ -327,6 +329,7 @@ namespace AnKuchen.KuchenList
                 var content = contents[i];
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
                 if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
+                if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 var p = newObject.anchoredPosition;
                 var r = newObject.rect;
@@ -352,6 +355,7 @@ namespace AnKuchen.KuchenList
                 contentPositions.Add(calcHeight);
                 if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
                 if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
@@ -551,6 +555,7 @@ namespace AnKuchen.KuchenList
                 if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
                 if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
                 if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3);
+                if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 var p = newObject.anchoredPosition;
                 var r = newObject.rect;
@@ -577,6 +582,7 @@ namespace AnKuchen.KuchenList
                 if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
                 if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
                 if (content.Callback3 != null) calcHeight += original3.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
@@ -783,6 +789,7 @@ namespace AnKuchen.KuchenList
                 if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
                 if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3);
                 if (content.Callback4 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original4, content.Callback4);
+                if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 var p = newObject.anchoredPosition;
                 var r = newObject.rect;
@@ -810,6 +817,7 @@ namespace AnKuchen.KuchenList
                 if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
                 if (content.Callback3 != null) calcHeight += original3.Mapper.Get<RectTransform>().rect.height;
                 if (content.Callback4 != null) calcHeight += original4.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
                 calcHeight += Spacing;
             }
             if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
