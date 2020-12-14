@@ -141,6 +141,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.xtaltools.unity-t4-patch": {
+      "version": "https://github.com/neptaco/UnityT4TemplatePatch.git?path=Packages/UnityT4TemplatePatch",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "4628fcd2b0efa2dc75de4afa3b123944da04c004"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,
