@@ -73,7 +73,7 @@ namespace AnKuchen.KuchenList
                 var map = tmp.Value;
                 if (displayMinIndex <= index && index <= displayMaxIndex) continue;
 
-                CollectObject(index, map);
+                CollectObject(map);
                 removedList.Add(index);
             }
 
@@ -101,10 +101,9 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
-            foreach (var item in createdObjects.Values)
+            foreach (var map in createdObjects.Values)
             {
-                if (item is IReusableMappedObject reusable) reusable.Deactivate();
-                UnityEngine.Object.Destroy(item.Mapper.Get());
+                CollectObject(map);
             }
             createdObjects.Clear();
             contentPositions.Clear();
@@ -126,13 +125,12 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IMappedObject target)
+        private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
-            var content = contents[index];
-            if (content.Callback1 != null) cachedObjects[typeof(T1)].Add(target);
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
         }
 
         private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
@@ -258,7 +256,7 @@ namespace AnKuchen.KuchenList
                 var map = tmp.Value;
                 if (displayMinIndex <= index && index <= displayMaxIndex) continue;
 
-                CollectObject(index, map);
+                CollectObject(map);
                 removedList.Add(index);
             }
 
@@ -287,10 +285,9 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
-            foreach (var item in createdObjects.Values)
+            foreach (var map in createdObjects.Values)
             {
-                if (item is IReusableMappedObject reusable) reusable.Deactivate();
-                UnityEngine.Object.Destroy(item.Mapper.Get());
+                CollectObject(map);
             }
             createdObjects.Clear();
             contentPositions.Clear();
@@ -313,14 +310,13 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IMappedObject target)
+        private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
-            var content = contents[index];
-            if (content.Callback1 != null) cachedObjects[typeof(T1)].Add(target);
-            if (content.Callback2 != null) cachedObjects[typeof(T2)].Add(target);
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+            if (target is T2) cachedObjects[typeof(T2)].Add(target);
         }
 
         private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
@@ -451,7 +447,7 @@ namespace AnKuchen.KuchenList
                 var map = tmp.Value;
                 if (displayMinIndex <= index && index <= displayMaxIndex) continue;
 
-                CollectObject(index, map);
+                CollectObject(map);
                 removedList.Add(index);
             }
 
@@ -481,10 +477,9 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
-            foreach (var item in createdObjects.Values)
+            foreach (var map in createdObjects.Values)
             {
-                if (item is IReusableMappedObject reusable) reusable.Deactivate();
-                UnityEngine.Object.Destroy(item.Mapper.Get());
+                CollectObject(map);
             }
             createdObjects.Clear();
             contentPositions.Clear();
@@ -508,15 +503,14 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IMappedObject target)
+        private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
-            var content = contents[index];
-            if (content.Callback1 != null) cachedObjects[typeof(T1)].Add(target);
-            if (content.Callback2 != null) cachedObjects[typeof(T2)].Add(target);
-            if (content.Callback3 != null) cachedObjects[typeof(T3)].Add(target);
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+            if (target is T2) cachedObjects[typeof(T2)].Add(target);
+            if (target is T3) cachedObjects[typeof(T3)].Add(target);
         }
 
         private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
@@ -652,7 +646,7 @@ namespace AnKuchen.KuchenList
                 var map = tmp.Value;
                 if (displayMinIndex <= index && index <= displayMaxIndex) continue;
 
-                CollectObject(index, map);
+                CollectObject(map);
                 removedList.Add(index);
             }
 
@@ -683,10 +677,9 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
-            foreach (var item in createdObjects.Values)
+            foreach (var map in createdObjects.Values)
             {
-                if (item is IReusableMappedObject reusable) reusable.Deactivate();
-                UnityEngine.Object.Destroy(item.Mapper.Get());
+                CollectObject(map);
             }
             createdObjects.Clear();
             contentPositions.Clear();
@@ -711,16 +704,15 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IMappedObject target)
+        private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
-            var content = contents[index];
-            if (content.Callback1 != null) cachedObjects[typeof(T1)].Add(target);
-            if (content.Callback2 != null) cachedObjects[typeof(T2)].Add(target);
-            if (content.Callback3 != null) cachedObjects[typeof(T3)].Add(target);
-            if (content.Callback4 != null) cachedObjects[typeof(T4)].Add(target);
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+            if (target is T2) cachedObjects[typeof(T2)].Add(target);
+            if (target is T3) cachedObjects[typeof(T3)].Add(target);
+            if (target is T4) cachedObjects[typeof(T4)].Add(target);
         }
 
         private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()

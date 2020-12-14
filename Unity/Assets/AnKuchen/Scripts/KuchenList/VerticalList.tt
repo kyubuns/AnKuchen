@@ -81,7 +81,7 @@ namespace AnKuchen.KuchenList
                 var map = tmp.Value;
                 if (displayMinIndex <= index && index <= displayMaxIndex) continue;
 
-                CollectObject(index, map);
+                CollectObject(map);
                 removedList.Add(index);
             }
 
@@ -111,10 +111,9 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
-            foreach (var item in createdObjects.Values)
+            foreach (var map in createdObjects.Values)
             {
-                if (item is IReusableMappedObject reusable) reusable.Deactivate();
-                UnityEngine.Object.Destroy(item.Mapper.Get());
+                CollectObject(map);
             }
             createdObjects.Clear();
             contentPositions.Clear();
@@ -138,14 +137,13 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(s.x, calcHeight);
         }
 
-        private void CollectObject(int index, IMappedObject target)
+        private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
             target.Mapper.Get().SetActive(false);
 
-            var content = contents[index];
 <# for (var i = 1; i <= t; ++i) { #>
-            if (content.Callback<#= i #> != null) cachedObjects[typeof(T<#= i #>)].Add(target);
+            if (target is T<#= i #>) cachedObjects[typeof(T<#= i #>)].Add(target);
 <# } #>
         }
 

@@ -66,22 +66,10 @@ namespace AnKuchen.Development
                     }),
                 };
 
-                for (var i = 0; i < 1000; ++i)
+                for (var i = 0; i < num; ++i)
                 {
-                    var r = Random.Range(0, 2);
-                    if (r == 0)
-                    {
-                        var i1 = i;
-                        editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Text.text = $"Test {i1}"));
-                    }
-                    else
-                    {
-                        editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x =>
-                        {
-                            x.Image.color = Random.ColorHSV();
-                            x.Button.onClick.AddListener(() => Debug.Log("Click Blue"));
-                        }));
-                    }
+                    var i1 = i;
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Text.text = $"Test {i1}"));
                 }
             }
         }
