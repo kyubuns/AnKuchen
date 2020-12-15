@@ -1,0 +1,907 @@
+﻿using System;
+using System.Collections.Generic;
+using AnKuchen.Extensions;
+using AnKuchen.Map;
+using UnityEngine;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
+
+namespace AnKuchen.KuchenList
+{
+    public class VerticalList<T1>
+        where T1 : IMappedObject, new()
+    {
+        private readonly ScrollRect scrollRect;
+        private readonly T1 original1;
+        private List<UIFactory<T1>> contents = new List<UIFactory<T1>>();
+        private readonly List<float> contentPositions = new List<float>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
+        private readonly RectTransform viewportRectTransformCache;
+        public float Spacing { get; private set; }
+
+        private Margin margin = new Margin();
+        public IReadonlyMargin Margin => margin;
+
+        public VerticalList(ScrollRect scrollRect, T1 original1)
+        {
+            this.scrollRect = scrollRect;
+
+            this.original1 = original1;
+            this.original1.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+
+            var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
+            kuchenList.List = new ListOperator(this);
+
+            var viewport = scrollRect.viewport;
+            viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+        }
+
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1> list;
+
+            public ListOperator(VerticalList<T1> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
+        {
+            foreach (var item in createdObjects.Values)
+            {
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
+            }
+            createdObjects.Clear();
+        }
+
+        private void UpdateView()
+        {
+            var displayRect = viewportRectTransformCache.rect;
+            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var start = contentRect.max.y - displayRect.max.y;
+            var end = start + displayRect.height;
+
+            var displayMinIndex = int.MaxValue;
+            var displayMaxIndex = int.MinValue;
+            for (var i = 0; i < contentPositions.Count; ++i)
+            {
+                if (start > contentPositions[i]) continue;
+                if (contentPositions[i] > end) break;
+                displayMinIndex = Mathf.Min(displayMinIndex, i);
+                displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+
+            var removedList = new List<int>();
+            foreach (var tmp in createdObjects)
+            {
+                var index = tmp.Key;
+                var map = tmp.Value;
+                if (displayMinIndex <= index && index <= displayMaxIndex) continue;
+
+                CollectObject(map);
+                removedList.Add(index);
+            }
+
+            foreach (var removed in removedList)
+            {
+                createdObjects.Remove(removed);
+            }
+
+            for (var i = displayMinIndex; i <= displayMaxIndex; ++i)
+            {
+                if (createdObjects.ContainsKey(i)) continue;
+
+                RectTransform newObject = null;
+                IMappedObject newMappedObject = null;
+                var content = contents[i];
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
+                if (content.Spacer != null) continue;
+                if (newObject == null) throw new Exception($"newObject == null");
+                var p = newObject.anchoredPosition;
+                var r = newObject.rect;
+                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
+                createdObjects[i] = newMappedObject;
+            }
+        }
+
+        private void UpdateListContents()
+        {
+            // clear elements
+            foreach (var map in createdObjects.Values)
+            {
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+            contentPositions.Clear();
+
+            // create elements
+            var calcHeight = Margin.Top;
+            foreach (var content in contents)
+            {
+                contentPositions.Add(calcHeight);
+                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
+                calcHeight += Spacing;
+            }
+            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
+            calcHeight += Margin.Bottom;
+
+            // calc content size
+            var c = scrollRect.content;
+            var s = c.sizeDelta;
+            c.sizeDelta = new Vector2(s.x, calcHeight);
+        }
+
+        private void CollectObject(IMappedObject target)
+        {
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
+            target.Mapper.Get().SetActive(false);
+
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+        }
+
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        {
+            var cache = cachedObjects[typeof(T)];
+            T newObject;
+            if (cache.Count > 0)
+            {
+                newObject = (T) cache[0];
+                cache.RemoveAt(0);
+            }
+            else
+            {
+                newObject = original.Duplicate();
+            }
+
+            var newRectTransform = newObject.Mapper.Get<RectTransform>();
+            newRectTransform.SetParent(scrollRect.content);
+            newObject.Mapper.Get().SetActive(true);
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
+            contentCallback(newObject);
+            return (newRectTransform, newObject);
+        }
+
+        public ListContentEditor Edit()
+        {
+            return new ListContentEditor(this);
+        }
+
+        public class ListContentEditor : IDisposable
+        {
+            private readonly VerticalList<T1> parent;
+            public List<UIFactory<T1>> Contents { get; set; }
+            public float Spacing { get; set; }
+            public Margin Margin { get; set; }
+
+            public ListContentEditor(VerticalList<T1> parent)
+            {
+                this.parent = parent;
+                Contents = parent.contents;
+                Spacing = parent.Spacing;
+                Margin = parent.margin;
+            }
+
+            public void Dispose()
+            {
+                parent.contents = Contents;
+                parent.Spacing = Spacing;
+                parent.margin = Margin;
+                parent.UpdateListContents();
+            }
+        }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
+    }
+
+    public class VerticalList<T1, T2>
+        where T1 : IMappedObject, new() where T2 : IMappedObject, new()
+    {
+        private readonly ScrollRect scrollRect;
+        private readonly T1 original1;
+        private readonly T2 original2;
+        private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
+        private readonly List<float> contentPositions = new List<float>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
+        private readonly RectTransform viewportRectTransformCache;
+        public float Spacing { get; private set; }
+
+        private Margin margin = new Margin();
+        public IReadonlyMargin Margin => margin;
+
+        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2)
+        {
+            this.scrollRect = scrollRect;
+
+            this.original1 = original1;
+            this.original1.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+
+            this.original2 = original2;
+            this.original2.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T2), new List<IMappedObject>());
+
+            var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
+            kuchenList.List = new ListOperator(this);
+
+            var viewport = scrollRect.viewport;
+            viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+        }
+
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1, T2> list;
+
+            public ListOperator(VerticalList<T1, T2> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
+        {
+            foreach (var item in createdObjects.Values)
+            {
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
+            }
+            createdObjects.Clear();
+        }
+
+        private void UpdateView()
+        {
+            var displayRect = viewportRectTransformCache.rect;
+            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var start = contentRect.max.y - displayRect.max.y;
+            var end = start + displayRect.height;
+
+            var displayMinIndex = int.MaxValue;
+            var displayMaxIndex = int.MinValue;
+            for (var i = 0; i < contentPositions.Count; ++i)
+            {
+                if (start > contentPositions[i]) continue;
+                if (contentPositions[i] > end) break;
+                displayMinIndex = Mathf.Min(displayMinIndex, i);
+                displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+
+            var removedList = new List<int>();
+            foreach (var tmp in createdObjects)
+            {
+                var index = tmp.Key;
+                var map = tmp.Value;
+                if (displayMinIndex <= index && index <= displayMaxIndex) continue;
+
+                CollectObject(map);
+                removedList.Add(index);
+            }
+
+            foreach (var removed in removedList)
+            {
+                createdObjects.Remove(removed);
+            }
+
+            for (var i = displayMinIndex; i <= displayMaxIndex; ++i)
+            {
+                if (createdObjects.ContainsKey(i)) continue;
+
+                RectTransform newObject = null;
+                IMappedObject newMappedObject = null;
+                var content = contents[i];
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
+                if (content.Spacer != null) continue;
+                if (newObject == null) throw new Exception($"newObject == null");
+                var p = newObject.anchoredPosition;
+                var r = newObject.rect;
+                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
+                createdObjects[i] = newMappedObject;
+            }
+        }
+
+        private void UpdateListContents()
+        {
+            // clear elements
+            foreach (var map in createdObjects.Values)
+            {
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+            contentPositions.Clear();
+
+            // create elements
+            var calcHeight = Margin.Top;
+            foreach (var content in contents)
+            {
+                contentPositions.Add(calcHeight);
+                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
+                calcHeight += Spacing;
+            }
+            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
+            calcHeight += Margin.Bottom;
+
+            // calc content size
+            var c = scrollRect.content;
+            var s = c.sizeDelta;
+            c.sizeDelta = new Vector2(s.x, calcHeight);
+        }
+
+        private void CollectObject(IMappedObject target)
+        {
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
+            target.Mapper.Get().SetActive(false);
+
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+            if (target is T2) cachedObjects[typeof(T2)].Add(target);
+        }
+
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        {
+            var cache = cachedObjects[typeof(T)];
+            T newObject;
+            if (cache.Count > 0)
+            {
+                newObject = (T) cache[0];
+                cache.RemoveAt(0);
+            }
+            else
+            {
+                newObject = original.Duplicate();
+            }
+
+            var newRectTransform = newObject.Mapper.Get<RectTransform>();
+            newRectTransform.SetParent(scrollRect.content);
+            newObject.Mapper.Get().SetActive(true);
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
+            contentCallback(newObject);
+            return (newRectTransform, newObject);
+        }
+
+        public ListContentEditor Edit()
+        {
+            return new ListContentEditor(this);
+        }
+
+        public class ListContentEditor : IDisposable
+        {
+            private readonly VerticalList<T1, T2> parent;
+            public List<UIFactory<T1, T2>> Contents { get; set; }
+            public float Spacing { get; set; }
+            public Margin Margin { get; set; }
+
+            public ListContentEditor(VerticalList<T1, T2> parent)
+            {
+                this.parent = parent;
+                Contents = parent.contents;
+                Spacing = parent.Spacing;
+                Margin = parent.margin;
+            }
+
+            public void Dispose()
+            {
+                parent.contents = Contents;
+                parent.Spacing = Spacing;
+                parent.margin = Margin;
+                parent.UpdateListContents();
+            }
+        }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
+    }
+
+    public class VerticalList<T1, T2, T3>
+        where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new()
+    {
+        private readonly ScrollRect scrollRect;
+        private readonly T1 original1;
+        private readonly T2 original2;
+        private readonly T3 original3;
+        private List<UIFactory<T1, T2, T3>> contents = new List<UIFactory<T1, T2, T3>>();
+        private readonly List<float> contentPositions = new List<float>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
+        private readonly RectTransform viewportRectTransformCache;
+        public float Spacing { get; private set; }
+
+        private Margin margin = new Margin();
+        public IReadonlyMargin Margin => margin;
+
+        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3)
+        {
+            this.scrollRect = scrollRect;
+
+            this.original1 = original1;
+            this.original1.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+
+            this.original2 = original2;
+            this.original2.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T2), new List<IMappedObject>());
+
+            this.original3 = original3;
+            this.original3.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T3), new List<IMappedObject>());
+
+            var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
+            kuchenList.List = new ListOperator(this);
+
+            var viewport = scrollRect.viewport;
+            viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+        }
+
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1, T2, T3> list;
+
+            public ListOperator(VerticalList<T1, T2, T3> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
+        {
+            foreach (var item in createdObjects.Values)
+            {
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
+            }
+            createdObjects.Clear();
+        }
+
+        private void UpdateView()
+        {
+            var displayRect = viewportRectTransformCache.rect;
+            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var start = contentRect.max.y - displayRect.max.y;
+            var end = start + displayRect.height;
+
+            var displayMinIndex = int.MaxValue;
+            var displayMaxIndex = int.MinValue;
+            for (var i = 0; i < contentPositions.Count; ++i)
+            {
+                if (start > contentPositions[i]) continue;
+                if (contentPositions[i] > end) break;
+                displayMinIndex = Mathf.Min(displayMinIndex, i);
+                displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+
+            var removedList = new List<int>();
+            foreach (var tmp in createdObjects)
+            {
+                var index = tmp.Key;
+                var map = tmp.Value;
+                if (displayMinIndex <= index && index <= displayMaxIndex) continue;
+
+                CollectObject(map);
+                removedList.Add(index);
+            }
+
+            foreach (var removed in removedList)
+            {
+                createdObjects.Remove(removed);
+            }
+
+            for (var i = displayMinIndex; i <= displayMaxIndex; ++i)
+            {
+                if (createdObjects.ContainsKey(i)) continue;
+
+                RectTransform newObject = null;
+                IMappedObject newMappedObject = null;
+                var content = contents[i];
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
+                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3);
+                if (content.Spacer != null) continue;
+                if (newObject == null) throw new Exception($"newObject == null");
+                var p = newObject.anchoredPosition;
+                var r = newObject.rect;
+                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
+                createdObjects[i] = newMappedObject;
+            }
+        }
+
+        private void UpdateListContents()
+        {
+            // clear elements
+            foreach (var map in createdObjects.Values)
+            {
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+            contentPositions.Clear();
+
+            // create elements
+            var calcHeight = Margin.Top;
+            foreach (var content in contents)
+            {
+                contentPositions.Add(calcHeight);
+                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback3 != null) calcHeight += original3.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
+                calcHeight += Spacing;
+            }
+            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
+            calcHeight += Margin.Bottom;
+
+            // calc content size
+            var c = scrollRect.content;
+            var s = c.sizeDelta;
+            c.sizeDelta = new Vector2(s.x, calcHeight);
+        }
+
+        private void CollectObject(IMappedObject target)
+        {
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
+            target.Mapper.Get().SetActive(false);
+
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+            if (target is T2) cachedObjects[typeof(T2)].Add(target);
+            if (target is T3) cachedObjects[typeof(T3)].Add(target);
+        }
+
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        {
+            var cache = cachedObjects[typeof(T)];
+            T newObject;
+            if (cache.Count > 0)
+            {
+                newObject = (T) cache[0];
+                cache.RemoveAt(0);
+            }
+            else
+            {
+                newObject = original.Duplicate();
+            }
+
+            var newRectTransform = newObject.Mapper.Get<RectTransform>();
+            newRectTransform.SetParent(scrollRect.content);
+            newObject.Mapper.Get().SetActive(true);
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
+            contentCallback(newObject);
+            return (newRectTransform, newObject);
+        }
+
+        public ListContentEditor Edit()
+        {
+            return new ListContentEditor(this);
+        }
+
+        public class ListContentEditor : IDisposable
+        {
+            private readonly VerticalList<T1, T2, T3> parent;
+            public List<UIFactory<T1, T2, T3>> Contents { get; set; }
+            public float Spacing { get; set; }
+            public Margin Margin { get; set; }
+
+            public ListContentEditor(VerticalList<T1, T2, T3> parent)
+            {
+                this.parent = parent;
+                Contents = parent.contents;
+                Spacing = parent.Spacing;
+                Margin = parent.margin;
+            }
+
+            public void Dispose()
+            {
+                parent.contents = Contents;
+                parent.Spacing = Spacing;
+                parent.margin = Margin;
+                parent.UpdateListContents();
+            }
+        }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
+    }
+
+    public class VerticalList<T1, T2, T3, T4>
+        where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new() where T4 : IMappedObject, new()
+    {
+        private readonly ScrollRect scrollRect;
+        private readonly T1 original1;
+        private readonly T2 original2;
+        private readonly T3 original3;
+        private readonly T4 original4;
+        private List<UIFactory<T1, T2, T3, T4>> contents = new List<UIFactory<T1, T2, T3, T4>>();
+        private readonly List<float> contentPositions = new List<float>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
+        private readonly RectTransform viewportRectTransformCache;
+        public float Spacing { get; private set; }
+
+        private Margin margin = new Margin();
+        public IReadonlyMargin Margin => margin;
+
+        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3, T4 original4)
+        {
+            this.scrollRect = scrollRect;
+
+            this.original1 = original1;
+            this.original1.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+
+            this.original2 = original2;
+            this.original2.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T2), new List<IMappedObject>());
+
+            this.original3 = original3;
+            this.original3.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T3), new List<IMappedObject>());
+
+            this.original4 = original4;
+            this.original4.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T4), new List<IMappedObject>());
+
+            var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
+            kuchenList.List = new ListOperator(this);
+
+            var viewport = scrollRect.viewport;
+            viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+        }
+
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<T1, T2, T3, T4> list;
+
+            public ListOperator(VerticalList<T1, T2, T3, T4> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
+        {
+            foreach (var item in createdObjects.Values)
+            {
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
+            }
+            createdObjects.Clear();
+        }
+
+        private void UpdateView()
+        {
+            var displayRect = viewportRectTransformCache.rect;
+            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var start = contentRect.max.y - displayRect.max.y;
+            var end = start + displayRect.height;
+
+            var displayMinIndex = int.MaxValue;
+            var displayMaxIndex = int.MinValue;
+            for (var i = 0; i < contentPositions.Count; ++i)
+            {
+                if (start > contentPositions[i]) continue;
+                if (contentPositions[i] > end) break;
+                displayMinIndex = Mathf.Min(displayMinIndex, i);
+                displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+
+            var removedList = new List<int>();
+            foreach (var tmp in createdObjects)
+            {
+                var index = tmp.Key;
+                var map = tmp.Value;
+                if (displayMinIndex <= index && index <= displayMaxIndex) continue;
+
+                CollectObject(map);
+                removedList.Add(index);
+            }
+
+            foreach (var removed in removedList)
+            {
+                createdObjects.Remove(removed);
+            }
+
+            for (var i = displayMinIndex; i <= displayMaxIndex; ++i)
+            {
+                if (createdObjects.ContainsKey(i)) continue;
+
+                RectTransform newObject = null;
+                IMappedObject newMappedObject = null;
+                var content = contents[i];
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
+                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3);
+                if (content.Callback4 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original4, content.Callback4);
+                if (content.Spacer != null) continue;
+                if (newObject == null) throw new Exception($"newObject == null");
+                var p = newObject.anchoredPosition;
+                var r = newObject.rect;
+                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
+                createdObjects[i] = newMappedObject;
+            }
+        }
+
+        private void UpdateListContents()
+        {
+            // clear elements
+            foreach (var map in createdObjects.Values)
+            {
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+            contentPositions.Clear();
+
+            // create elements
+            var calcHeight = Margin.Top;
+            foreach (var content in contents)
+            {
+                contentPositions.Add(calcHeight);
+                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback3 != null) calcHeight += original3.Mapper.Get<RectTransform>().rect.height;
+                if (content.Callback4 != null) calcHeight += original4.Mapper.Get<RectTransform>().rect.height;
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
+                calcHeight += Spacing;
+            }
+            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
+            calcHeight += Margin.Bottom;
+
+            // calc content size
+            var c = scrollRect.content;
+            var s = c.sizeDelta;
+            c.sizeDelta = new Vector2(s.x, calcHeight);
+        }
+
+        private void CollectObject(IMappedObject target)
+        {
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
+            target.Mapper.Get().SetActive(false);
+
+            if (target is T1) cachedObjects[typeof(T1)].Add(target);
+            if (target is T2) cachedObjects[typeof(T2)].Add(target);
+            if (target is T3) cachedObjects[typeof(T3)].Add(target);
+            if (target is T4) cachedObjects[typeof(T4)].Add(target);
+        }
+
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        {
+            var cache = cachedObjects[typeof(T)];
+            T newObject;
+            if (cache.Count > 0)
+            {
+                newObject = (T) cache[0];
+                cache.RemoveAt(0);
+            }
+            else
+            {
+                newObject = original.Duplicate();
+            }
+
+            var newRectTransform = newObject.Mapper.Get<RectTransform>();
+            newRectTransform.SetParent(scrollRect.content);
+            newObject.Mapper.Get().SetActive(true);
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
+            contentCallback(newObject);
+            return (newRectTransform, newObject);
+        }
+
+        public ListContentEditor Edit()
+        {
+            return new ListContentEditor(this);
+        }
+
+        public class ListContentEditor : IDisposable
+        {
+            private readonly VerticalList<T1, T2, T3, T4> parent;
+            public List<UIFactory<T1, T2, T3, T4>> Contents { get; set; }
+            public float Spacing { get; set; }
+            public Margin Margin { get; set; }
+
+            public ListContentEditor(VerticalList<T1, T2, T3, T4> parent)
+            {
+                this.parent = parent;
+                Contents = parent.contents;
+                Spacing = parent.Spacing;
+                Margin = parent.margin;
+            }
+
+            public void Dispose()
+            {
+                parent.contents = Contents;
+                parent.Spacing = Spacing;
+                parent.margin = Margin;
+                parent.UpdateListContents();
+            }
+        }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
+    }
+
+}

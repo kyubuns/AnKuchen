@@ -43,6 +43,7 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.xtaltools.unity-t4-patch": "https://github.com/neptaco/UnityT4TemplatePatch.git?path=Packages/UnityT4TemplatePatch"
   }
 }

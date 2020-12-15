@@ -1,0 +1,238 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Linq" #>
+<#@ assembly name="System.Core" #>
+using System;
+using System.Collections.Generic;
+using AnKuchen.Extensions;
+using AnKuchen.Map;
+using UnityEngine;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
+
+namespace AnKuchen.KuchenList
+{
+<# for (var t = 1; t <= 4; ++t) { #>
+    public class VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>
+        <#= string.Join(" ", Enumerable.Range(1, t).Select(i => $"where T{i} : IMappedObject, new()")) #>
+    {
+        private readonly ScrollRect scrollRect;
+<# for (var i = 1; i <= t; ++i) { #>
+        private readonly T<#= i #> original<#= i #>;
+<# } #>
+        private List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> contents = new List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>>();
+        private readonly List<float> contentPositions = new List<float>();
+        private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
+        private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
+        private readonly RectTransform viewportRectTransformCache;
+        public float Spacing { get; private set; }
+
+        private Margin margin = new Margin();
+        public IReadonlyMargin Margin => margin;
+
+        public VerticalList(ScrollRect scrollRect, <#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i} original{i}")) #>)
+        {
+            this.scrollRect = scrollRect;
+
+<# for (var i = 1; i <= t; ++i) { #>
+            this.original<#= i #> = original<#= i #>;
+            this.original<#= i #>.Mapper.Get().SetActive(false);
+            cachedObjects.Add(typeof(T<#= i #>), new List<IMappedObject>());
+
+<# } #>
+            var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
+            kuchenList.List = new ListOperator(this);
+
+            var viewport = scrollRect.viewport;
+            viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+        }
+
+        private class ListOperator : IKuchenListMonoBehaviourBridge
+        {
+            private readonly VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> list;
+
+            public ListOperator(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> list)
+            {
+                this.list = list;
+            }
+
+            public void DeactivateAll()
+            {
+                list.DeactivateAll();
+            }
+
+            public void UpdateView()
+            {
+                list.UpdateView();
+            }
+        }
+
+        private void DeactivateAll()
+        {
+            foreach (var item in createdObjects.Values)
+            {
+                if (item is IReusableMappedObject reusable) reusable.Deactivate();
+            }
+            createdObjects.Clear();
+        }
+
+        private void UpdateView()
+        {
+            var displayRect = viewportRectTransformCache.rect;
+            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var start = contentRect.max.y - displayRect.max.y;
+            var end = start + displayRect.height;
+
+            var displayMinIndex = int.MaxValue;
+            var displayMaxIndex = int.MinValue;
+            for (var i = 0; i < contentPositions.Count; ++i)
+            {
+                if (start > contentPositions[i]) continue;
+                if (contentPositions[i] > end) break;
+                displayMinIndex = Mathf.Min(displayMinIndex, i);
+                displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+
+            var removedList = new List<int>();
+            foreach (var tmp in createdObjects)
+            {
+                var index = tmp.Key;
+                var map = tmp.Value;
+                if (displayMinIndex <= index && index <= displayMaxIndex) continue;
+
+                CollectObject(map);
+                removedList.Add(index);
+            }
+
+            foreach (var removed in removedList)
+            {
+                createdObjects.Remove(removed);
+            }
+
+            for (var i = displayMinIndex; i <= displayMaxIndex; ++i)
+            {
+                if (createdObjects.ContainsKey(i)) continue;
+
+                RectTransform newObject = null;
+                IMappedObject newMappedObject = null;
+                var content = contents[i];
+<# for (var i = 1; i <= t; ++i) { #>
+                if (content.Callback<#= i #> != null) (newObject, newMappedObject) = GetOrCreateNewObject(original<#= i #>, content.Callback<#= i #>);
+<# } #>
+                if (content.Spacer != null) continue;
+                if (newObject == null) throw new Exception($"newObject == null");
+                var p = newObject.anchoredPosition;
+                var r = newObject.rect;
+                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
+                createdObjects[i] = newMappedObject;
+            }
+        }
+
+        private void UpdateListContents()
+        {
+            // clear elements
+            foreach (var map in createdObjects.Values)
+            {
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+            contentPositions.Clear();
+
+            // create elements
+            var calcHeight = Margin.Top;
+            foreach (var content in contents)
+            {
+                contentPositions.Add(calcHeight);
+<# for (var i = 1; i <= t; ++i) { #>
+                if (content.Callback<#= i #> != null) calcHeight += original<#= i #>.Mapper.Get<RectTransform>().rect.height;
+<# } #>
+                if (content.Spacer != null) calcHeight += content.Spacer.Size;
+                calcHeight += Spacing;
+            }
+            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
+            calcHeight += Margin.Bottom;
+
+            // calc content size
+            var c = scrollRect.content;
+            var s = c.sizeDelta;
+            c.sizeDelta = new Vector2(s.x, calcHeight);
+        }
+
+        private void CollectObject(IMappedObject target)
+        {
+            if (target is IReusableMappedObject reusable) reusable.Deactivate();
+            target.Mapper.Get().SetActive(false);
+
+<# for (var i = 1; i <= t; ++i) { #>
+            if (target is T<#= i #>) cachedObjects[typeof(T<#= i #>)].Add(target);
+<# } #>
+        }
+
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        {
+            var cache = cachedObjects[typeof(T)];
+            T newObject;
+            if (cache.Count > 0)
+            {
+                newObject = (T) cache[0];
+                cache.RemoveAt(0);
+            }
+            else
+            {
+                newObject = original.Duplicate();
+            }
+
+            var newRectTransform = newObject.Mapper.Get<RectTransform>();
+            newRectTransform.SetParent(scrollRect.content);
+            newObject.Mapper.Get().SetActive(true);
+            if (newObject is IReusableMappedObject reusable) reusable.Activate();
+            contentCallback(newObject);
+            return (newRectTransform, newObject);
+        }
+
+        public ListContentEditor Edit()
+        {
+            return new ListContentEditor(this);
+        }
+
+        public class ListContentEditor : IDisposable
+        {
+            private readonly VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent;
+            public List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> Contents { get; set; }
+            public float Spacing { get; set; }
+            public Margin Margin { get; set; }
+
+            public ListContentEditor(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent)
+            {
+                this.parent = parent;
+                Contents = parent.contents;
+                Spacing = parent.Spacing;
+                Margin = parent.margin;
+            }
+
+            public void Dispose()
+            {
+                parent.contents = Contents;
+                parent.Spacing = Spacing;
+                parent.margin = Margin;
+                parent.UpdateListContents();
+            }
+        }
+
+        public void DestroyCachedGameObjects()
+        {
+            foreach (var cachedObject in cachedObjects)
+            {
+                foreach (var go in cachedObject.Value)
+                {
+                    Object.Destroy(go.Mapper.Get());
+                }
+                cachedObject.Value.Clear();
+            }
+        }
+    }
+
+<# } #>
+}
