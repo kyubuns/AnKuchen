@@ -220,6 +220,107 @@ var test1Object = Resources.Load<GameObject>("Test1");
 Assert.DoesNotThrow(() => UIElementTester.Test<UIElements>(test1Object));
 ```
 
+### Scroll List
+
+![output](https://user-images.githubusercontent.com/961165/102043233-3805b480-3e17-11eb-8f2a-c54b6121a64a.gif)
+
+```csharp
+public class Sample : MonoBehaviour
+{
+    [SerializeField] private UICache root = default;
+
+    public void Start()
+    {
+        var ui = new UIElements(root);
+
+        using (var editor = ui.List.Edit())
+        {
+            editor.Spacing = 10f;
+            editor.Margin.TopBottom = 10f;
+
+            for (var i = 0; i < 1000; ++i)
+            {
+                if (Random.Range(0, 2) == 0)
+                {
+                    var i1 = i;
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>((ListElements1 x) =>
+                    {
+                        x.LineText.text = $"Test {i1}";
+                    }));
+                }
+                else
+                {
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>((ListElements2 x) =>
+                    {
+                        x.Background.color = Random.ColorHSV();
+                        x.Button.onClick.AddListener(() => Debug.Log("Click Button"));
+                    }));
+                }
+            }
+        }
+    }
+}
+
+public class UIElements : IMappedObject
+{
+    public IMapper Mapper { get; private set; }
+    public VerticalList<ListElements1, ListElements2> List { get; private set; }
+
+    public UIElements(IMapper mapper)
+    {
+        Initialize(mapper);
+    }
+
+    public void Initialize(IMapper mapper)
+    {
+        Mapper = mapper;
+        List = new VerticalList<ListElements1, ListElements2>(
+            mapper.Get<ScrollRect>("List"),
+            mapper.GetChild<ListElements1>("Element1"),
+            mapper.GetChild<ListElements2>("Element2")
+        );
+    }
+}
+
+public class ListElements1 : IMappedObject
+{
+    public IMapper Mapper { get; private set; }
+    public GameObject Root { get; private set; }
+    public Text LineText { get; private set; }
+
+    public void Initialize(IMapper mapper)
+    {
+        Mapper = mapper;
+        Root = mapper.Get();
+        LineText = mapper.Get<Text>("./Text");
+    }
+}
+
+public class ListElements2 : IReusableMappedObject
+{
+    public IMapper Mapper { get; private set; }
+    public GameObject Root { get; private set; }
+    public Image Background { get; private set; }
+    public Button Button { get; private set; }
+
+    public void Initialize(IMapper mapper)
+    {
+        Mapper = mapper;
+        Root = mapper.Get();
+        Background = mapper.Get<Image>("./Image");
+        Button = mapper.Get<Button>("./Button");
+    }
+
+    public void Activate()
+    {
+    }
+
+    public void Deactivate()
+    {
+        Button.onClick.RemoveAllListeners();
+    }
+}
+```
 
 ## Setup
 
