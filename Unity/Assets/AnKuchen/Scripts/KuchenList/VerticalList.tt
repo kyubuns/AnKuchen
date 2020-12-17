@@ -119,13 +119,10 @@ namespace AnKuchen.KuchenList
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
 <# for (var i = 1; i <= t; ++i) { #>
-                if (content.Callback<#= i #> != null) (newObject, newMappedObject) = GetOrCreateNewObject(original<#= i #>, content.Callback<#= i #>);
+                if (content.Callback<#= i #> != null) (newObject, newMappedObject) = GetOrCreateNewObject(original<#= i #>, content.Callback<#= i #>, contentPositions[i]);
 <# } #>
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
-                var p = newObject.anchoredPosition;
-                var r = newObject.rect;
-                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
                 createdObjects[i] = newMappedObject;
             }
         }
@@ -170,7 +167,7 @@ namespace AnKuchen.KuchenList
 <# } #>
         }
 
-        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback, float position) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -187,8 +184,14 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
+
+            var p = newRectTransform.anchoredPosition;
+            var r = newRectTransform.rect;
+            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
+
             return (newRectTransform, newObject);
         }
 

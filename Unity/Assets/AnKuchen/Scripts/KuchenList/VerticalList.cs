@@ -110,12 +110,9 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
-                var p = newObject.anchoredPosition;
-                var r = newObject.rect;
-                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
                 createdObjects[i] = newMappedObject;
             }
         }
@@ -156,7 +153,7 @@ namespace AnKuchen.KuchenList
             if (target is T1) cachedObjects[typeof(T1)].Add(target);
         }
 
-        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback, float position) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -173,8 +170,14 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
+
+            var p = newRectTransform.anchoredPosition;
+            var r = newRectTransform.rect;
+            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
+
             return (newRectTransform, newObject);
         }
 
@@ -327,13 +330,10 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
-                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i]);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
-                var p = newObject.anchoredPosition;
-                var r = newObject.rect;
-                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
                 createdObjects[i] = newMappedObject;
             }
         }
@@ -376,7 +376,7 @@ namespace AnKuchen.KuchenList
             if (target is T2) cachedObjects[typeof(T2)].Add(target);
         }
 
-        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback, float position) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -393,8 +393,14 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
+
+            var p = newRectTransform.anchoredPosition;
+            var r = newRectTransform.rect;
+            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
+
             return (newRectTransform, newObject);
         }
 
@@ -552,14 +558,11 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
-                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
-                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i]);
+                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3, contentPositions[i]);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
-                var p = newObject.anchoredPosition;
-                var r = newObject.rect;
-                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
                 createdObjects[i] = newMappedObject;
             }
         }
@@ -604,7 +607,7 @@ namespace AnKuchen.KuchenList
             if (target is T3) cachedObjects[typeof(T3)].Add(target);
         }
 
-        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback, float position) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -621,8 +624,14 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
+
+            var p = newRectTransform.anchoredPosition;
+            var r = newRectTransform.rect;
+            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
+
             return (newRectTransform, newObject);
         }
 
@@ -785,15 +794,12 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1);
-                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2);
-                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3);
-                if (content.Callback4 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original4, content.Callback4);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i]);
+                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3, contentPositions[i]);
+                if (content.Callback4 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original4, content.Callback4, contentPositions[i]);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
-                var p = newObject.anchoredPosition;
-                var r = newObject.rect;
-                newObject.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - contentPositions[i] - r.height / 2f, 0f);
                 createdObjects[i] = newMappedObject;
             }
         }
@@ -840,7 +846,7 @@ namespace AnKuchen.KuchenList
             if (target is T4) cachedObjects[typeof(T4)].Add(target);
         }
 
-        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback) where T : IMappedObject, new()
+        private (RectTransform, IMappedObject) GetOrCreateNewObject<T>(T original, Action<T> contentCallback, float position) where T : IMappedObject, new()
         {
             var cache = cachedObjects[typeof(T)];
             T newObject;
@@ -857,8 +863,14 @@ namespace AnKuchen.KuchenList
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
             newObject.Mapper.Get().SetActive(true);
+
+            var p = newRectTransform.anchoredPosition;
+            var r = newRectTransform.rect;
+            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
+
             return (newRectTransform, newObject);
         }
 
