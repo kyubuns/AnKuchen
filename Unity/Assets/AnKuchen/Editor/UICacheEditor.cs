@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AnKuchen.Map;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace AnKuchen.Editor
@@ -18,6 +20,7 @@ namespace AnKuchen.Editor
             {
                 var uiCache = (UICache) target;
                 uiCache.CreateCache();
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                 Debug.Log("Updated!");
             }
 
@@ -25,6 +28,7 @@ namespace AnKuchen.Editor
             {
                 var uiCache = (UICache) target;
                 uiCache.CreateCache();
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                 var stringElements = CreateStringCache(uiCache.Get<Transform>());
                 EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
                 Debug.Log("Copied!");
