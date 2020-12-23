@@ -19,6 +19,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
+        public int SpareElement { get; private set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -84,8 +85,8 @@ namespace AnKuchen.KuchenList
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
 
-            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
-            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+            displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex + SpareElement, contents.Count - 1);
 
             var removedList = new List<int>();
             foreach (var tmp in createdObjects)
@@ -192,6 +193,7 @@ namespace AnKuchen.KuchenList
             public List<UIFactory<T1>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
+            public int SpareElement { get; set; }
 
             public ListContentEditor(VerticalList<T1> parent)
             {
@@ -199,6 +201,7 @@ namespace AnKuchen.KuchenList
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
+                SpareElement = parent.SpareElement;
             }
 
             public void Dispose()
@@ -206,6 +209,7 @@ namespace AnKuchen.KuchenList
                 parent.contents = Contents;
                 parent.Spacing = Spacing;
                 parent.margin = Margin;
+                parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
         }
@@ -235,6 +239,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
+        public int SpareElement { get; private set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -304,8 +309,8 @@ namespace AnKuchen.KuchenList
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
 
-            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
-            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+            displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex + SpareElement, contents.Count - 1);
 
             var removedList = new List<int>();
             foreach (var tmp in createdObjects)
@@ -415,6 +420,7 @@ namespace AnKuchen.KuchenList
             public List<UIFactory<T1, T2>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
+            public int SpareElement { get; set; }
 
             public ListContentEditor(VerticalList<T1, T2> parent)
             {
@@ -422,6 +428,7 @@ namespace AnKuchen.KuchenList
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
+                SpareElement = parent.SpareElement;
             }
 
             public void Dispose()
@@ -429,6 +436,7 @@ namespace AnKuchen.KuchenList
                 parent.contents = Contents;
                 parent.Spacing = Spacing;
                 parent.margin = Margin;
+                parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
         }
@@ -459,6 +467,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
+        public int SpareElement { get; private set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -532,8 +541,8 @@ namespace AnKuchen.KuchenList
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
 
-            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
-            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+            displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex + SpareElement, contents.Count - 1);
 
             var removedList = new List<int>();
             foreach (var tmp in createdObjects)
@@ -646,6 +655,7 @@ namespace AnKuchen.KuchenList
             public List<UIFactory<T1, T2, T3>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
+            public int SpareElement { get; set; }
 
             public ListContentEditor(VerticalList<T1, T2, T3> parent)
             {
@@ -653,6 +663,7 @@ namespace AnKuchen.KuchenList
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
+                SpareElement = parent.SpareElement;
             }
 
             public void Dispose()
@@ -660,6 +671,7 @@ namespace AnKuchen.KuchenList
                 parent.contents = Contents;
                 parent.Spacing = Spacing;
                 parent.margin = Margin;
+                parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
         }
@@ -691,6 +703,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         public float Spacing { get; private set; }
+        public int SpareElement { get; private set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -768,8 +781,8 @@ namespace AnKuchen.KuchenList
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
 
-            displayMinIndex = Mathf.Max(displayMinIndex - 1, 0);
-            displayMaxIndex = Mathf.Min(displayMaxIndex, contents.Count - 1);
+            displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
+            displayMaxIndex = Mathf.Min(displayMaxIndex + SpareElement, contents.Count - 1);
 
             var removedList = new List<int>();
             foreach (var tmp in createdObjects)
@@ -885,6 +898,7 @@ namespace AnKuchen.KuchenList
             public List<UIFactory<T1, T2, T3, T4>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
+            public int SpareElement { get; set; }
 
             public ListContentEditor(VerticalList<T1, T2, T3, T4> parent)
             {
@@ -892,6 +906,7 @@ namespace AnKuchen.KuchenList
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
+                SpareElement = parent.SpareElement;
             }
 
             public void Dispose()
@@ -899,6 +914,7 @@ namespace AnKuchen.KuchenList
                 parent.contents = Contents;
                 parent.Spacing = Spacing;
                 parent.margin = Margin;
+                parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
         }
