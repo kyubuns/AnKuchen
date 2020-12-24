@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AnKuchen.Map;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,7 +21,7 @@ namespace AnKuchen.Editor
             {
                 var uiCache = (UICache) target;
                 uiCache.CreateCache();
-                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                MarkDirty();
                 Debug.Log("Updated!");
             }
 
@@ -28,13 +29,26 @@ namespace AnKuchen.Editor
             {
                 var uiCache = (UICache) target;
                 uiCache.CreateCache();
-                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                MarkDirty();
                 var stringElements = CreateStringCache(uiCache.Get<Transform>());
                 EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
                 Debug.Log("Copied!");
             }
 
             base.OnInspectorGUI();
+        }
+
+        private static void MarkDirty()
+        {
+            var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+            if (prefabStage != null)
+            {
+                EditorSceneManager.MarkSceneDirty(prefabStage.scene);
+            }
+            else
+            {
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            }
         }
 
         private static string ToSafeVariableName(string originalName)
