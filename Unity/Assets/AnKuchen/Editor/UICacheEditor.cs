@@ -20,16 +20,14 @@ namespace AnKuchen.Editor
             if (GUILayout.Button("Update"))
             {
                 var uiCache = (UICache) target;
-                uiCache.CreateCache();
-                MarkDirty();
+                CreateCacheAndMarkDirty(uiCache);
                 Debug.Log("Updated!");
             }
 
             if (GUILayout.Button("Copy Template"))
             {
                 var uiCache = (UICache) target;
-                uiCache.CreateCache();
-                MarkDirty();
+                CreateCacheAndMarkDirty(uiCache);
                 var stringElements = CreateStringCache(uiCache.Get<Transform>());
                 EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
                 Debug.Log("Copied!");
@@ -54,14 +52,37 @@ namespace AnKuchen.Editor
             var target = Selection.activeGameObject;
             var stringElements = CreateStringCache(target.transform);
             var parentUiCache = target.GetComponentInParent<UICache>();
-            parentUiCache.CreateCache();
-            MarkDirty();
+            CreateCacheAndMarkDirty(parentUiCache);
 
             var rootObjectPath = parentUiCache.GetRawElements().First(x => x.GameObject == target).Path.Reverse().ToArray();
             var uiCache = parentUiCache.GetMapper(rootObjectPath);
 
             EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
             Debug.Log("Copied!");
+        }
+
+        private static void CreateCacheAndMarkDirty(UICache uiCache)
+        {
+            var elements = uiCache.Elements ?? new CachedObject[] { };
+            var prev = CalcHash(elements);
+            uiCache.CreateCache();
+            var now = CalcHash(uiCache.Elements);
+            if (prev != now) MarkDirty();
+        }
+
+        private static uint CalcHash(CachedObject[] objects)
+        {
+            var l = new List<uint> { (uint) objects.Length };
+            foreach (var a in objects)
+            {
+                l.Add((uint) a.GameObject.GetInstanceID());
+                l.Add((uint) a.Path.Length);
+                foreach (var b in a.Path)
+                {
+                    l.Add(b);
+                }
+            }
+            return FastHash.CalculateHash(l.ToArray());
         }
 
         private static void MarkDirty()
