@@ -38,6 +38,32 @@ namespace AnKuchen.Editor
             base.OnInspectorGUI();
         }
 
+        private const string MenuItemName = "GameObject/Copy AnKuchen Template";
+        private const int MenuItemPriority = 48;
+
+        [MenuItem(MenuItemName, true, MenuItemPriority)]
+        public static bool CopyAnKuchenTemplateValidate()
+        {
+            if (Selection.activeGameObject == null) return false;
+            return Selection.activeGameObject.GetComponentInParent<UICache>() != null;
+        }
+
+        [MenuItem(MenuItemName, false, MenuItemPriority)]
+        public static void CopyAnKuchenTemplate()
+        {
+            var target = Selection.activeGameObject;
+            var stringElements = CreateStringCache(target.transform);
+            var parentUiCache = target.GetComponentInParent<UICache>();
+            parentUiCache.CreateCache();
+            MarkDirty();
+
+            var rootObjectPath = parentUiCache.GetRawElements().First(x => x.GameObject == target).Path.Reverse().ToArray();
+            var uiCache = parentUiCache.GetMapper(rootObjectPath);
+
+            EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
+            Debug.Log("Copied!");
+        }
+
         private static void MarkDirty()
         {
             var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
@@ -56,7 +82,7 @@ namespace AnKuchen.Editor
             return Regex.Replace(originalName, @"[^\w_]", "_", RegexOptions.None);
         }
 
-        private string GenerateTemplate(UICache uiCache, UIStringElement[] stringElements)
+        private static string GenerateTemplate(IMapper uiCache, UIStringElement[] stringElements)
         {
             var targetTypes = new[] { typeof(Button), typeof(InputField), typeof(Text), typeof(Image) };
 
@@ -72,7 +98,10 @@ namespace AnKuchen.Editor
                     while (uniquePath.Length > 1)
                     {
                         var next = uniquePath.Take(uniquePath.Length - 1).ToArray();
-                        if (uiCache.GetAll(string.Join("/", next.Reverse())).Length != 1) break;
+                        var findPath = string.Join("/", next.Reverse());
+                        var count = uiCache.GetAll(findPath).Length;
+                        if (count == 0) throw new Exception($"{findPath} is not found");
+                        if (count != 1) break;
                         uniquePath = next;
                     }
                     elements.Add((ToSafeVariableName(string.Join("", uniquePath.Where(x => x != ".").Reverse())), uniquePath.Reverse().ToArray(), targetType.Name));
@@ -111,14 +140,14 @@ namespace AnKuchen.Editor
             return text;
         }
 
-        private UIStringElement[] CreateStringCache(Transform parent)
+        private static UIStringElement[] CreateStringCache(Transform parent)
         {
             var elements = new List<UIStringElement>();
             CreateStringCacheInternal(elements, parent, new List<string>());
             return elements.ToArray();
         }
 
-        private void CreateStringCacheInternal(List<UIStringElement> elements, Transform t, List<string> basePath)
+        private static void CreateStringCacheInternal(List<UIStringElement> elements, Transform t, List<string> basePath)
         {
             elements.Add(new UIStringElement { GameObject = t.gameObject, Path = basePath.ToArray() });
             foreach (Transform child in t)
@@ -129,7 +158,7 @@ namespace AnKuchen.Editor
             }
         }
 
-        public class UIStringElement
+        private class UIStringElement
         {
             public GameObject GameObject;
             public string[] Path;

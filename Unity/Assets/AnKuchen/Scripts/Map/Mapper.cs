@@ -177,7 +177,7 @@ namespace AnKuchen.Map
                 start = true;
                 path = path.Skip(1).ToArray();
             }
-            Array.Reverse(path);
+            path = path.Reverse().ToArray();
             foreach (var e in elements)
             {
                 if (e.Path.Length < path.Length) continue;
