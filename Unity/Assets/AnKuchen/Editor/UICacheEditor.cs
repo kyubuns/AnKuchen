@@ -91,12 +91,8 @@ namespace AnKuchen.Editor
                     text += $"    public {t} {n} {{ get; private set; }}\n";
                 }
                 text += "\n";
-                text += "    public UIElements(IMapper mapper)\n";
-                text += "    {\n";
-                {
-                    text += "        Initialize(mapper);\n";
-                }
-                text += "    }\n";
+                text += "    public UIElements() { }\n";
+                text += "    public UIElements(IMapper mapper) { Initialize(mapper); }\n";
                 text += "\n";
                 text += "    public void Initialize(IMapper mapper)\n";
                 text += "    {\n";
