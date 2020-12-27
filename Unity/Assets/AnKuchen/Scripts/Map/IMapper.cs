@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace AnKuchen.Map
 {
@@ -27,5 +28,26 @@ namespace AnKuchen.Map
     {
         IMapper Mapper { get; }
         void Initialize(IMapper mapper);
+    }
+
+    public abstract class AnKuchenException : Exception
+    {
+        protected AnKuchenException(string message) : base(message)
+        {
+        }
+    }
+
+    public class AnKuchenNotFoundException : AnKuchenException
+    {
+        public AnKuchenNotFoundException(string message) : base(message)
+        {
+        }
+    }
+
+    public class AnKuchenNotUniqueException : AnKuchenException
+    {
+        public AnKuchenNotUniqueException(string message) : base(message)
+        {
+        }
     }
 }

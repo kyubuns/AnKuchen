@@ -3,7 +3,6 @@ using AnKuchen.Map;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-using AssertionException = UnityEngine.Assertions.AssertionException;
 
 namespace Tests
 {
@@ -20,7 +19,7 @@ namespace Tests
         public void UI要素が全てあるかのテスト無ければコケる()
         {
             var test1Object = Resources.Load<GameObject>("Test1");
-            Assert.Throws<AssertionException>(() => UIElementTester.Test<UIElementsDummy>(test1Object));
+            Assert.Throws<AnKuchenNotFoundException>(() => UIElementTester.Test<UIElementsDummy>(test1Object));
         }
 
         public class UIElements : IMappedObject

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace AnKuchen.Map
 {
@@ -29,13 +28,25 @@ namespace AnKuchen.Map
 
         public GameObject Get(string objectPath)
         {
-            return Get(ToHash(objectPath));
+            try
+            {
+                return Get(ToHash(objectPath));
+            }
+            catch (AnKuchenNotFoundException)
+            {
+                throw new AnKuchenNotFoundException($"{objectPath} is not found");
+            }
+            catch (AnKuchenNotUniqueException)
+            {
+                throw new AnKuchenNotUniqueException($"{objectPath} is not unique");
+            }
         }
 
         public GameObject Get(uint[] objectPath)
         {
             var target = GetInternal(objectPath);
-            Assert.AreEqual(1, target.Length, $"{objectPath} is not found");
+            if (target.Length == 0) throw new AnKuchenNotFoundException($"{objectPath} is not found");
+            if (target.Length > 1) throw new AnKuchenNotUniqueException($"{objectPath} is not unique");
             return target.Length > 0 ? target[0].GameObject : null;
         }
 
@@ -52,13 +63,25 @@ namespace AnKuchen.Map
 
         public T Get<T>(string objectPath) where T : Component
         {
-            return Get<T>(ToHash(objectPath));
+            try
+            {
+                return Get<T>(ToHash(objectPath));
+            }
+            catch (AnKuchenNotFoundException)
+            {
+                throw new AnKuchenNotFoundException($"{objectPath} is not found");
+            }
+            catch (AnKuchenNotUniqueException)
+            {
+                throw new AnKuchenNotUniqueException($"{objectPath} is not unique");
+            }
         }
 
         public T Get<T>(uint[] objectPath) where T : Component
         {
             var target = GetInternal(objectPath);
-            Assert.AreEqual(1, target.Length, $"{objectPath} is not found");
+            if (target.Length == 0) throw new AnKuchenNotFoundException($"{objectPath} is not found");
+            if (target.Length > 1) throw new AnKuchenNotUniqueException($"{objectPath} is not unique");
             return target.Length > 0 ? target[0].GameObject.GetComponent<T>() : null;
         }
 
@@ -77,13 +100,25 @@ namespace AnKuchen.Map
 
         public IMapper GetMapper(string rootObjectPath)
         {
-            return GetMapper(ToHash(rootObjectPath));
+            try
+            {
+                return GetMapper(ToHash(rootObjectPath));
+            }
+            catch (AnKuchenNotFoundException)
+            {
+                throw new AnKuchenNotFoundException($"{rootObjectPath} is not found");
+            }
+            catch (AnKuchenNotUniqueException)
+            {
+                throw new AnKuchenNotUniqueException($"{rootObjectPath} is not unique");
+            }
         }
 
         public IMapper GetMapper(uint[] rootObjectPath)
         {
             var target = GetInternal(rootObjectPath);
-            Assert.AreEqual(1, target.Length, $"{rootObjectPath} is not found");
+            if (target.Length == 0) throw new AnKuchenNotFoundException($"{rootObjectPath} is not found");
+            if (target.Length > 1) throw new AnKuchenNotUniqueException($"{rootObjectPath} is not unique");
 
             var pathElements = target[0].Path.Reverse().ToArray();
             var result = new List<CachedObject>();

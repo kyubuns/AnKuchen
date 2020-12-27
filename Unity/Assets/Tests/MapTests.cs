@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-using AssertionException = UnityEngine.Assertions.AssertionException;
 
 namespace Tests
 {
@@ -28,7 +27,8 @@ namespace Tests
         public void 存在しないボタンは取得出来ない()
         {
             var ui = TestUtils.Instantiate(Resources.Load<GameObject>("Test1"));
-            Assert.Throws<AssertionException>(() => ui.Get("DummyButton"));
+            var ex = Assert.Throws<AnKuchenNotFoundException>(() => ui.Get("DummyButton"));
+            Assert.AreEqual("DummyButton is not found", ex.Message);
         }
 
         [Test]
