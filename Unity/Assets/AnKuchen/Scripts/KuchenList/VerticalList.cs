@@ -97,6 +97,12 @@ namespace AnKuchen.KuchenList
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
 
+            if (displayMinIndex == int.MaxValue)
+            {
+                displayMinIndex = contentPositions.Count - 1;
+                displayMaxIndex = contentPositions.Count - 1;
+            }
+
             displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
             displayMaxIndex = Mathf.Min(displayMaxIndex + SpareElement, contents.Count - 1);
 
@@ -331,6 +337,12 @@ namespace AnKuchen.KuchenList
                 if (contentPositions[i] > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            if (displayMinIndex == int.MaxValue)
+            {
+                displayMinIndex = contentPositions.Count - 1;
+                displayMaxIndex = contentPositions.Count - 1;
             }
 
             displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
@@ -575,6 +587,12 @@ namespace AnKuchen.KuchenList
                 if (contentPositions[i] > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            if (displayMinIndex == int.MaxValue)
+            {
+                displayMinIndex = contentPositions.Count - 1;
+                displayMaxIndex = contentPositions.Count - 1;
             }
 
             displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
@@ -827,6 +845,12 @@ namespace AnKuchen.KuchenList
                 if (contentPositions[i] > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
+            }
+
+            if (displayMinIndex == int.MaxValue)
+            {
+                displayMinIndex = contentPositions.Count - 1;
+                displayMaxIndex = contentPositions.Count - 1;
             }
 
             displayMinIndex = Mathf.Max(displayMinIndex - 1 - SpareElement, 0);
