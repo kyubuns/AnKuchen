@@ -36,8 +36,9 @@ namespace AnKuchen.Development
         {
             using (var editor = ui.List.Edit())
             {
-                editor.Spacing = 10f;
-                editor.Margin.TopBottom = 10f;
+                // editor.Spacing = 10f;
+                // editor.Margin.TopBottom = 10f;
+                // SpacingはContentのLayoutGroupから自動的に取得される
 
                 editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
                 {

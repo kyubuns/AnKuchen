@@ -37,6 +37,18 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
+            if (verticalLayoutGroup != null)
+            {
+                verticalLayoutGroup.enabled = false;
+                Spacing = verticalLayoutGroup.spacing;
+                margin = new Margin
+                {
+                    Top = verticalLayoutGroup.padding.top,
+                    Bottom = verticalLayoutGroup.padding.bottom
+                };
+            }
         }
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
@@ -261,6 +273,18 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
+            if (verticalLayoutGroup != null)
+            {
+                verticalLayoutGroup.enabled = false;
+                Spacing = verticalLayoutGroup.spacing;
+                margin = new Margin
+                {
+                    Top = verticalLayoutGroup.padding.top,
+                    Bottom = verticalLayoutGroup.padding.bottom
+                };
+            }
         }
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
@@ -493,6 +517,18 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
+            if (verticalLayoutGroup != null)
+            {
+                verticalLayoutGroup.enabled = false;
+                Spacing = verticalLayoutGroup.spacing;
+                margin = new Margin
+                {
+                    Top = verticalLayoutGroup.padding.top,
+                    Bottom = verticalLayoutGroup.padding.bottom
+                };
+            }
         }
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
@@ -733,6 +769,18 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
+            if (verticalLayoutGroup != null)
+            {
+                verticalLayoutGroup.enabled = false;
+                Spacing = verticalLayoutGroup.spacing;
+                margin = new Margin
+                {
+                    Top = verticalLayoutGroup.padding.top,
+                    Bottom = verticalLayoutGroup.padding.bottom
+                };
+            }
         }
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
