@@ -130,8 +130,9 @@ namespace AnKuchen.Editor
                 }
             }
 
+            var className = $"{uiCache.Get().name}UiElements";
             // コード生成
-            var text = "public class UiElements : IMappedObject\n";
+            var text = $"public class {className} : IMappedObject\n";
             text += "{\n";
             {
                 text += $"    public IMapper Mapper {{ get; private set; }}\n";
@@ -141,8 +142,8 @@ namespace AnKuchen.Editor
                     text += $"    public {t} {n} {{ get; private set; }}\n";
                 }
                 text += "\n";
-                text += "    public UiElements() { }\n";
-                text += "    public UiElements(IMapper mapper) { Initialize(mapper); }\n";
+                text += $"    public {className}() {{ }}\n";
+                text += $"    public {className}(IMapper mapper) {{ Initialize(mapper); }}\n";
                 text += "\n";
                 text += "    public void Initialize(IMapper mapper)\n";
                 text += "    {\n";
