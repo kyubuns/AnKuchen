@@ -131,7 +131,7 @@ namespace AnKuchen.Editor
             }
 
             // コード生成
-            var text = "public class UIElements : IMappedObject\n";
+            var text = "public class UiElements : IMappedObject\n";
             text += "{\n";
             {
                 text += $"    public IMapper Mapper {{ get; private set; }}\n";
@@ -141,8 +141,8 @@ namespace AnKuchen.Editor
                     text += $"    public {t} {n} {{ get; private set; }}\n";
                 }
                 text += "\n";
-                text += "    public UIElements() { }\n";
-                text += "    public UIElements(IMapper mapper) { Initialize(mapper); }\n";
+                text += "    public UiElements() { }\n";
+                text += "    public UiElements(IMapper mapper) { Initialize(mapper); }\n";
                 text += "\n";
                 text += "    public void Initialize(IMapper mapper)\n";
                 text += "    {\n";
