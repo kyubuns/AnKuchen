@@ -399,7 +399,7 @@ MonoBehaviour:
   - GameObject: {fileID: 258812533}
     Path: 
   - GameObject: {fileID: 2097555474}
-    Path: 266ab301
+    Path: 308f39a6
   - GameObject: {fileID: 1084936445}
     Path: b091a254
   - GameObject: {fileID: 319412881}
@@ -2167,7 +2167,7 @@ GameObject:
   - component: {fileID: 2097555477}
   - component: {fileID: 2097555476}
   m_Layer: 5
-  m_Name: Text
+  m_Name: 12345
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

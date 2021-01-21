@@ -100,7 +100,9 @@ namespace AnKuchen.Editor
 
         private static string ToSafeVariableName(string originalName)
         {
-            return Regex.Replace(originalName, @"[^\w_]", "", RegexOptions.None);
+            var name = Regex.Replace(originalName, @"[^\w_]", "", RegexOptions.None);
+            if (Enumerable.Range(0, 10).Any(x => name.StartsWith(x.ToString()))) name = $"_{name}";
+            return name;
         }
 
         private static string GenerateTemplate(IMapper uiCache, UIStringElement[] stringElements)
