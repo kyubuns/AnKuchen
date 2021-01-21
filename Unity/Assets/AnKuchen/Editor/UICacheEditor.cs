@@ -132,7 +132,7 @@ namespace AnKuchen.Editor
                 }
             }
 
-            var className = $"{uiCache.Get().name}UiElements";
+            var className = $"{ToSafeVariableName(uiCache.Get().name)}UiElements";
             // コード生成
             var text = $"public class {className} : IMappedObject\n";
             text += "{\n";
