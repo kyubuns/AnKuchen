@@ -54,7 +54,6 @@ namespace AnKuchen.Development
                     {
                         x.Text.text = "No.3";
                     }),
-                    new UIFactory<ListElements1, ListElements2>(new Spacer(50f)),
                     new UIFactory<ListElements1, ListElements2>(x =>
                     {
                         x.Image.color = Color.red;
@@ -65,6 +64,7 @@ namespace AnKuchen.Development
                         x.Image.color = Color.green;
                         x.Button.onClick.AddListener(() => Debug.Log("Click Green"));
                     }),
+                    new UIFactory<ListElements1, ListElements2>(new Spacer(50f)),
                     new UIFactory<ListElements1, ListElements2>(x =>
                     {
                         x.Image.color = Color.blue;

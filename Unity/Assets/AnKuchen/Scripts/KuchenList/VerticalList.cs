@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using AnKuchen.AdditionalInfo;
 using AnKuchen.Extensions;
 using AnKuchen.Map;
 using UnityEngine;
@@ -18,6 +20,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
+        private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
 
@@ -37,6 +40,8 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
             var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
             if (verticalLayoutGroup != null)
@@ -148,14 +153,38 @@ namespace AnKuchen.KuchenList
 
             // create elements
             var calcHeight = Margin.Top;
-            foreach (var content in contents)
+            var prevElementName = "";
+            var elementName = "";
+            var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
+                ? additionalInfo.specialSpacings
+                : new SpecialSpacing[] { };
+            for (var i = 0; i < contents.Count; ++i)
             {
+                var content = contents[i];
+                var elementSize = 0f;
+
+                if (content.Callback1 != null)
+                {
+                    elementName = original1.Mapper.Get().name;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Spacer != null)
+                {
+                    elementName = "";
+                    elementSize = content.Spacer.Size;
+                }
+
+                float? spacing = null;
+                var specialSpacing = specialSpacings.FirstOrDefault(x => x.item1 == prevElementName && x.item2 == elementName);
+                if (specialSpacing != null) spacing = specialSpacing.spacing;
+                if (spacing == null && i != 0) spacing = Spacing;
+
+                calcHeight += spacing ?? 0f;
                 contentPositions.Add(calcHeight);
-                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
-                if (content.Spacer != null) calcHeight += content.Spacer.Size;
-                calcHeight += Spacing;
+                calcHeight += elementSize;
+
+                prevElementName = elementName;
             }
-            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
             calcHeight += Margin.Bottom;
 
             // calc content size
@@ -256,6 +285,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
+        private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
 
@@ -279,6 +309,8 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
             var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
             if (verticalLayoutGroup != null)
@@ -391,15 +423,43 @@ namespace AnKuchen.KuchenList
 
             // create elements
             var calcHeight = Margin.Top;
-            foreach (var content in contents)
+            var prevElementName = "";
+            var elementName = "";
+            var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
+                ? additionalInfo.specialSpacings
+                : new SpecialSpacing[] { };
+            for (var i = 0; i < contents.Count; ++i)
             {
+                var content = contents[i];
+                var elementSize = 0f;
+
+                if (content.Callback1 != null)
+                {
+                    elementName = original1.Mapper.Get().name;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Callback2 != null)
+                {
+                    elementName = original2.Mapper.Get().name;
+                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Spacer != null)
+                {
+                    elementName = "";
+                    elementSize = content.Spacer.Size;
+                }
+
+                float? spacing = null;
+                var specialSpacing = specialSpacings.FirstOrDefault(x => x.item1 == prevElementName && x.item2 == elementName);
+                if (specialSpacing != null) spacing = specialSpacing.spacing;
+                if (spacing == null && i != 0) spacing = Spacing;
+
+                calcHeight += spacing ?? 0f;
                 contentPositions.Add(calcHeight);
-                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
-                if (content.Spacer != null) calcHeight += content.Spacer.Size;
-                calcHeight += Spacing;
+                calcHeight += elementSize;
+
+                prevElementName = elementName;
             }
-            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
             calcHeight += Margin.Bottom;
 
             // calc content size
@@ -502,6 +562,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
+        private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
 
@@ -529,6 +590,8 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
             var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
             if (verticalLayoutGroup != null)
@@ -642,16 +705,48 @@ namespace AnKuchen.KuchenList
 
             // create elements
             var calcHeight = Margin.Top;
-            foreach (var content in contents)
+            var prevElementName = "";
+            var elementName = "";
+            var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
+                ? additionalInfo.specialSpacings
+                : new SpecialSpacing[] { };
+            for (var i = 0; i < contents.Count; ++i)
             {
+                var content = contents[i];
+                var elementSize = 0f;
+
+                if (content.Callback1 != null)
+                {
+                    elementName = original1.Mapper.Get().name;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Callback2 != null)
+                {
+                    elementName = original2.Mapper.Get().name;
+                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Callback3 != null)
+                {
+                    elementName = original3.Mapper.Get().name;
+                    elementSize = original3.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Spacer != null)
+                {
+                    elementName = "";
+                    elementSize = content.Spacer.Size;
+                }
+
+                float? spacing = null;
+                var specialSpacing = specialSpacings.FirstOrDefault(x => x.item1 == prevElementName && x.item2 == elementName);
+                if (specialSpacing != null) spacing = specialSpacing.spacing;
+                if (spacing == null && i != 0) spacing = Spacing;
+
+                calcHeight += spacing ?? 0f;
                 contentPositions.Add(calcHeight);
-                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback3 != null) calcHeight += original3.Mapper.Get<RectTransform>().rect.height;
-                if (content.Spacer != null) calcHeight += content.Spacer.Size;
-                calcHeight += Spacing;
+                calcHeight += elementSize;
+
+                prevElementName = elementName;
             }
-            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
             calcHeight += Margin.Bottom;
 
             // calc content size
@@ -756,6 +851,7 @@ namespace AnKuchen.KuchenList
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
+        private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
 
@@ -787,6 +883,8 @@ namespace AnKuchen.KuchenList
 
             var viewport = scrollRect.viewport;
             viewportRectTransformCache = viewport != null ? viewport : scrollRect.GetComponent<RectTransform>();
+
+            additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
             var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
             if (verticalLayoutGroup != null)
@@ -901,17 +999,53 @@ namespace AnKuchen.KuchenList
 
             // create elements
             var calcHeight = Margin.Top;
-            foreach (var content in contents)
+            var prevElementName = "";
+            var elementName = "";
+            var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
+                ? additionalInfo.specialSpacings
+                : new SpecialSpacing[] { };
+            for (var i = 0; i < contents.Count; ++i)
             {
+                var content = contents[i];
+                var elementSize = 0f;
+
+                if (content.Callback1 != null)
+                {
+                    elementName = original1.Mapper.Get().name;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Callback2 != null)
+                {
+                    elementName = original2.Mapper.Get().name;
+                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Callback3 != null)
+                {
+                    elementName = original3.Mapper.Get().name;
+                    elementSize = original3.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Callback4 != null)
+                {
+                    elementName = original4.Mapper.Get().name;
+                    elementSize = original4.Mapper.Get<RectTransform>().rect.height;
+                }
+                if (content.Spacer != null)
+                {
+                    elementName = "";
+                    elementSize = content.Spacer.Size;
+                }
+
+                float? spacing = null;
+                var specialSpacing = specialSpacings.FirstOrDefault(x => x.item1 == prevElementName && x.item2 == elementName);
+                if (specialSpacing != null) spacing = specialSpacing.spacing;
+                if (spacing == null && i != 0) spacing = Spacing;
+
+                calcHeight += spacing ?? 0f;
                 contentPositions.Add(calcHeight);
-                if (content.Callback1 != null) calcHeight += original1.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback2 != null) calcHeight += original2.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback3 != null) calcHeight += original3.Mapper.Get<RectTransform>().rect.height;
-                if (content.Callback4 != null) calcHeight += original4.Mapper.Get<RectTransform>().rect.height;
-                if (content.Spacer != null) calcHeight += content.Spacer.Size;
-                calcHeight += Spacing;
+                calcHeight += elementSize;
+
+                prevElementName = elementName;
             }
-            if (contents.Count > 0) calcHeight -= Spacing; // 最後は要らない
             calcHeight += Margin.Bottom;
 
             // calc content size

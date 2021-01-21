@@ -399,7 +399,7 @@ MonoBehaviour:
   - GameObject: {fileID: 258812533}
     Path: 
   - GameObject: {fileID: 2097555474}
-    Path: 308f39a6
+    Path: 266ab301
   - GameObject: {fileID: 1084936445}
     Path: b091a254
   - GameObject: {fileID: 319412881}
@@ -1321,6 +1321,7 @@ GameObject:
   - component: {fileID: 1014655546}
   - component: {fileID: 1014655547}
   - component: {fileID: 1014655549}
+  - component: {fileID: 1014655550}
   m_Layer: 5
   m_Name: List
   m_TagString: Untagged
@@ -1432,6 +1433,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1014655550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014655544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5873ada5ceb564878853b8ea791f94f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  specialSpacings:
+  - item1: Element1
+    item2: Element2
+    spacing: 100
 --- !u!1 &1084936445
 GameObject:
   m_ObjectHideFlags: 0
@@ -2167,7 +2184,7 @@ GameObject:
   - component: {fileID: 2097555477}
   - component: {fileID: 2097555476}
   m_Layer: 5
-  m_Name: 12345
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
