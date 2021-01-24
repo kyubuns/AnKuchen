@@ -54,6 +54,12 @@ namespace AnKuchen.KuchenList
                     Bottom = verticalLayoutGroup.padding.bottom
                 };
             }
+
+            var contentSizeFitter = scrollRect.content.GetComponent<ContentSizeFitter>();
+            if (contentSizeFitter != null)
+            {
+                contentSizeFitter.enabled = false;
+            }
         }
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
@@ -322,6 +328,12 @@ namespace AnKuchen.KuchenList
                     Top = verticalLayoutGroup.padding.top,
                     Bottom = verticalLayoutGroup.padding.bottom
                 };
+            }
+
+            var contentSizeFitter = scrollRect.content.GetComponent<ContentSizeFitter>();
+            if (contentSizeFitter != null)
+            {
+                contentSizeFitter.enabled = false;
             }
         }
 
@@ -603,6 +615,12 @@ namespace AnKuchen.KuchenList
                     Top = verticalLayoutGroup.padding.top,
                     Bottom = verticalLayoutGroup.padding.bottom
                 };
+            }
+
+            var contentSizeFitter = scrollRect.content.GetComponent<ContentSizeFitter>();
+            if (contentSizeFitter != null)
+            {
+                contentSizeFitter.enabled = false;
             }
         }
 
@@ -896,6 +914,12 @@ namespace AnKuchen.KuchenList
                     Top = verticalLayoutGroup.padding.top,
                     Bottom = verticalLayoutGroup.padding.bottom
                 };
+            }
+
+            var contentSizeFitter = scrollRect.content.GetComponent<ContentSizeFitter>();
+            if (contentSizeFitter != null)
+            {
+                contentSizeFitter.enabled = false;
             }
         }
 
