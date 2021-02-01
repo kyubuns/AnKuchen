@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 namespace AnKuchen.KuchenList
 {
 <# for (var t = 1; t <= 4; ++t) { #>
-    public class VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>
+    public class HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>
         <#= string.Join(" ", Enumerable.Range(1, t).Select(i => $"where T{i} : IMappedObject, new()")) #>
     {
         private readonly ScrollRect scrollRect;
@@ -33,7 +33,7 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
-        public VerticalList(ScrollRect scrollRect, <#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i} original{i}")) #>)
+        public HorizontalList(ScrollRect scrollRect, <#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i} original{i}")) #>)
         {
             this.scrollRect = scrollRect;
 
@@ -51,15 +51,15 @@ namespace AnKuchen.KuchenList
 
             additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
-            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
-            if (verticalLayoutGroup != null)
+            var horizontalLayoutGroup = scrollRect.content.GetComponent<HorizontalLayoutGroup>();
+            if (horizontalLayoutGroup != null)
             {
-                verticalLayoutGroup.enabled = false;
-                Spacing = verticalLayoutGroup.spacing;
+                horizontalLayoutGroup.enabled = false;
+                Spacing = horizontalLayoutGroup.spacing;
                 margin = new Margin
                 {
-                    Top = verticalLayoutGroup.padding.top,
-                    Bottom = verticalLayoutGroup.padding.bottom
+                    Left = horizontalLayoutGroup.padding.left,
+                    Right = horizontalLayoutGroup.padding.right
                 };
             }
 
@@ -72,9 +72,9 @@ namespace AnKuchen.KuchenList
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
         {
-            private readonly VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> list;
+            private readonly HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> list;
 
-            public ListOperator(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> list)
+            public ListOperator(HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> list)
             {
                 this.list = list;
             }
@@ -103,9 +103,14 @@ namespace AnKuchen.KuchenList
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
-            var start = contentRect.max.y - displayRect.max.y;
-            var displayRectHeight = displayRect.height;
-            var end = start + displayRectHeight;
+            var start = contentRect.max.x - displayRect.max.x;
+            var displayRectWidth = displayRect.width;
+            var end = start + displayRectWidth;
+
+            var tmpEnd = contentRect.size.x - start;
+            var tmpStart = contentRect.size.x - end;
+            start = tmpStart;
+            end = tmpEnd;
 
             var displayMinIndex = int.MaxValue;
             var displayMaxIndex = int.MinValue;
@@ -169,7 +174,7 @@ namespace AnKuchen.KuchenList
             contentPositions.Clear();
 
             // create elements
-            var calcPosition = Margin.Top;
+            var calcPosition = Margin.Left;
             var prevElementName = "";
             var elementName = "";
             var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
@@ -184,7 +189,7 @@ namespace AnKuchen.KuchenList
                 if (content.Callback<#= i #> != null)
                 {
                     elementName = original<#= i #>.Mapper.Get().name;
-                    elementSize = original<#= i #>.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original<#= i #>.Mapper.Get<RectTransform>().rect.width;
                 }
 <# } #>
                 if (content.Spacer != null)
@@ -204,12 +209,12 @@ namespace AnKuchen.KuchenList
 
                 prevElementName = elementName;
             }
-            calcPosition += Margin.Bottom;
+            calcPosition += Margin.Right;
 
             // calc content size
             var c = scrollRect.content;
             var s = c.sizeDelta;
-            c.sizeDelta = new Vector2(s.x, calcPosition);
+            c.sizeDelta = new Vector2(calcPosition, s.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -242,7 +247,7 @@ namespace AnKuchen.KuchenList
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
-            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+            newRectTransform.anchoredPosition = new Vector3((scrollRect.content.sizeDelta.x / -2f) + position + r.width / 2f, p.y, 0f);
 
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
@@ -257,13 +262,13 @@ namespace AnKuchen.KuchenList
 
         public class ListContentEditor : IDisposable
         {
-            private readonly VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent;
+            private readonly HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent;
             public List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent)
+            public ListContentEditor(HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent)
             {
                 this.parent = parent;
                 Contents = parent.contents;

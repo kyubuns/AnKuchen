@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace AnKuchen.KuchenList
 {
-    public class VerticalList<T1>
+    public class HorizontalList<T1>
         where T1 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -27,7 +27,7 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
-        public VerticalList(ScrollRect scrollRect, T1 original1)
+        public HorizontalList(ScrollRect scrollRect, T1 original1)
         {
             this.scrollRect = scrollRect;
 
@@ -43,15 +43,15 @@ namespace AnKuchen.KuchenList
 
             additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
-            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
-            if (verticalLayoutGroup != null)
+            var horizontalLayoutGroup = scrollRect.content.GetComponent<HorizontalLayoutGroup>();
+            if (horizontalLayoutGroup != null)
             {
-                verticalLayoutGroup.enabled = false;
-                Spacing = verticalLayoutGroup.spacing;
+                horizontalLayoutGroup.enabled = false;
+                Spacing = horizontalLayoutGroup.spacing;
                 margin = new Margin
                 {
-                    Top = verticalLayoutGroup.padding.top,
-                    Bottom = verticalLayoutGroup.padding.bottom
+                    Left = horizontalLayoutGroup.padding.left,
+                    Right = horizontalLayoutGroup.padding.right
                 };
             }
 
@@ -64,9 +64,9 @@ namespace AnKuchen.KuchenList
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
         {
-            private readonly VerticalList<T1> list;
+            private readonly HorizontalList<T1> list;
 
-            public ListOperator(VerticalList<T1> list)
+            public ListOperator(HorizontalList<T1> list)
             {
                 this.list = list;
             }
@@ -95,9 +95,14 @@ namespace AnKuchen.KuchenList
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
-            var start = contentRect.max.y - displayRect.max.y;
-            var displayRectHeight = displayRect.height;
-            var end = start + displayRectHeight;
+            var start = contentRect.max.x - displayRect.max.x;
+            var displayRectWidth = displayRect.width;
+            var end = start + displayRectWidth;
+
+            var tmpEnd = contentRect.size.x - start;
+            var tmpStart = contentRect.size.x - end;
+            start = tmpStart;
+            end = tmpEnd;
 
             var displayMinIndex = int.MaxValue;
             var displayMaxIndex = int.MinValue;
@@ -159,7 +164,7 @@ namespace AnKuchen.KuchenList
             contentPositions.Clear();
 
             // create elements
-            var calcPosition = Margin.Top;
+            var calcPosition = Margin.Left;
             var prevElementName = "";
             var elementName = "";
             var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
@@ -173,7 +178,7 @@ namespace AnKuchen.KuchenList
                 if (content.Callback1 != null)
                 {
                     elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Spacer != null)
                 {
@@ -192,12 +197,12 @@ namespace AnKuchen.KuchenList
 
                 prevElementName = elementName;
             }
-            calcPosition += Margin.Bottom;
+            calcPosition += Margin.Right;
 
             // calc content size
             var c = scrollRect.content;
             var s = c.sizeDelta;
-            c.sizeDelta = new Vector2(s.x, calcPosition);
+            c.sizeDelta = new Vector2(calcPosition, s.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -228,7 +233,7 @@ namespace AnKuchen.KuchenList
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
-            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+            newRectTransform.anchoredPosition = new Vector3((scrollRect.content.sizeDelta.x / -2f) + position + r.width / 2f, p.y, 0f);
 
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
@@ -243,13 +248,13 @@ namespace AnKuchen.KuchenList
 
         public class ListContentEditor : IDisposable
         {
-            private readonly VerticalList<T1> parent;
+            private readonly HorizontalList<T1> parent;
             public List<UIFactory<T1>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1> parent)
+            public ListContentEditor(HorizontalList<T1> parent)
             {
                 this.parent = parent;
                 Contents = parent.contents;
@@ -281,7 +286,7 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public class VerticalList<T1, T2>
+    public class HorizontalList<T1, T2>
         where T1 : IMappedObject, new() where T2 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -299,7 +304,7 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
-        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2)
+        public HorizontalList(ScrollRect scrollRect, T1 original1, T2 original2)
         {
             this.scrollRect = scrollRect;
 
@@ -319,15 +324,15 @@ namespace AnKuchen.KuchenList
 
             additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
-            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
-            if (verticalLayoutGroup != null)
+            var horizontalLayoutGroup = scrollRect.content.GetComponent<HorizontalLayoutGroup>();
+            if (horizontalLayoutGroup != null)
             {
-                verticalLayoutGroup.enabled = false;
-                Spacing = verticalLayoutGroup.spacing;
+                horizontalLayoutGroup.enabled = false;
+                Spacing = horizontalLayoutGroup.spacing;
                 margin = new Margin
                 {
-                    Top = verticalLayoutGroup.padding.top,
-                    Bottom = verticalLayoutGroup.padding.bottom
+                    Left = horizontalLayoutGroup.padding.left,
+                    Right = horizontalLayoutGroup.padding.right
                 };
             }
 
@@ -340,9 +345,9 @@ namespace AnKuchen.KuchenList
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
         {
-            private readonly VerticalList<T1, T2> list;
+            private readonly HorizontalList<T1, T2> list;
 
-            public ListOperator(VerticalList<T1, T2> list)
+            public ListOperator(HorizontalList<T1, T2> list)
             {
                 this.list = list;
             }
@@ -371,9 +376,14 @@ namespace AnKuchen.KuchenList
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
-            var start = contentRect.max.y - displayRect.max.y;
-            var displayRectHeight = displayRect.height;
-            var end = start + displayRectHeight;
+            var start = contentRect.max.x - displayRect.max.x;
+            var displayRectWidth = displayRect.width;
+            var end = start + displayRectWidth;
+
+            var tmpEnd = contentRect.size.x - start;
+            var tmpStart = contentRect.size.x - end;
+            start = tmpStart;
+            end = tmpEnd;
 
             var displayMinIndex = int.MaxValue;
             var displayMaxIndex = int.MinValue;
@@ -436,7 +446,7 @@ namespace AnKuchen.KuchenList
             contentPositions.Clear();
 
             // create elements
-            var calcPosition = Margin.Top;
+            var calcPosition = Margin.Left;
             var prevElementName = "";
             var elementName = "";
             var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
@@ -450,12 +460,12 @@ namespace AnKuchen.KuchenList
                 if (content.Callback1 != null)
                 {
                     elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Callback2 != null)
                 {
                     elementName = original2.Mapper.Get().name;
-                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original2.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Spacer != null)
                 {
@@ -474,12 +484,12 @@ namespace AnKuchen.KuchenList
 
                 prevElementName = elementName;
             }
-            calcPosition += Margin.Bottom;
+            calcPosition += Margin.Right;
 
             // calc content size
             var c = scrollRect.content;
             var s = c.sizeDelta;
-            c.sizeDelta = new Vector2(s.x, calcPosition);
+            c.sizeDelta = new Vector2(calcPosition, s.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -511,7 +521,7 @@ namespace AnKuchen.KuchenList
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
-            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+            newRectTransform.anchoredPosition = new Vector3((scrollRect.content.sizeDelta.x / -2f) + position + r.width / 2f, p.y, 0f);
 
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
@@ -526,13 +536,13 @@ namespace AnKuchen.KuchenList
 
         public class ListContentEditor : IDisposable
         {
-            private readonly VerticalList<T1, T2> parent;
+            private readonly HorizontalList<T1, T2> parent;
             public List<UIFactory<T1, T2>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2> parent)
+            public ListContentEditor(HorizontalList<T1, T2> parent)
             {
                 this.parent = parent;
                 Contents = parent.contents;
@@ -564,7 +574,7 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public class VerticalList<T1, T2, T3>
+    public class HorizontalList<T1, T2, T3>
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -583,7 +593,7 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
-        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3)
+        public HorizontalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3)
         {
             this.scrollRect = scrollRect;
 
@@ -607,15 +617,15 @@ namespace AnKuchen.KuchenList
 
             additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
-            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
-            if (verticalLayoutGroup != null)
+            var horizontalLayoutGroup = scrollRect.content.GetComponent<HorizontalLayoutGroup>();
+            if (horizontalLayoutGroup != null)
             {
-                verticalLayoutGroup.enabled = false;
-                Spacing = verticalLayoutGroup.spacing;
+                horizontalLayoutGroup.enabled = false;
+                Spacing = horizontalLayoutGroup.spacing;
                 margin = new Margin
                 {
-                    Top = verticalLayoutGroup.padding.top,
-                    Bottom = verticalLayoutGroup.padding.bottom
+                    Left = horizontalLayoutGroup.padding.left,
+                    Right = horizontalLayoutGroup.padding.right
                 };
             }
 
@@ -628,9 +638,9 @@ namespace AnKuchen.KuchenList
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
         {
-            private readonly VerticalList<T1, T2, T3> list;
+            private readonly HorizontalList<T1, T2, T3> list;
 
-            public ListOperator(VerticalList<T1, T2, T3> list)
+            public ListOperator(HorizontalList<T1, T2, T3> list)
             {
                 this.list = list;
             }
@@ -659,9 +669,14 @@ namespace AnKuchen.KuchenList
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
-            var start = contentRect.max.y - displayRect.max.y;
-            var displayRectHeight = displayRect.height;
-            var end = start + displayRectHeight;
+            var start = contentRect.max.x - displayRect.max.x;
+            var displayRectWidth = displayRect.width;
+            var end = start + displayRectWidth;
+
+            var tmpEnd = contentRect.size.x - start;
+            var tmpStart = contentRect.size.x - end;
+            start = tmpStart;
+            end = tmpEnd;
 
             var displayMinIndex = int.MaxValue;
             var displayMaxIndex = int.MinValue;
@@ -725,7 +740,7 @@ namespace AnKuchen.KuchenList
             contentPositions.Clear();
 
             // create elements
-            var calcPosition = Margin.Top;
+            var calcPosition = Margin.Left;
             var prevElementName = "";
             var elementName = "";
             var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
@@ -739,17 +754,17 @@ namespace AnKuchen.KuchenList
                 if (content.Callback1 != null)
                 {
                     elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Callback2 != null)
                 {
                     elementName = original2.Mapper.Get().name;
-                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original2.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Callback3 != null)
                 {
                     elementName = original3.Mapper.Get().name;
-                    elementSize = original3.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original3.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Spacer != null)
                 {
@@ -768,12 +783,12 @@ namespace AnKuchen.KuchenList
 
                 prevElementName = elementName;
             }
-            calcPosition += Margin.Bottom;
+            calcPosition += Margin.Right;
 
             // calc content size
             var c = scrollRect.content;
             var s = c.sizeDelta;
-            c.sizeDelta = new Vector2(s.x, calcPosition);
+            c.sizeDelta = new Vector2(calcPosition, s.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -806,7 +821,7 @@ namespace AnKuchen.KuchenList
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
-            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+            newRectTransform.anchoredPosition = new Vector3((scrollRect.content.sizeDelta.x / -2f) + position + r.width / 2f, p.y, 0f);
 
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
@@ -821,13 +836,13 @@ namespace AnKuchen.KuchenList
 
         public class ListContentEditor : IDisposable
         {
-            private readonly VerticalList<T1, T2, T3> parent;
+            private readonly HorizontalList<T1, T2, T3> parent;
             public List<UIFactory<T1, T2, T3>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2, T3> parent)
+            public ListContentEditor(HorizontalList<T1, T2, T3> parent)
             {
                 this.parent = parent;
                 Contents = parent.contents;
@@ -859,7 +874,7 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public class VerticalList<T1, T2, T3, T4>
+    public class HorizontalList<T1, T2, T3, T4>
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new() where T4 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -879,7 +894,7 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
-        public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3, T4 original4)
+        public HorizontalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3, T4 original4)
         {
             this.scrollRect = scrollRect;
 
@@ -907,15 +922,15 @@ namespace AnKuchen.KuchenList
 
             additionalInfo = scrollRect.GetComponent<ListAdditionalInfo>();
 
-            var verticalLayoutGroup = scrollRect.content.GetComponent<VerticalLayoutGroup>();
-            if (verticalLayoutGroup != null)
+            var horizontalLayoutGroup = scrollRect.content.GetComponent<HorizontalLayoutGroup>();
+            if (horizontalLayoutGroup != null)
             {
-                verticalLayoutGroup.enabled = false;
-                Spacing = verticalLayoutGroup.spacing;
+                horizontalLayoutGroup.enabled = false;
+                Spacing = horizontalLayoutGroup.spacing;
                 margin = new Margin
                 {
-                    Top = verticalLayoutGroup.padding.top,
-                    Bottom = verticalLayoutGroup.padding.bottom
+                    Left = horizontalLayoutGroup.padding.left,
+                    Right = horizontalLayoutGroup.padding.right
                 };
             }
 
@@ -928,9 +943,9 @@ namespace AnKuchen.KuchenList
 
         private class ListOperator : IKuchenListMonoBehaviourBridge
         {
-            private readonly VerticalList<T1, T2, T3, T4> list;
+            private readonly HorizontalList<T1, T2, T3, T4> list;
 
-            public ListOperator(VerticalList<T1, T2, T3, T4> list)
+            public ListOperator(HorizontalList<T1, T2, T3, T4> list)
             {
                 this.list = list;
             }
@@ -959,9 +974,14 @@ namespace AnKuchen.KuchenList
         {
             var displayRect = viewportRectTransformCache.rect;
             var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
-            var start = contentRect.max.y - displayRect.max.y;
-            var displayRectHeight = displayRect.height;
-            var end = start + displayRectHeight;
+            var start = contentRect.max.x - displayRect.max.x;
+            var displayRectWidth = displayRect.width;
+            var end = start + displayRectWidth;
+
+            var tmpEnd = contentRect.size.x - start;
+            var tmpStart = contentRect.size.x - end;
+            start = tmpStart;
+            end = tmpEnd;
 
             var displayMinIndex = int.MaxValue;
             var displayMaxIndex = int.MinValue;
@@ -1026,7 +1046,7 @@ namespace AnKuchen.KuchenList
             contentPositions.Clear();
 
             // create elements
-            var calcPosition = Margin.Top;
+            var calcPosition = Margin.Left;
             var prevElementName = "";
             var elementName = "";
             var specialSpacings = (additionalInfo != null && additionalInfo.specialSpacings != null)
@@ -1040,22 +1060,22 @@ namespace AnKuchen.KuchenList
                 if (content.Callback1 != null)
                 {
                     elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original1.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Callback2 != null)
                 {
                     elementName = original2.Mapper.Get().name;
-                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original2.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Callback3 != null)
                 {
                     elementName = original3.Mapper.Get().name;
-                    elementSize = original3.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original3.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Callback4 != null)
                 {
                     elementName = original4.Mapper.Get().name;
-                    elementSize = original4.Mapper.Get<RectTransform>().rect.height;
+                    elementSize = original4.Mapper.Get<RectTransform>().rect.width;
                 }
                 if (content.Spacer != null)
                 {
@@ -1074,12 +1094,12 @@ namespace AnKuchen.KuchenList
 
                 prevElementName = elementName;
             }
-            calcPosition += Margin.Bottom;
+            calcPosition += Margin.Right;
 
             // calc content size
             var c = scrollRect.content;
             var s = c.sizeDelta;
-            c.sizeDelta = new Vector2(s.x, calcPosition);
+            c.sizeDelta = new Vector2(calcPosition, s.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -1113,7 +1133,7 @@ namespace AnKuchen.KuchenList
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
-            newRectTransform.anchoredPosition = new Vector3(p.x, scrollRect.content.sizeDelta.y / 2f - position - r.height / 2f, 0f);
+            newRectTransform.anchoredPosition = new Vector3((scrollRect.content.sizeDelta.x / -2f) + position + r.width / 2f, p.y, 0f);
 
             if (newObject is IReusableMappedObject reusable) reusable.Activate();
             contentCallback(newObject);
@@ -1128,13 +1148,13 @@ namespace AnKuchen.KuchenList
 
         public class ListContentEditor : IDisposable
         {
-            private readonly VerticalList<T1, T2, T3, T4> parent;
+            private readonly HorizontalList<T1, T2, T3, T4> parent;
             public List<UIFactory<T1, T2, T3, T4>> Contents { get; set; }
             public float Spacing { get; set; }
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2, T3, T4> parent)
+            public ListContentEditor(HorizontalList<T1, T2, T3, T4> parent)
             {
                 this.parent = parent;
                 Contents = parent.contents;
