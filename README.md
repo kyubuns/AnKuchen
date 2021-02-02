@@ -143,8 +143,6 @@ public void Start()
 public class UIElements : IMappedObject
 {
     public IMapper Mapper { get; private set; }
-    public GameObject Root { get; private set; }
-    public Text Text { get; private set; }
     public Layout<ButtonElements> HogeButton { get; private set; }
 
     public UIElements(IMapper mapper)
@@ -155,8 +153,6 @@ public class UIElements : IMappedObject
     public void Initialize(IMapper mapper)
     {
         Mapper = mapper;
-        Root = mapper.Get();
-        Text = mapper.Get<Text>("./Text");
         HogeButton = new Layout<ButtonElements>(mapper.GetChild<ButtonElements>("HogeButton"));
     }
 }
@@ -164,15 +160,12 @@ public class UIElements : IMappedObject
 public class ButtonElements : IMappedObject
 {
     public IMapper Mapper { get; private set; }
-    public GameObject Root { get; private set; }
-    public Button Button { get; private set; }
     public Text Text { get; private set; }
 
+    public ButtonElements() { }
     public void Initialize(IMapper mapper)
     {
         Mapper = mapper;
-        Root = mapper.Get();
-        Button = mapper.Get<Button>();
         Text = mapper.Get<Text>("Text");
     }
 }
