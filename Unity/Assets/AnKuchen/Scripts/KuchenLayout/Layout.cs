@@ -27,9 +27,9 @@ namespace AnKuchen.KuchenLayout
             this.original.Mapper.Get().SetActive(false);
         }
 
-        public LayoutEditor Edit()
+        public LayoutEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new LayoutEditor(this);
+            return new LayoutEditor(this, editMode);
         }
 
         private void UpdateContents(List<T> newElements)
@@ -49,10 +49,12 @@ namespace AnKuchen.KuchenLayout
             public List<T> Elements { get; }
             private readonly Layout<T> parent;
 
-            public LayoutEditor(Layout<T> parent)
+            public LayoutEditor(Layout<T> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Elements = parent.elements.ToList();
+
+                if (editMode == EditMode.Clear) Elements.Clear();
             }
 
             public T Create()

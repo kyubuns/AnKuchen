@@ -236,9 +236,9 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit()
+        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new ListContentEditor(this);
+            return new ListContentEditor(this, editMode);
         }
 
         public class ListContentEditor : IDisposable
@@ -249,13 +249,15 @@ namespace AnKuchen.KuchenList
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1> parent)
+            public ListContentEditor(VerticalList<T1> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
                 SpareElement = parent.SpareElement;
+
+                if (editMode == EditMode.Clear) Contents.Clear();
             }
 
             public void Dispose()
@@ -519,9 +521,9 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit()
+        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new ListContentEditor(this);
+            return new ListContentEditor(this, editMode);
         }
 
         public class ListContentEditor : IDisposable
@@ -532,13 +534,15 @@ namespace AnKuchen.KuchenList
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2> parent)
+            public ListContentEditor(VerticalList<T1, T2> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
                 SpareElement = parent.SpareElement;
+
+                if (editMode == EditMode.Clear) Contents.Clear();
             }
 
             public void Dispose()
@@ -814,9 +818,9 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit()
+        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new ListContentEditor(this);
+            return new ListContentEditor(this, editMode);
         }
 
         public class ListContentEditor : IDisposable
@@ -827,13 +831,15 @@ namespace AnKuchen.KuchenList
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2, T3> parent)
+            public ListContentEditor(VerticalList<T1, T2, T3> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
                 SpareElement = parent.SpareElement;
+
+                if (editMode == EditMode.Clear) Contents.Clear();
             }
 
             public void Dispose()
@@ -1121,9 +1127,9 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit()
+        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new ListContentEditor(this);
+            return new ListContentEditor(this, editMode);
         }
 
         public class ListContentEditor : IDisposable
@@ -1134,13 +1140,15 @@ namespace AnKuchen.KuchenList
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<T1, T2, T3, T4> parent)
+            public ListContentEditor(VerticalList<T1, T2, T3, T4> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
                 SpareElement = parent.SpareElement;
+
+                if (editMode == EditMode.Clear) Contents.Clear();
             }
 
             public void Dispose()

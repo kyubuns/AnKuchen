@@ -45,12 +45,10 @@ namespace AnKuchen.Development
                 c.Text.text = "c";
             }
 
-            using (var editor = ui.Layout.Edit())
+            using (var editor = ui.Layout.Edit(EditMode.DontClear))
             {
                 var a = editor.Create();
                 a.Text.text = "d";
-
-                // editor.Elements.Clear();
 
                 var b = editor.Create();
                 b.Text.text = "e";

@@ -250,9 +250,9 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit()
+        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new ListContentEditor(this);
+            return new ListContentEditor(this, editMode);
         }
 
         public class ListContentEditor : IDisposable
@@ -263,13 +263,15 @@ namespace AnKuchen.KuchenList
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent)
+            public ListContentEditor(VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
                 SpareElement = parent.SpareElement;
+
+                if (editMode == EditMode.Clear) Contents.Clear();
             }
 
             public void Dispose()
