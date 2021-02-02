@@ -77,24 +77,6 @@ var newButton = root.GetMapper("HogeButton").Duplicate();
 newButton.Get<Text>("Text").text = "New Button!";
 ```
 
-### Duplicate and Layout
-
-On top of more buttons, you can also line them up nicely.
-
-```csharp
-using (var editor = Layouter.TopToBottom(root.GetMapper("HogeButton")))
-{
-    var newButton1 = editor.Create();
-    newButton1.Get<Text>("Text").text = "NewButton1";
-    
-    var newButton2 = editor.Create();
-    newButton2.Get<Text>("Text").text = "NewButton2";
-    
-    var newButton3 = editor.Create();
-    newButton3.Get<Text>("Text").text = "NewButton3";
-}
-```
-
 ### Code Template
 
 Did you notice the "Copy Template" button in UICacheComponent?  
@@ -148,7 +130,7 @@ You can still use Duplicate and Layouter, even if you have the type. Don't worry
 public void Start()
 {
     var ui = new UIElements(root);
-    using (var editor = Layouter.Edit(ui.HogeButton))
+    using (var editor = ui.HogeButton.Edit())
     {
         foreach (var a in new[] { "h1", "h2", "h3" })
         {
@@ -163,7 +145,7 @@ public class UIElements : IMappedObject
     public IMapper Mapper { get; private set; }
     public GameObject Root { get; private set; }
     public Text Text { get; private set; }
-    public ButtonElements HogeButton { get; private set; }
+    public Layout<ButtonElements> HogeButton { get; private set; }
 
     public UIElements(IMapper mapper)
     {
@@ -175,7 +157,7 @@ public class UIElements : IMappedObject
         Mapper = mapper;
         Root = mapper.Get();
         Text = mapper.Get<Text>("./Text");
-        HogeButton = mapper.GetChild<ButtonElements>("HogeButton");
+        HogeButton = new Layout<ButtonElements>(mapper.GetChild<ButtonElements>("HogeButton"));
     }
 }
 
