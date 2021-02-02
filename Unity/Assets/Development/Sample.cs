@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using AnKuchen.KuchenLayout;
+using AnKuchen.KuchenLayout.Layouter;
 using AnKuchen.Map;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +32,34 @@ namespace AnKuchen.Development
                 ui.List.DestroyCachedGameObjects();
             });
             CreateList(ui, num);
+
+            using (var editor = ui.Layout.Edit())
+            {
+                var a = editor.Create();
+                a.Text.text = "a";
+
+                var b = editor.Create();
+                b.Text.text = "b";
+
+                var c = editor.Create();
+                c.Text.text = "c";
+            }
+
+            using (var editor = ui.Layout.Edit())
+            {
+                var a = editor.Create();
+                a.Text.text = "d";
+
+                // editor.Elements.Clear();
+
+                var b = editor.Create();
+                b.Text.text = "e";
+
+                var c = editor.Create();
+                c.Text.text = "f";
+            }
+
+            ui.Layout.Elements[0].Text.text = "0";
         }
 
         private void CreateList(UIElements ui, int num)
@@ -92,6 +122,7 @@ namespace AnKuchen.Development
         public Text SomeButtonText { get; private set; }
         public Button DeleteAllButton { get; private set; }
         public VerticalList<ListElements1, ListElements2> List { get; private set; }
+        public Layout<LayoutItem> Layout { get; private set; }
 
         public UIElements(IMapper mapper)
         {
@@ -112,6 +143,10 @@ namespace AnKuchen.Development
                 mapper.Get<ScrollRect>("List"),
                 mapper.GetChild<ListElements1>("Element1"),
                 mapper.GetChild<ListElements2>("Element2")
+            );
+            Layout = new Layout<LayoutItem>(
+                mapper.GetChild<LayoutItem>("LayoutGroup/Item"),
+                new TopToBottomLayouter(10f)
             );
         }
     }
@@ -152,6 +187,22 @@ namespace AnKuchen.Development
         public void Deactivate()
         {
             Button.onClick.RemoveAllListeners();
+        }
+    }
+
+    public class LayoutItem : IMappedObject
+    {
+        public IMapper Mapper { get; private set; }
+        public Text Text { get; private set; }
+
+        public LayoutItem()
+        {
+        }
+
+        public void Initialize(IMapper mapper)
+        {
+            Mapper = mapper;
+            Text = mapper.Get<Text>("Text");
         }
     }
 }
