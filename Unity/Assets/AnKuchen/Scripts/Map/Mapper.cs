@@ -35,12 +35,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotFoundException($"{objectPath} is not found", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(objectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotUniqueException($"{objectPath} is not unique", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(objectPath, e.Type);
                 throw;
             }
         }
@@ -48,8 +48,8 @@ namespace AnKuchen.Map
         public GameObject Get(uint[] objectPath)
         {
             var target = GetInternal(objectPath);
-            if (target.Length == 0) throw new AnKuchenNotFoundException($"{objectPath} is not found", objectPath);
-            if (target.Length > 1) throw new AnKuchenNotUniqueException($"{objectPath} is not unique", objectPath);
+            if (target.Length == 0) throw new AnKuchenNotFoundException(objectPath, null);
+            if (target.Length > 1) throw new AnKuchenNotUniqueException(objectPath, null);
             return target.Length > 0 ? target[0].GameObject : null;
         }
 
@@ -73,12 +73,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotFoundException($"{objectPath} is not found", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(objectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotUniqueException($"{objectPath} is not unique", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(objectPath, e.Type);
                 throw;
             }
         }
@@ -86,11 +86,11 @@ namespace AnKuchen.Map
         public T Get<T>(uint[] objectPath) where T : Component
         {
             var target = GetInternal(objectPath);
-            if (target.Length == 0) throw new AnKuchenNotFoundException($"{objectPath} is not found", objectPath);
-            if (target.Length > 1) throw new AnKuchenNotUniqueException($"{objectPath} is not unique", objectPath);
+            if (target.Length == 0) throw new AnKuchenNotFoundException(objectPath, typeof(T));
+            if (target.Length > 1) throw new AnKuchenNotUniqueException(objectPath, typeof(T));
 
             var component = target[0].GameObject.GetComponent<T>();
-            if (component == null) throw new AnKuchenNotFoundException($"{objectPath}<{nameof(T)}> is not found", objectPath);
+            if (component == null) throw new AnKuchenNotFoundException(objectPath, typeof(T));
             return component;
         }
 
@@ -103,19 +103,34 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotFoundException($"{rootObjectPath} is not found", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(rootObjectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotUniqueException($"{rootObjectPath} is not unique", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(rootObjectPath, e.Type);
                 throw;
             }
         }
 
         public T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new()
         {
-            var newMapper = GetMapper(rootObjectPath);
+            IMapper newMapper;
+            try
+            {
+                newMapper = GetMapper(rootObjectPath);
+            }
+            catch (AnKuchenNotFoundException e)
+            {
+                if (e.PathHash != null && e.PathHash.SequenceEqual(rootObjectPath)) throw new AnKuchenNotFoundException(rootObjectPath, typeof(T));
+                throw;
+            }
+            catch (AnKuchenNotUniqueException e)
+            {
+                if (e.PathHash != null && e.PathHash.SequenceEqual(rootObjectPath)) throw new AnKuchenNotUniqueException(rootObjectPath, typeof(T));
+                throw;
+            }
+
             var newObject = new T();
             newObject.Initialize(newMapper);
             return newObject;
@@ -130,12 +145,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotFoundException($"{rootObjectPath} is not found", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(rootObjectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.Path != null && e.Path.SequenceEqual(hash)) throw new AnKuchenNotUniqueException($"{rootObjectPath} is not unique", null);
+                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(rootObjectPath, e.Type);
                 throw;
             }
         }
@@ -143,8 +158,8 @@ namespace AnKuchen.Map
         public IMapper GetMapper(uint[] rootObjectPath)
         {
             var target = GetInternal(rootObjectPath);
-            if (target.Length == 0) throw new AnKuchenNotFoundException($"{rootObjectPath} is not found", rootObjectPath);
-            if (target.Length > 1) throw new AnKuchenNotUniqueException($"{rootObjectPath} is not unique", rootObjectPath);
+            if (target.Length == 0) throw new AnKuchenNotFoundException(rootObjectPath, null);
+            if (target.Length > 1) throw new AnKuchenNotUniqueException(rootObjectPath, null);
 
             var pathElements = target[0].Path.Reverse().ToArray();
             var result = new List<CachedObject>();

@@ -39,21 +39,59 @@ namespace AnKuchen.Map
 
     public class AnKuchenNotFoundException : AnKuchenException
     {
-        public uint[] Path { get; }
+        public string PathString { get; }
+        public uint[] PathHash { get; }
+        public Type Type { get; }
 
-        public AnKuchenNotFoundException(string message, uint[] path) : base(message)
+        public AnKuchenNotFoundException(uint[] pathHash, Type type) : base(
+            type == null
+                ? $"[{string.Join(", ", pathHash)}] is not found"
+                : $"[{string.Join(", ", pathHash)}]<{type}> is not found"
+        )
         {
-            Path = path;
+            PathString = null;
+            PathHash = pathHash;
+            Type = type;
+        }
+
+        public AnKuchenNotFoundException(string pathString, Type type) : base(
+            type == null
+                ? $"{pathString} is not found"
+                : $"{pathString}<{type}> is not found"
+        )
+        {
+            PathString = pathString;
+            PathHash = null;
+            Type = type;
         }
     }
 
     public class AnKuchenNotUniqueException : AnKuchenException
     {
-        public uint[] Path { get; }
+        public string PathString { get; }
+        public uint[] PathHash { get; }
+        public Type Type { get; }
 
-        public AnKuchenNotUniqueException(string message, uint[] path) : base(message)
+        public AnKuchenNotUniqueException(uint[] pathHash, Type type) : base(
+            type == null
+                ? $"[{string.Join(", ", pathHash)}] is not unique"
+                : $"[{string.Join(", ", pathHash)}]<{type}> is not unique"
+        )
         {
-            Path = path;
+            PathString = null;
+            PathHash = pathHash;
+            Type = type;
+        }
+
+        public AnKuchenNotUniqueException(string pathString, Type type) : base(
+            type == null
+                ? $"{pathString} is not unique"
+                : $"{pathString}<{type}> is not unique"
+        )
+        {
+            PathString = pathString;
+            PathHash = null;
+            Type = type;
         }
     }
 }
