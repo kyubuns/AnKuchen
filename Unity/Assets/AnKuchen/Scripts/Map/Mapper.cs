@@ -88,7 +88,10 @@ namespace AnKuchen.Map
             var target = GetInternal(objectPath);
             if (target.Length == 0) throw new AnKuchenNotFoundException($"{objectPath} is not found", objectPath);
             if (target.Length > 1) throw new AnKuchenNotUniqueException($"{objectPath} is not unique", objectPath);
-            return target.Length > 0 ? target[0].GameObject.GetComponent<T>() : null;
+
+            var component = target[0].GameObject.GetComponent<T>();
+            if (component == null) throw new AnKuchenNotFoundException($"{objectPath}<{nameof(T)}> is not found", objectPath);
+            return component;
         }
 
         public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
