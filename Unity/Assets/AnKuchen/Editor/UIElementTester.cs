@@ -40,6 +40,7 @@ namespace AnKuchen.Editor
                     Assert.IsNotNull(value, $"{o.GetType()} : {property.Name} == null");
 
                     if (value is IMappedObject mappedObject) testTargets.Add(mappedObject);
+                    else if (value is IEnumerable<IMappedObject> mappedObjects) testTargets.AddRange(mappedObjects);
                 }
             }
 
