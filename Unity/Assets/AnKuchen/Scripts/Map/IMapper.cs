@@ -39,15 +39,21 @@ namespace AnKuchen.Map
 
     public class AnKuchenNotFoundException : AnKuchenException
     {
-        public AnKuchenNotFoundException(string message) : base(message)
+        public uint[] Path { get; }
+
+        public AnKuchenNotFoundException(string message, uint[] path) : base(message)
         {
+            Path = path;
         }
     }
 
     public class AnKuchenNotUniqueException : AnKuchenException
     {
-        public AnKuchenNotUniqueException(string message) : base(message)
+        public uint[] Path { get; }
+
+        public AnKuchenNotUniqueException(string message, uint[] path) : base(message)
         {
+            Path = path;
         }
     }
 }
