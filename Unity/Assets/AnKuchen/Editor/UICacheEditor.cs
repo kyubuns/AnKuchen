@@ -102,6 +102,7 @@ namespace AnKuchen.Editor
             var templateName = "DefaultTemplate";
             var classNameTemplate = AnKuchenCopyTemplateSettings.DefaultClassName;
             var targetTypesTemplate = AnKuchenCopyTemplateSettings.DefaultPickupComponentNames;
+            var removeText = AnKuchenCopyTemplateSettings.DefaultRemoveText;
 
             var guids = AssetDatabase.FindAssets($"t:{nameof(AnKuchenCopyTemplateSettings)}");
             if (guids.Length > 0)
@@ -112,6 +113,7 @@ namespace AnKuchen.Editor
                 templateName = path;
                 classNameTemplate = settings.ClassName;
                 targetTypesTemplate = settings.PickupComponentNames;
+                removeText = settings.RemoveText;
             }
 
             var className = string.Format(classNameTemplate, ToSafeVariableName(uiCache.Get().name));
@@ -135,7 +137,15 @@ namespace AnKuchen.Editor
                         if (count != 1) break;
                         uniquePath = next;
                     }
-                    elements.Add((ToSafeVariableName(string.Join("", uniquePath.Where(x => x != ".").Reverse())), uniquePath.Reverse().ToArray(), component.GetType().Name));
+
+                    var safeVariableName = ToSafeVariableName(string.Join("", uniquePath.Where(x => x != ".").Reverse()));
+                    foreach (var r in removeText)
+                    {
+                        var before = safeVariableName;
+                        safeVariableName = safeVariableName.Replace(r, "");
+                        if (string.IsNullOrWhiteSpace(safeVariableName)) safeVariableName = before;
+                    }
+                    elements.Add((safeVariableName, uniquePath.Reverse().ToArray(), component.GetType().Name));
                     break;
                 }
             }

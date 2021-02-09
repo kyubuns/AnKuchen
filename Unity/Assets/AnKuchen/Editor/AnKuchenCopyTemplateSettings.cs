@@ -12,6 +12,10 @@ namespace AnKuchen.Editor
 
         public string[] PickupComponentNames => pickupComponentNames;
         [SerializeField] private string[] pickupComponentNames = DefaultPickupComponentNames;
-        public static readonly string[] DefaultPickupComponentNames = new[] { nameof(Button), nameof(InputField), nameof(Text) };
+        public static readonly string[] DefaultPickupComponentNames = { nameof(Button), nameof(InputField), nameof(Text) };
+
+        public string[] RemoveText => removeText;
+        [SerializeField] private string[] removeText = DefaultRemoveText;
+        public static readonly string[] DefaultRemoveText = { };
     }
 }
