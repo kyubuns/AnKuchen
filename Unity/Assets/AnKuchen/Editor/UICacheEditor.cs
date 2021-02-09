@@ -111,9 +111,9 @@ namespace AnKuchen.Editor
                 var settings = AssetDatabase.LoadAssetAtPath<AnKuchenCopyTemplateSettings>(path);
 
                 templateName = path;
-                classNameTemplate = settings.ClassName;
-                targetTypesTemplate = settings.PickupComponentNames;
-                removeText = settings.RemoveText;
+                classNameTemplate = settings.ClassName ?? AnKuchenCopyTemplateSettings.DefaultClassName;
+                targetTypesTemplate = settings.PickupComponentNames ?? new string[] { };
+                removeText = settings.RemoveText ?? new string[] { };
             }
 
             var className = string.Format(classNameTemplate, ToSafeVariableName(uiCache.Get().name));
