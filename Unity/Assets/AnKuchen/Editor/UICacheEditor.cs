@@ -48,8 +48,9 @@ namespace AnKuchen.Editor
             var rootObjectPath = parentUiCache.GetRawElements().First(x => x.GameObject == target).Path.Reverse().ToArray();
             var uiCache = parentUiCache.GetMapper(rootObjectPath);
 
-            EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
-            Debug.Log("Copied!");
+            var (body, templateName) = GenerateTemplate(uiCache, stringElements);
+            EditorGUIUtility.systemCopyBuffer = body;
+            Debug.Log($"Copied! ({templateName})");
         }
 
         private static void CreateCacheAndMarkDirty(UICache uiCache)
@@ -96,9 +97,25 @@ namespace AnKuchen.Editor
             return name;
         }
 
-        private static string GenerateTemplate(IMapper uiCache, UIStringElement[] stringElements)
+        private static (string Body, string TemplateName) GenerateTemplate(IMapper uiCache, UIStringElement[] stringElements)
         {
-            var targetTypes = new[] { nameof(Button), nameof(InputField), nameof(Text) };
+            var templateName = "DefaultTemplate";
+            var classNameTemplate = AnKuchenCopyTemplateSettings.DefaultClassName;
+            var targetTypesTemplate = AnKuchenCopyTemplateSettings.DefaultPickupComponentNames;
+
+            var guids = AssetDatabase.FindAssets($"t:{nameof(AnKuchenCopyTemplateSettings)}");
+            if (guids.Length > 0)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                var settings = AssetDatabase.LoadAssetAtPath<AnKuchenCopyTemplateSettings>(path);
+
+                templateName = path;
+                classNameTemplate = settings.ClassName;
+                targetTypesTemplate = settings.PickupComponentNames;
+            }
+
+            var className = string.Format(classNameTemplate, ToSafeVariableName(uiCache.Get().name));
+            var targetTypes = targetTypesTemplate;
 
             var elements = new List<(string Name, string[] Path, string Type)>();
             foreach (var e in stringElements)
@@ -123,7 +140,6 @@ namespace AnKuchen.Editor
                 }
             }
 
-            var className = $"{ToSafeVariableName(uiCache.Get().name)}UiElements";
             // コード生成
             var text = $"public class {className} : IMappedObject\n";
             text += "{\n";
@@ -152,7 +168,7 @@ namespace AnKuchen.Editor
                 text += "    }\n";
             }
             text += "}\n";
-            return text;
+            return (text, templateName);
         }
 
         private static UIStringElement[] CreateStringCache(Transform parent)
