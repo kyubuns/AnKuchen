@@ -24,15 +24,6 @@ namespace AnKuchen.Editor
                 Debug.Log("Updated!");
             }
 
-            if (GUILayout.Button("Copy Template"))
-            {
-                var uiCache = (UICache) target;
-                CreateCacheAndMarkDirty(uiCache);
-                var stringElements = CreateStringCache(uiCache.Get<Transform>());
-                EditorGUIUtility.systemCopyBuffer = GenerateTemplate(uiCache, stringElements);
-                Debug.Log("Copied!");
-            }
-
             base.OnInspectorGUI();
         }
 
@@ -107,15 +98,15 @@ namespace AnKuchen.Editor
 
         private static string GenerateTemplate(IMapper uiCache, UIStringElement[] stringElements)
         {
-            var targetTypes = new[] { typeof(Button), typeof(InputField), typeof(Text), typeof(Image) };
+            var targetTypes = new[] { nameof(Button), nameof(InputField), nameof(Text) };
 
             var elements = new List<(string Name, string[] Path, string Type)>();
             foreach (var e in stringElements)
             {
                 if (e.Path.Length == 0) continue;
-                foreach (var targetType in targetTypes)
+                foreach (var component in e.GameObject.GetComponents<Component>())
                 {
-                    if (e.GameObject.GetComponent(targetType) == null) continue;
+                    if (!targetTypes.Contains(component.GetType().Name)) continue;
 
                     var uniquePath = e.Path.Concat(new[] { "." }).ToArray();
                     while (uniquePath.Length > 1)
@@ -127,7 +118,7 @@ namespace AnKuchen.Editor
                         if (count != 1) break;
                         uniquePath = next;
                     }
-                    elements.Add((ToSafeVariableName(string.Join("", uniquePath.Where(x => x != ".").Reverse())), uniquePath.Reverse().ToArray(), targetType.Name));
+                    elements.Add((ToSafeVariableName(string.Join("", uniquePath.Where(x => x != ".").Reverse())), uniquePath.Reverse().ToArray(), component.GetType().Name));
                     break;
                 }
             }
