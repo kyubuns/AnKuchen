@@ -22,6 +22,13 @@ namespace Tests
             Assert.Throws<AnKuchenNotFoundException>(() => UIElementTester.Test<UIElementsDummy>(test1Object));
         }
 
+        [Test]
+        public void UI要素が全てあるかのテスト配列でも無ければコケる()
+        {
+            var test1Object = Resources.Load<GameObject>("Test1");
+            Assert.Throws<AnKuchenNotFoundException>(() => UIElementTester.Test<HoldingArrayUIElements>(test1Object));
+        }
+
         public class UIElements : IMappedObject
         {
             public IMapper Mapper { get; private set; }
@@ -103,6 +110,33 @@ namespace Tests
                 Button = mapper.Get<Button>();
                 Text = mapper.Get<Text>("Text");
                 Text2 = mapper.Get<Text>("Text2");
+            }
+        }
+
+        public class HoldingArrayUIElements : IMappedObject
+        {
+            public IMapper Mapper { get; private set; }
+            public GameObject Root { get; private set; }
+            public Text[] Text { get; private set; }
+
+            public HoldingArrayUIElements()
+            {
+            }
+
+            public HoldingArrayUIElements(IMapper mapper)
+            {
+                Initialize(mapper);
+            }
+
+            public void Initialize(IMapper mapper)
+            {
+                Mapper = mapper;
+                Root = mapper.Get();
+                Text = new[]
+                {
+                    mapper.Get<Text>("./Text"),
+                    mapper.Get<Text>("./Text_Nothing"),
+                };
             }
         }
     }

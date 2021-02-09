@@ -39,8 +39,25 @@ namespace AnKuchen.Editor
                     var value = property.GetValue(o);
                     Assert.IsNotNull(value, $"{o.GetType()} : {property.Name} == null");
 
-                    if (value is IMappedObject mappedObject) testTargets.Add(mappedObject);
-                    else if (value is IEnumerable<IMappedObject> mappedObjects) testTargets.AddRange(mappedObjects);
+                    if (value is IMappedObject mappedObject)
+                    {
+                        testTargets.Add(mappedObject);
+                        continue;
+                    }
+
+                    if (value is IEnumerable<IMappedObject> mappedObjects)
+                    {
+                        testTargets.AddRange(mappedObjects);
+                        continue;
+                    }
+
+                    if (value is IEnumerable<object> enumerable)
+                    {
+                        foreach (var (x, i) in enumerable.Select((x, i) => (x, i)))
+                        {
+                            Assert.IsNotNull(x, $"{o.GetType()} : {property.Name}[{i}] == null");
+                        }
+                    }
                 }
             }
 
