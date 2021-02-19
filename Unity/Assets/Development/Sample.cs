@@ -12,52 +12,9 @@ namespace AnKuchen.Development
     {
         [SerializeField] private UICache root = default;
 
-        public void Start()
+        public void Update()
         {
             var ui = new UIElements(root);
-            var num = 10;
-            ui.HogeButton.onClick.AddListener(() =>
-            {
-                num++;
-                CreateList(ui, num);
-            });
-            ui.SomeButton.onClick.AddListener(() =>
-            {
-                num--;
-                if (num < 0) num = 0;
-                CreateList(ui, num);
-            });
-            ui.DeleteAllButton.onClick.AddListener(() =>
-            {
-                ui.List.DestroyCachedGameObjects();
-            });
-            CreateList(ui, num);
-
-            using (var editor = ui.Layout.Edit())
-            {
-                var a = editor.Create();
-                a.Text.text = "a";
-
-                var b = editor.Create();
-                b.Text.text = "b";
-
-                var c = editor.Create();
-                c.Text.text = "c";
-            }
-
-            using (var editor = ui.Layout.Edit(EditMode.DontClear))
-            {
-                var a = editor.Create();
-                a.Text.text = "d";
-
-                var b = editor.Create();
-                b.Text.text = "e";
-
-                var c = editor.Create();
-                c.Text.text = "f";
-            }
-
-            ui.Layout.Elements[0].Text.text = "0";
         }
 
         private void CreateList(UIElements ui, int num)
@@ -131,21 +88,19 @@ namespace AnKuchen.Development
         {
             Mapper = mapper;
             Root = mapper.Get();
-            Text = mapper.Get<Text>("./Text");
-            HogeButton = mapper.Get<Button>("HogeButton");
-            HogeButtonText = mapper.Get<Text>("HogeButton/Text");
-            SomeButton = mapper.Get<Button>("Some Button");
-            SomeButtonText = mapper.Get<Text>("Some Button/Text");
-            DeleteAllButton = mapper.Get<Button>("DeleteAllButton");
-            List = new VerticalList<ListElements1, ListElements2>(
-                mapper.Get<ScrollRect>("List"),
-                mapper.GetChild<ListElements1>("Element1"),
-                mapper.GetChild<ListElements2>("Element2")
-            );
-            Layout = new Layout<LayoutItem>(
-                mapper.GetChild<LayoutItem>("LayoutGroup/Item"),
-                new TopToBottomLayouter(10f)
-            );
+            for (var i = 0; i < 1000; ++i)
+            {
+                Text = mapper.Get<Text>("./Text");
+                HogeButton = mapper.Get<Button>("HogeButton");
+                HogeButtonText = mapper.Get<Text>("HogeButton/Text");
+                SomeButton = mapper.Get<Button>("Some Button");
+                SomeButtonText = mapper.Get<Text>("Some Button/Text");
+                DeleteAllButton = mapper.Get<Button>("DeleteAllButton");
+                Layout = new Layout<LayoutItem>(
+                    mapper.GetChild<LayoutItem>("LayoutGroup/Item"),
+                    new TopToBottomLayouter(10f)
+                );
+            }
         }
     }
 
