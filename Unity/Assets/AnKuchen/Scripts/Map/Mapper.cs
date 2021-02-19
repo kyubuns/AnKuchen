@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace AnKuchen.Map
@@ -26,6 +25,17 @@ namespace AnKuchen.Map
             return root.GetComponent<T>();
         }
 
+        private static bool SequenceEqual(uint[] a, uint[] b)
+        {
+            if (a.Length != b.Length) return false;
+            for (var i = 0; i < a.Length; ++i)
+            {
+                if (a[i] != b[i]) return false;
+            }
+
+            return true;
+        }
+
         public GameObject Get(string objectPath)
         {
             var hash = ToHash(objectPath);
@@ -35,12 +45,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(objectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotFoundException(objectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(objectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotUniqueException(objectPath, e.Type);
                 throw;
             }
         }
@@ -61,7 +71,10 @@ namespace AnKuchen.Map
         public GameObject[] GetAll(uint[] objectPath)
         {
             var target = GetInternal(objectPath);
-            return target.Select(x => x.GameObject).ToArray();
+
+            var a = new GameObject[target.Length];
+            for (var i = 0; i < a.Length; ++i) a[i] = target[i].GameObject;
+            return a;
         }
 
         public T Get<T>(string objectPath) where T : Component
@@ -73,12 +86,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(objectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotFoundException(objectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(objectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotUniqueException(objectPath, e.Type);
                 throw;
             }
         }
@@ -103,12 +116,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(rootObjectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotFoundException(rootObjectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(rootObjectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotUniqueException(rootObjectPath, e.Type);
                 throw;
             }
         }
@@ -122,12 +135,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(rootObjectPath)) throw new AnKuchenNotFoundException(rootObjectPath, typeof(T));
+                if (e.PathHash != null && SequenceEqual(e.PathHash, rootObjectPath)) throw new AnKuchenNotFoundException(rootObjectPath, typeof(T));
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(rootObjectPath)) throw new AnKuchenNotUniqueException(rootObjectPath, typeof(T));
+                if (e.PathHash != null && SequenceEqual(e.PathHash, rootObjectPath)) throw new AnKuchenNotUniqueException(rootObjectPath, typeof(T));
                 throw;
             }
 
@@ -145,12 +158,12 @@ namespace AnKuchen.Map
             }
             catch (AnKuchenNotFoundException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotFoundException(rootObjectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotFoundException(rootObjectPath, e.Type);
                 throw;
             }
             catch (AnKuchenNotUniqueException e)
             {
-                if (e.PathHash != null && e.PathHash.SequenceEqual(hash)) throw new AnKuchenNotUniqueException(rootObjectPath, e.Type);
+                if (e.PathHash != null && SequenceEqual(e.PathHash, hash)) throw new AnKuchenNotUniqueException(rootObjectPath, e.Type);
                 throw;
             }
         }
@@ -161,7 +174,10 @@ namespace AnKuchen.Map
             if (target.Length == 0) throw new AnKuchenNotFoundException(rootObjectPath, null);
             if (target.Length > 1) throw new AnKuchenNotUniqueException(rootObjectPath, null);
 
-            var pathElements = target[0].Path.Reverse().ToArray();
+            // var pathElements = target[0].Path.Reverse().ToArray();
+            var pathElements = new uint[target[0].Path.Length];
+            for (var i = 0; i < pathElements.Length; ++i) pathElements[i] = target[0].Path[target[0].Path.Length - i - 1];
+
             var result = new List<CachedObject>();
             foreach (var e in elements)
             {
@@ -176,7 +192,9 @@ namespace AnKuchen.Map
                 }
                 if (pass)
                 {
-                    result.Add(new CachedObject { GameObject = e.GameObject, Path = e.Path.Take(e.Path.Length - pathElements.Length).ToArray() });
+                    var take = new uint[e.Path.Length - pathElements.Length];
+                    for (var i = 0; i < take.Length; ++i) take[i] = e.Path[i];
+                    result.Add(new CachedObject { GameObject = e.GameObject, Path = take });
                 }
             }
             return new Mapper(target[0].GameObject, result.ToArray());
@@ -195,7 +213,19 @@ namespace AnKuchen.Map
         private uint[] ToHash(string stringPath)
         {
             if (string.IsNullOrEmpty(stringPath)) return new uint[] { };
-            return stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).ToArray();
+
+            // return stringPath.Split('/').Select(x => FastHash.CalculateHash(x)).ToArray();
+            var iMax = 1;
+            for (var i = 0; i < stringPath.Length; ++i)
+            {
+                if (stringPath[i] == '/')
+                {
+                    iMax++;
+                }
+            }
+            var result = new uint[iMax];
+            for (var i = 0; i < result.Length; ++i) result[i] = FastHash.CalculateHash(stringPath, i);
+            return result;
         }
 
         private static readonly uint CachedHashDot = FastHash.CalculateHash(".");
@@ -216,9 +246,18 @@ namespace AnKuchen.Map
             if (path[0] == CachedHashDot)
             {
                 start = true;
-                path = path.Skip(1).ToArray();
+
+                // path = path.Skip(1).ToArray();
+                var tmp = path;
+                path = new uint[path.Length - 1];
+                for (var i = 0; i < path.Length; ++i) path[i] = tmp[i + 1];
             }
-            path = path.Reverse().ToArray();
+
+            // path = path.Reverse().ToArray();
+            var tmp2 = path;
+            path = new uint[tmp2.Length];
+            for (var i = 0; i < path.Length; ++i) path[i] = tmp2[tmp2.Length - i - 1];
+
             foreach (var e in elements)
             {
                 if (e.Path.Length < path.Length) continue;
