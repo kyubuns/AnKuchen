@@ -5,6 +5,12 @@ You won't have to drag and drop on Inspector when you create your UI.
 
 <a href="https://www.buymeacoffee.com/kyubuns" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
+## Instructions
+
+- [UnityPackage](https://github.com/kyubuns/AnKuchen/releases)
+- Package Manager
+  - Import AnKuchen `https://github.com/kyubuns/AnKuchen.git?path=Unity/Assets/AnKuchen`
+
 ## Sample
 
 Sample GameObject  
@@ -304,10 +310,9 @@ public class ListElements2 : IReusableMappedObject
 
 ## Setup
 
-- Install "AnKuchen" by UnityPackageManager. `https://github.com/kyubuns/AnKuchen.git?path=Unity/Assets/AnKuchen`
+- Install "AnKuchen"
 - Add a UICacheComponent to the Root of the UI and press the Update button.
   - We recommend that you automate the process of pressing the Update button to fit your workflow.
-<img width="640" alt="Screen Shot 2020-09-03 at 20 49 27" src="https://user-images.githubusercontent.com/961165/92111226-f6806900-ee26-11ea-9718-beb328af5038.png">
 - To update, rewrite the Hash in Packages/packages-lock.json.
 
 ## Requirements
