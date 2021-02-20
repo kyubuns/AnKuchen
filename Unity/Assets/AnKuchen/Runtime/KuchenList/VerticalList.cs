@@ -27,6 +27,12 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
+        public float NormalizedPosition
+        {
+            get => scrollRect.verticalNormalizedPosition;
+            set => scrollRect.verticalNormalizedPosition = value;
+        }
+
         public VerticalList(ScrollRect scrollRect, T1 original1)
         {
             this.scrollRect = scrollRect;
@@ -300,6 +306,12 @@ namespace AnKuchen.KuchenList
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
+
+        public float NormalizedPosition
+        {
+            get => scrollRect.verticalNormalizedPosition;
+            set => scrollRect.verticalNormalizedPosition = value;
+        }
 
         public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2)
         {
@@ -586,6 +598,12 @@ namespace AnKuchen.KuchenList
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
+
+        public float NormalizedPosition
+        {
+            get => scrollRect.verticalNormalizedPosition;
+            set => scrollRect.verticalNormalizedPosition = value;
+        }
 
         public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3)
         {
@@ -884,6 +902,12 @@ namespace AnKuchen.KuchenList
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
+
+        public float NormalizedPosition
+        {
+            get => scrollRect.verticalNormalizedPosition;
+            set => scrollRect.verticalNormalizedPosition = value;
+        }
 
         public VerticalList(ScrollRect scrollRect, T1 original1, T2 original2, T3 original3, T4 original4)
         {

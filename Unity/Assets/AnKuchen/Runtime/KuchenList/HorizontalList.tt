@@ -33,6 +33,12 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
+        public float NormalizedPosition
+        {
+            get => scrollRect.horizontalNormalizedPosition;
+            set => scrollRect.horizontalNormalizedPosition = value;
+        }
+
         public HorizontalList(ScrollRect scrollRect, <#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i} original{i}")) #>)
         {
             this.scrollRect = scrollRect;
