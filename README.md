@@ -303,6 +303,13 @@ public class ListElements2 : IReusableMappedObject
 }
 ```
 
+## With
+
+### With AkyuiUnity
+
+- AkyuiUnity(.Xd) is Adobe XD to Unity(uGUI) Library.
+- Please see [AkyuiUnity Manual](https://github.com/kyubuns/AkyuiUnity/blob/main/Manual/Manual_en.md#connecting-to-ankuchen)
+
 ### With Baum2
 
 - Baum2 is Photoshop(psd) to Unity(uGUI) Library.
