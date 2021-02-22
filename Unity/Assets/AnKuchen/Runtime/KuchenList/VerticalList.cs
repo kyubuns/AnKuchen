@@ -15,6 +15,7 @@ namespace AnKuchen.KuchenList
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
+        private (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1>> contents = new List<UIFactory<T1>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -37,9 +38,12 @@ namespace AnKuchen.KuchenList
         {
             this.scrollRect = scrollRect;
 
+            originalInfoCache = new (string Name, float Size)[1];
+
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+            originalInfoCache[0] = (original1.Mapper.Get().name, original1.Mapper.Get<RectTransform>().rect.height);
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = new ListOperator(this);
@@ -178,8 +182,8 @@ namespace AnKuchen.KuchenList
 
                 if (content.Callback1 != null)
                 {
-                    elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[0].Name;
+                    elementSize = originalInfoCache[0].Size;
                 }
                 if (content.Spacer != null)
                 {
@@ -305,6 +309,7 @@ namespace AnKuchen.KuchenList
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private readonly T2 original2;
+        private (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -327,13 +332,17 @@ namespace AnKuchen.KuchenList
         {
             this.scrollRect = scrollRect;
 
+            originalInfoCache = new (string Name, float Size)[2];
+
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+            originalInfoCache[0] = (original1.Mapper.Get().name, original1.Mapper.Get<RectTransform>().rect.height);
 
             this.original2 = original2;
             this.original2.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T2), new List<IMappedObject>());
+            originalInfoCache[1] = (original2.Mapper.Get().name, original2.Mapper.Get<RectTransform>().rect.height);
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = new ListOperator(this);
@@ -473,13 +482,13 @@ namespace AnKuchen.KuchenList
 
                 if (content.Callback1 != null)
                 {
-                    elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[0].Name;
+                    elementSize = originalInfoCache[0].Size;
                 }
                 if (content.Callback2 != null)
                 {
-                    elementName = original2.Mapper.Get().name;
-                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[1].Name;
+                    elementSize = originalInfoCache[1].Size;
                 }
                 if (content.Spacer != null)
                 {
@@ -607,6 +616,7 @@ namespace AnKuchen.KuchenList
         private readonly T1 original1;
         private readonly T2 original2;
         private readonly T3 original3;
+        private (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2, T3>> contents = new List<UIFactory<T1, T2, T3>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -629,17 +639,22 @@ namespace AnKuchen.KuchenList
         {
             this.scrollRect = scrollRect;
 
+            originalInfoCache = new (string Name, float Size)[3];
+
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+            originalInfoCache[0] = (original1.Mapper.Get().name, original1.Mapper.Get<RectTransform>().rect.height);
 
             this.original2 = original2;
             this.original2.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T2), new List<IMappedObject>());
+            originalInfoCache[1] = (original2.Mapper.Get().name, original2.Mapper.Get<RectTransform>().rect.height);
 
             this.original3 = original3;
             this.original3.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T3), new List<IMappedObject>());
+            originalInfoCache[2] = (original3.Mapper.Get().name, original3.Mapper.Get<RectTransform>().rect.height);
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = new ListOperator(this);
@@ -780,18 +795,18 @@ namespace AnKuchen.KuchenList
 
                 if (content.Callback1 != null)
                 {
-                    elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[0].Name;
+                    elementSize = originalInfoCache[0].Size;
                 }
                 if (content.Callback2 != null)
                 {
-                    elementName = original2.Mapper.Get().name;
-                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[1].Name;
+                    elementSize = originalInfoCache[1].Size;
                 }
                 if (content.Callback3 != null)
                 {
-                    elementName = original3.Mapper.Get().name;
-                    elementSize = original3.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[2].Name;
+                    elementSize = originalInfoCache[2].Size;
                 }
                 if (content.Spacer != null)
                 {
@@ -921,6 +936,7 @@ namespace AnKuchen.KuchenList
         private readonly T2 original2;
         private readonly T3 original3;
         private readonly T4 original4;
+        private (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2, T3, T4>> contents = new List<UIFactory<T1, T2, T3, T4>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -943,21 +959,27 @@ namespace AnKuchen.KuchenList
         {
             this.scrollRect = scrollRect;
 
+            originalInfoCache = new (string Name, float Size)[4];
+
             this.original1 = original1;
             this.original1.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T1), new List<IMappedObject>());
+            originalInfoCache[0] = (original1.Mapper.Get().name, original1.Mapper.Get<RectTransform>().rect.height);
 
             this.original2 = original2;
             this.original2.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T2), new List<IMappedObject>());
+            originalInfoCache[1] = (original2.Mapper.Get().name, original2.Mapper.Get<RectTransform>().rect.height);
 
             this.original3 = original3;
             this.original3.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T3), new List<IMappedObject>());
+            originalInfoCache[2] = (original3.Mapper.Get().name, original3.Mapper.Get<RectTransform>().rect.height);
 
             this.original4 = original4;
             this.original4.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T4), new List<IMappedObject>());
+            originalInfoCache[3] = (original4.Mapper.Get().name, original4.Mapper.Get<RectTransform>().rect.height);
 
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
             kuchenList.List = new ListOperator(this);
@@ -1099,23 +1121,23 @@ namespace AnKuchen.KuchenList
 
                 if (content.Callback1 != null)
                 {
-                    elementName = original1.Mapper.Get().name;
-                    elementSize = original1.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[0].Name;
+                    elementSize = originalInfoCache[0].Size;
                 }
                 if (content.Callback2 != null)
                 {
-                    elementName = original2.Mapper.Get().name;
-                    elementSize = original2.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[1].Name;
+                    elementSize = originalInfoCache[1].Size;
                 }
                 if (content.Callback3 != null)
                 {
-                    elementName = original3.Mapper.Get().name;
-                    elementSize = original3.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[2].Name;
+                    elementSize = originalInfoCache[2].Size;
                 }
                 if (content.Callback4 != null)
                 {
-                    elementName = original4.Mapper.Get().name;
-                    elementSize = original4.Mapper.Get<RectTransform>().rect.height;
+                    elementName = originalInfoCache[3].Name;
+                    elementSize = originalInfoCache[3].Size;
                 }
                 if (content.Spacer != null)
                 {

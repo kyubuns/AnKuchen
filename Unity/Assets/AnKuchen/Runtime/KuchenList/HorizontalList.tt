@@ -21,6 +21,7 @@ namespace AnKuchen.KuchenList
 <# for (var i = 1; i <= t; ++i) { #>
         private readonly T<#= i #> original<#= i #>;
 <# } #>
+        private (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> contents = new List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -43,10 +44,13 @@ namespace AnKuchen.KuchenList
         {
             this.scrollRect = scrollRect;
 
+            originalInfoCache = new (string Name, float Size)[<#= t #>];
+
 <# for (var i = 1; i <= t; ++i) { #>
             this.original<#= i #> = original<#= i #>;
             this.original<#= i #>.Mapper.Get().SetActive(false);
             cachedObjects.Add(typeof(T<#= i #>), new List<IMappedObject>());
+            originalInfoCache[<#= i - 1 #>] = (original<#= i #>.Mapper.Get().name, original<#= i #>.Mapper.Get<RectTransform>().rect.width);
 
 <# } #>
             var kuchenList = this.scrollRect.gameObject.AddComponent<KuchenList>();
@@ -194,8 +198,8 @@ namespace AnKuchen.KuchenList
 <# for (var i = 1; i <= t; ++i) { #>
                 if (content.Callback<#= i #> != null)
                 {
-                    elementName = original<#= i #>.Mapper.Get().name;
-                    elementSize = original<#= i #>.Mapper.Get<RectTransform>().rect.width;
+                    elementName = originalInfoCache[<#= i - 1 #>].Name;
+                    elementSize = originalInfoCache[<#= i - 1 #>].Size;
                 }
 <# } #>
                 if (content.Spacer != null)
