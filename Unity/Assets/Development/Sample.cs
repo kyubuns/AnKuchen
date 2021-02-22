@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using AnKuchen.KuchenLayout;
 using AnKuchen.KuchenLayout.Layouter;
 using AnKuchen.Map;
@@ -12,8 +13,10 @@ namespace AnKuchen.Development
     {
         [SerializeField] private UICache root = default;
 
-        public void Start()
+        public IEnumerator Start()
         {
+            yield return new WaitForSeconds(1.0f);
+
             var ui = new UIElements(root);
             var num = 10;
             ui.HogeButton.onClick.AddListener(() =>
@@ -82,24 +85,7 @@ namespace AnKuchen.Development
                     {
                         x.Text.text = "No.3";
                     }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Image.color = Color.red;
-                        x.Button.onClick.AddListener(() => Debug.Log("Click Red"));
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Image.color = Color.green;
-                        x.Button.onClick.AddListener(() => Debug.Log("Click Green"));
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(new Spacer(50f)),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Image.color = Color.blue;
-                        x.Button.onClick.AddListener(() => Debug.Log("Click Blue"));
-                    }),
                 };
-
                 for (var i = 0; i < num; ++i)
                 {
                     var i1 = i;
@@ -119,7 +105,7 @@ namespace AnKuchen.Development
         public Button SomeButton { get; private set; }
         public Text SomeButtonText { get; private set; }
         public Button DeleteAllButton { get; private set; }
-        public VerticalList<ListElements1, ListElements2> List { get; private set; }
+        public HorizontalList<ListElements1, ListElements2> List { get; private set; }
         public Layout<LayoutItem> Layout { get; private set; }
 
         public UIElements(IMapper mapper)
@@ -137,10 +123,14 @@ namespace AnKuchen.Development
             SomeButton = mapper.Get<Button>("Some Button");
             SomeButtonText = mapper.Get<Text>("Some Button/Text");
             DeleteAllButton = mapper.Get<Button>("DeleteAllButton");
-            List = new VerticalList<ListElements1, ListElements2>(
-                mapper.Get<ScrollRect>("List"),
-                mapper.GetChild<ListElements1>("Element1"),
-                mapper.GetChild<ListElements2>("Element2")
+
+            var scrollRect = mapper.Get<ScrollRect>("H_List");
+            var content = mapper.Get<RectTransform>("H_List/Content");
+            scrollRect.content = content;
+            List = new HorizontalList<ListElements1, ListElements2>(
+                scrollRect,
+                mapper.GetChild<ListElements1>("H_List/Element1"),
+                mapper.GetChild<ListElements2>("H_List/Element2")
             );
             Layout = new Layout<LayoutItem>(
                 mapper.GetChild<LayoutItem>("LayoutGroup/Item"),
