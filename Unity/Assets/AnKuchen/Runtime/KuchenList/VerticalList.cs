@@ -204,6 +204,16 @@ namespace AnKuchen.KuchenList
             var c = scrollRect.content;
             var s = c.sizeDelta;
             c.sizeDelta = new Vector2(s.x, calcPosition);
+
+            var anchoredPosition = c.anchoredPosition;
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
+            }
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
+            }
         }
 
         private void CollectObject(IMappedObject target)
@@ -494,6 +504,16 @@ namespace AnKuchen.KuchenList
             var c = scrollRect.content;
             var s = c.sizeDelta;
             c.sizeDelta = new Vector2(s.x, calcPosition);
+
+            var anchoredPosition = c.anchoredPosition;
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
+            }
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
+            }
         }
 
         private void CollectObject(IMappedObject target)
@@ -796,6 +816,16 @@ namespace AnKuchen.KuchenList
             var c = scrollRect.content;
             var s = c.sizeDelta;
             c.sizeDelta = new Vector2(s.x, calcPosition);
+
+            var anchoredPosition = c.anchoredPosition;
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
+            }
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
+            }
         }
 
         private void CollectObject(IMappedObject target)
@@ -1110,6 +1140,16 @@ namespace AnKuchen.KuchenList
             var c = scrollRect.content;
             var s = c.sizeDelta;
             c.sizeDelta = new Vector2(s.x, calcPosition);
+
+            var anchoredPosition = c.anchoredPosition;
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
+            }
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
+            }
         }
 
         private void CollectObject(IMappedObject target)
