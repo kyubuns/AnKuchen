@@ -310,6 +310,12 @@ public class ListElements2 : IReusableMappedObject
 - AkyuiUnity(.Xd) is Adobe XD to Unity(uGUI) Library.
 - Please see [AkyuiUnity Manual](https://github.com/kyubuns/AkyuiUnity/blob/main/Manual/Manual_en.md#connecting-to-ankuchen)
 
+### With VisualScripting
+
+- Add `AnKuchen.VisualScripting` to Project Settings > Visual Scripting > Node Library.
+- Click Regenerate Units Button.
+![EvJ7kYoVIAQgSfD](https://user-images.githubusercontent.com/961165/109305742-8278c800-7881-11eb-90eb-0b0dd26b630e.jpg)
+
 ### With Baum2
 
 - Baum2 is Photoshop(psd) to Unity(uGUI) Library.
