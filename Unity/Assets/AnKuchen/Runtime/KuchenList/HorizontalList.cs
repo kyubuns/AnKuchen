@@ -166,6 +166,7 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
+            var isFirst = createdObjects.Values.Count == 0;
             foreach (var map in createdObjects.Values)
             {
                 CollectObject(map);
@@ -215,14 +216,15 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(calcPosition, s.y);
 
             var anchoredPosition = c.anchoredPosition;
-            if (c.pivot.x > 1f - 0.0001f)
+            if (isFirst)
             {
-                c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+                var scrollRectSizeDeltaX = scrollRect.GetComponent<RectTransform>().rect.x;
+                if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(-scrollRectSizeDeltaX, anchoredPosition.y);
+                if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(scrollRectSizeDeltaX, anchoredPosition.y);
+                scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.x < 0f + 0.0001f)
-            {
-                c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
-            }
+            if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+            if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -469,6 +471,7 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
+            var isFirst = createdObjects.Values.Count == 0;
             foreach (var map in createdObjects.Values)
             {
                 CollectObject(map);
@@ -523,14 +526,15 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(calcPosition, s.y);
 
             var anchoredPosition = c.anchoredPosition;
-            if (c.pivot.x > 1f - 0.0001f)
+            if (isFirst)
             {
-                c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+                var scrollRectSizeDeltaX = scrollRect.GetComponent<RectTransform>().rect.x;
+                if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(-scrollRectSizeDeltaX, anchoredPosition.y);
+                if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(scrollRectSizeDeltaX, anchoredPosition.y);
+                scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.x < 0f + 0.0001f)
-            {
-                c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
-            }
+            if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+            if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -785,6 +789,7 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
+            var isFirst = createdObjects.Values.Count == 0;
             foreach (var map in createdObjects.Values)
             {
                 CollectObject(map);
@@ -844,14 +849,15 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(calcPosition, s.y);
 
             var anchoredPosition = c.anchoredPosition;
-            if (c.pivot.x > 1f - 0.0001f)
+            if (isFirst)
             {
-                c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+                var scrollRectSizeDeltaX = scrollRect.GetComponent<RectTransform>().rect.x;
+                if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(-scrollRectSizeDeltaX, anchoredPosition.y);
+                if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(scrollRectSizeDeltaX, anchoredPosition.y);
+                scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.x < 0f + 0.0001f)
-            {
-                c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
-            }
+            if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+            if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -1114,6 +1120,7 @@ namespace AnKuchen.KuchenList
         private void UpdateListContents()
         {
             // clear elements
+            var isFirst = createdObjects.Values.Count == 0;
             foreach (var map in createdObjects.Values)
             {
                 CollectObject(map);
@@ -1178,14 +1185,15 @@ namespace AnKuchen.KuchenList
             c.sizeDelta = new Vector2(calcPosition, s.y);
 
             var anchoredPosition = c.anchoredPosition;
-            if (c.pivot.x > 1f - 0.0001f)
+            if (isFirst)
             {
-                c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+                var scrollRectSizeDeltaX = scrollRect.GetComponent<RectTransform>().rect.x;
+                if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(-scrollRectSizeDeltaX, anchoredPosition.y);
+                if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(scrollRectSizeDeltaX, anchoredPosition.y);
+                scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.x < 0f + 0.0001f)
-            {
-                c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
-            }
+            if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
+            if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
         }
 
         private void CollectObject(IMappedObject target)
