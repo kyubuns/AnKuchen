@@ -24,6 +24,8 @@ namespace AnKuchen.KuchenList
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -320,6 +322,8 @@ namespace AnKuchen.KuchenList
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -629,6 +633,8 @@ namespace AnKuchen.KuchenList
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -951,6 +957,8 @@ namespace AnKuchen.KuchenList
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
