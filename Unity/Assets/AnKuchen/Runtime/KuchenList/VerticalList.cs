@@ -258,12 +258,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1>
         {
             private readonly VerticalList<T1> parent;
             public List<UIFactory<T1>> Contents { get; set; }
@@ -611,12 +611,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1, T2> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1, T2>
         {
             private readonly VerticalList<T1, T2> parent;
             public List<UIFactory<T1, T2>> Contents { get; set; }
@@ -977,12 +977,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1, T2, T3> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1, T2, T3>
         {
             private readonly VerticalList<T1, T2, T3> parent;
             public List<UIFactory<T1, T2, T3>> Contents { get; set; }
@@ -1356,12 +1356,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1, T2, T3, T4> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1, T2, T3, T4>
         {
             private readonly VerticalList<T1, T2, T3, T4> parent;
             public List<UIFactory<T1, T2, T3, T4>> Contents { get; set; }

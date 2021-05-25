@@ -64,12 +64,17 @@ namespace AnKuchen.Development
 
             yield return new WaitForSeconds(2.0f);
 
-            // /*
+            ui.List.ScrollTo(1, ScrollToType.Top);
+            ui.List2.ScrollTo(1, ScrollToType.Top);
+            ui.ListH.ScrollTo(1, ScrollToType.Top);
+            ui.ListH2.ScrollTo(1, ScrollToType.Top);
+
+            /*
             ui.List.ScrollTo(1, ScrollToType.Top);
             ui.List2.ScrollTo(4, ScrollToType.Top);
             ui.ListH.ScrollTo(1, ScrollToType.Top);
             ui.ListH2.ScrollTo(4, ScrollToType.Top);
-            // */
+            */
 
             /*
             ui.List.ScrollTo(4, ScrollToType.Bottom, 0f);
@@ -100,110 +105,45 @@ namespace AnKuchen.Development
         {
             using (var editor = ui.List.Edit())
             {
-                // editor.Spacing = 10f;
-                // editor.Margin.TopBottom = 10f;
-                // SpacingはContentのLayoutGroupから自動的に取得される
-
-                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
-                {
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.1";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.2";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.3";
-                    }),
-                };
-                for (var i = 0; i < num; ++i)
-                {
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
-                }
+                Hoge(editor, 0);
             }
 
             using (var editor = ui.List2.Edit())
             {
-                // editor.Spacing = 10f;
-                // editor.Margin.TopBottom = 10f;
-                // SpacingはContentのLayoutGroupから自動的に取得される
-
-                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
-                {
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.1";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.2";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.3";
-                    }),
-                };
-                for (var i = 0; i < num; ++i)
-                {
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
-                }
+                Hoge(editor, 0);
             }
 
             using (var editor = ui.ListH.Edit())
             {
-                // editor.Spacing = 10f;
-                // editor.Margin.TopBottom = 10f;
-                // SpacingはContentのLayoutGroupから自動的に取得される
-
-                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
-                {
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.1";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.2";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.3";
-                    }),
-                };
-                for (var i = 0; i < num; ++i)
-                {
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
-                }
+                Hoge(editor, 0);
             }
 
             using (var editor = ui.ListH2.Edit())
             {
-                // editor.Spacing = 10f;
-                // editor.Margin.TopBottom = 10f;
-                // SpacingはContentのLayoutGroupから自動的に取得される
+                Hoge(editor, 0);
+            }
+        }
 
-                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
+        private void Hoge(IListContentEditor<ListElements1, ListElements2> editor, int num)
+        {
+            editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
+            {
+                new UIFactory<ListElements1, ListElements2>(x =>
                 {
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.1";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.2";
-                    }),
-                    new UIFactory<ListElements1, ListElements2>(x =>
-                    {
-                        x.Text.text = "No.3";
-                    }),
-                };
-                for (var i = 0; i < num; ++i)
+                    x.Text.text = "No.1";
+                }),
+                new UIFactory<ListElements1, ListElements2>(x =>
                 {
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
-                }
+                    x.Text.text = "No.2";
+                }),
+                new UIFactory<ListElements1, ListElements2>(x =>
+                {
+                    x.Text.text = "No.3";
+                }),
+            };
+            for (var i = 0; i < num; ++i)
+            {
+                editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
             }
         }
     }
