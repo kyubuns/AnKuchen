@@ -26,6 +26,8 @@ namespace AnKuchen.KuchenList
         public int SpareElement { get; private set; }
         public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
         public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -304,7 +306,7 @@ namespace AnKuchen.KuchenList
             }
         }
 
-        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
         {
             var c = scrollRect.content;
             var anchoredPosition = c.anchoredPosition;
@@ -312,7 +314,7 @@ namespace AnKuchen.KuchenList
             var content = contentPositions[index];
             var contentHeight = scrollRect.content.rect.height;
             var viewportHeight = viewportRectTransformCache.rect.height;
-            if (viewportHeight > contentHeight) return;
+            if (viewportHeight > contentHeight) return null;
 
             if (c.pivot.y > 1f - 0.0001f)
             {
@@ -322,13 +324,14 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current > top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current < bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
 
@@ -340,15 +343,24 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current < top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current > bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
         }
     }
@@ -370,6 +382,8 @@ namespace AnKuchen.KuchenList
         public int SpareElement { get; private set; }
         public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
         public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -660,7 +674,7 @@ namespace AnKuchen.KuchenList
             }
         }
 
-        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
         {
             var c = scrollRect.content;
             var anchoredPosition = c.anchoredPosition;
@@ -668,7 +682,7 @@ namespace AnKuchen.KuchenList
             var content = contentPositions[index];
             var contentHeight = scrollRect.content.rect.height;
             var viewportHeight = viewportRectTransformCache.rect.height;
-            if (viewportHeight > contentHeight) return;
+            if (viewportHeight > contentHeight) return null;
 
             if (c.pivot.y > 1f - 0.0001f)
             {
@@ -678,13 +692,14 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current > top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current < bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
 
@@ -696,15 +711,24 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current < top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current > bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
         }
     }
@@ -727,6 +751,8 @@ namespace AnKuchen.KuchenList
         public int SpareElement { get; private set; }
         public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
         public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -1029,7 +1055,7 @@ namespace AnKuchen.KuchenList
             }
         }
 
-        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
         {
             var c = scrollRect.content;
             var anchoredPosition = c.anchoredPosition;
@@ -1037,7 +1063,7 @@ namespace AnKuchen.KuchenList
             var content = contentPositions[index];
             var contentHeight = scrollRect.content.rect.height;
             var viewportHeight = viewportRectTransformCache.rect.height;
-            if (viewportHeight > contentHeight) return;
+            if (viewportHeight > contentHeight) return null;
 
             if (c.pivot.y > 1f - 0.0001f)
             {
@@ -1047,13 +1073,14 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current > top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current < bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
 
@@ -1065,15 +1092,24 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current < top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current > bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
         }
     }
@@ -1097,6 +1133,8 @@ namespace AnKuchen.KuchenList
         public int SpareElement { get; private set; }
         public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
         public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -1411,7 +1449,7 @@ namespace AnKuchen.KuchenList
             }
         }
 
-        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
         {
             var c = scrollRect.content;
             var anchoredPosition = c.anchoredPosition;
@@ -1419,7 +1457,7 @@ namespace AnKuchen.KuchenList
             var content = contentPositions[index];
             var contentHeight = scrollRect.content.rect.height;
             var viewportHeight = viewportRectTransformCache.rect.height;
-            if (viewportHeight > contentHeight) return;
+            if (viewportHeight > contentHeight) return null;
 
             if (c.pivot.y > 1f - 0.0001f)
             {
@@ -1429,13 +1467,14 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current > top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current < bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
 
@@ -1447,15 +1486,24 @@ namespace AnKuchen.KuchenList
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
 
-                if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.y;
-                    if (current < top) c.anchoredPosition = new Vector2(anchoredPosition.x, top);
-                    else if (current > bottom) c.anchoredPosition = new Vector2(anchoredPosition.x, bottom);
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
                 }
             }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
         }
     }

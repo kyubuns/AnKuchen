@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AnKuchen.Map;
+using UnityEngine;
 
 namespace AnKuchen.KuchenList
 {
@@ -14,6 +15,7 @@ namespace AnKuchen.KuchenList
 
         float NormalizedPosition { get; set; }
 
+        Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f);
         void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f);
         void DestroyCachedGameObjects();
     }
