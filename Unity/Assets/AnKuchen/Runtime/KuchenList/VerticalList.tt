@@ -14,14 +14,14 @@ using Object = UnityEngine.Object;
 namespace AnKuchen.KuchenList
 {
 <# for (var t = 1; t <= 4; ++t) { #>
-    public class VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>
+    public class VerticalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> : IKuchenList
         <#= string.Join(" ", Enumerable.Range(1, t).Select(i => $"where T{i} : IMappedObject, new()")) #>
     {
         private readonly ScrollRect scrollRect;
 <# for (var i = 1; i <= t; ++i) { #>
         private readonly T<#= i #> original<#= i #>;
 <# } #>
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> contents = new List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();

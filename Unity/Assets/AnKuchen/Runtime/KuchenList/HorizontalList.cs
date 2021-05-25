@@ -10,12 +10,12 @@ using Object = UnityEngine.Object;
 
 namespace AnKuchen.KuchenList
 {
-    public class HorizontalList<T1>
+    public class HorizontalList<T1> : IKuchenList
         where T1 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1>> contents = new List<UIFactory<T1>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -310,13 +310,13 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public class HorizontalList<T1, T2>
+    public class HorizontalList<T1, T2> : IKuchenList
         where T1 : IMappedObject, new() where T2 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private readonly T2 original2;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -623,14 +623,14 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public class HorizontalList<T1, T2, T3>
+    public class HorizontalList<T1, T2, T3> : IKuchenList
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private readonly T2 original2;
         private readonly T3 original3;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2, T3>> contents = new List<UIFactory<T1, T2, T3>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
@@ -949,7 +949,7 @@ namespace AnKuchen.KuchenList
         }
     }
 
-    public class HorizontalList<T1, T2, T3, T4>
+    public class HorizontalList<T1, T2, T3, T4> : IKuchenList
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new() where T4 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -957,7 +957,7 @@ namespace AnKuchen.KuchenList
         private readonly T2 original2;
         private readonly T3 original3;
         private readonly T4 original4;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2, T3, T4>> contents = new List<UIFactory<T1, T2, T3, T4>>();
         private readonly List<float> contentPositions = new List<float>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
