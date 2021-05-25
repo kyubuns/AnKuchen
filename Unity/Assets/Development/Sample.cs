@@ -18,7 +18,7 @@ namespace AnKuchen.Development
             yield return new WaitForSeconds(1.0f);
 
             var ui = new UIElements(root);
-            var num = 10;
+            var num = 3;
             ui.HogeButton.onClick.AddListener(() =>
             {
                 num++;
@@ -61,6 +61,39 @@ namespace AnKuchen.Development
             }
 
             ui.Layout.Elements[0].Text.text = "0";
+
+            yield return new WaitForSeconds(2.0f);
+
+            // /*
+            ui.List.ScrollTo(1, ScrollToType.Top);
+            ui.List2.ScrollTo(4, ScrollToType.Top);
+            ui.ListH.ScrollTo(1, ScrollToType.Top);
+            ui.ListH2.ScrollTo(4, ScrollToType.Top);
+            // */
+
+            /*
+            ui.List.ScrollTo(4, ScrollToType.Bottom, 0f);
+            ui.List2.ScrollTo(1, ScrollToType.Bottom, 0f);
+            ui.ListH.ScrollTo(4, ScrollToType.Bottom, 0f);
+            ui.ListH2.ScrollTo(1, ScrollToType.Bottom, 0f);
+            */
+
+            /*
+            yield return new WaitForSeconds(2.0f);
+
+            ui.List.ScrollTo(5, ScrollToType.Top);
+            ui.List2.ScrollTo(5, ScrollToType.Top);
+            ui.ListH.ScrollTo(5, ScrollToType.Top);
+            ui.ListH2.ScrollTo(5, ScrollToType.Top);
+            */
+
+            /*
+            // ガタッってならないかチェック
+            ui.List.ScrollTo(5, ScrollToType.Top);
+            ui.List2.ScrollTo(0, ScrollToType.Top);
+            ui.ListH.ScrollTo(5, ScrollToType.Top);
+            ui.ListH2.ScrollTo(0, ScrollToType.Top);
+            */
         }
 
         private void CreateList(UIElements ui, int num)
@@ -88,8 +121,88 @@ namespace AnKuchen.Development
                 };
                 for (var i = 0; i < num; ++i)
                 {
-                    var i1 = i;
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Text.text = $"Test {i1}"));
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
+                }
+            }
+
+            using (var editor = ui.List2.Edit())
+            {
+                // editor.Spacing = 10f;
+                // editor.Margin.TopBottom = 10f;
+                // SpacingはContentのLayoutGroupから自動的に取得される
+
+                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
+                {
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.1";
+                    }),
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.2";
+                    }),
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.3";
+                    }),
+                };
+                for (var i = 0; i < num; ++i)
+                {
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
+                }
+            }
+
+            using (var editor = ui.ListH.Edit())
+            {
+                // editor.Spacing = 10f;
+                // editor.Margin.TopBottom = 10f;
+                // SpacingはContentのLayoutGroupから自動的に取得される
+
+                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
+                {
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.1";
+                    }),
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.2";
+                    }),
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.3";
+                    }),
+                };
+                for (var i = 0; i < num; ++i)
+                {
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
+                }
+            }
+
+            using (var editor = ui.ListH2.Edit())
+            {
+                // editor.Spacing = 10f;
+                // editor.Margin.TopBottom = 10f;
+                // SpacingはContentのLayoutGroupから自動的に取得される
+
+                editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
+                {
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.1";
+                    }),
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.2";
+                    }),
+                    new UIFactory<ListElements1, ListElements2>(x =>
+                    {
+                        x.Text.text = "No.3";
+                    }),
+                };
+                for (var i = 0; i < num; ++i)
+                {
+                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
                 }
             }
         }
@@ -105,7 +218,10 @@ namespace AnKuchen.Development
         public Button SomeButton { get; private set; }
         public Text SomeButtonText { get; private set; }
         public Button DeleteAllButton { get; private set; }
-        public HorizontalList<ListElements1, ListElements2> List { get; private set; }
+        public VerticalList<ListElements1, ListElements2> List { get; private set; }
+        public VerticalList<ListElements1, ListElements2> List2 { get; private set; }
+        public HorizontalList<ListElements1, ListElements2> ListH { get; private set; }
+        public HorizontalList<ListElements1, ListElements2> ListH2 { get; private set; }
         public Layout<LayoutItem> Layout { get; private set; }
 
         public UIElements(IMapper mapper)
@@ -124,14 +240,42 @@ namespace AnKuchen.Development
             SomeButtonText = mapper.Get<Text>("Some Button/Text");
             DeleteAllButton = mapper.Get<Button>("DeleteAllButton");
 
-            var scrollRect = mapper.Get<ScrollRect>("H_List");
-            var content = mapper.Get<RectTransform>("H_List/Content");
-            scrollRect.content = content;
-            List = new HorizontalList<ListElements1, ListElements2>(
-                scrollRect,
+            var scrollRectH = mapper.Get<ScrollRect>("H_List");
+            var contentH = mapper.Get<RectTransform>("H_List/Content");
+            scrollRectH.content = contentH;
+            ListH = new HorizontalList<ListElements1, ListElements2>(
+                scrollRectH,
                 mapper.GetChild<ListElements1>("H_List/Element1"),
                 mapper.GetChild<ListElements2>("H_List/Element2")
             );
+
+            var scrollRectH2 = mapper.Get<ScrollRect>("H_List2");
+            var contentH2 = mapper.Get<RectTransform>("H_List2/Content");
+            scrollRectH2.content = contentH2;
+            ListH2 = new HorizontalList<ListElements1, ListElements2>(
+                scrollRectH2,
+                mapper.GetChild<ListElements1>("H_List2/Element1"),
+                mapper.GetChild<ListElements2>("H_List2/Element2")
+            );
+
+            var scrollRect = mapper.Get<ScrollRect>("List");
+            var content = mapper.Get<RectTransform>("List/Content");
+            scrollRect.content = content;
+            List = new VerticalList<ListElements1, ListElements2>(
+                scrollRect,
+                mapper.GetChild<ListElements1>("List/Element1"),
+                mapper.GetChild<ListElements2>("List/Element2")
+            );
+
+            var scrollRect2 = mapper.Get<ScrollRect>("List2");
+            var content2 = mapper.Get<RectTransform>("List2/Content");
+            scrollRect2.content = content2;
+            List2 = new VerticalList<ListElements1, ListElements2>(
+                scrollRect2,
+                mapper.GetChild<ListElements1>("List2/Element1"),
+                mapper.GetChild<ListElements2>("List2/Element2")
+            );
+
             Layout = new Layout<LayoutItem>(
                 mapper.GetChild<LayoutItem>("LayoutGroup/Item"),
                 new TopToBottomLayouter(10f)

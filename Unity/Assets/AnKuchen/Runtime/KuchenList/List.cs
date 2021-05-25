@@ -13,6 +13,14 @@ namespace AnKuchen.KuchenList
 
         float NormalizedPosition { get; set; }
 
+        void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f);
         void DestroyCachedGameObjects();
+    }
+
+    public enum ScrollToType
+    {
+        Top,
+        Bottom,
+        Near,
     }
 }
