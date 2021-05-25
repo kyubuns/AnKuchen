@@ -64,6 +64,21 @@ namespace AnKuchen.Development
 
             yield return new WaitForSeconds(2.0f);
 
+            ui.List.ScrollTo(8, ScrollToType.Top);
+            ui.List2.ScrollTo(1, ScrollToType.Top);
+            ui.ListH.ScrollTo(8, ScrollToType.Top);
+            ui.ListH2.ScrollTo(1, ScrollToType.Top);
+
+            yield return new WaitForSeconds(2.0f);
+
+            ui.List.ScrollTo(6, ScrollToType.Near);
+            ui.List2.ScrollTo(3, ScrollToType.Near);
+            ui.ListH.ScrollTo(6, ScrollToType.Near);
+            ui.ListH2.ScrollTo(3, ScrollToType.Near);
+
+            /*
+            yield return new WaitForSeconds(2.0f);
+
             ui.List.ScrollTo(1, ScrollToType.Top);
             ui.List2.ScrollTo(8, ScrollToType.Top);
             ui.ListH.ScrollTo(1, ScrollToType.Top);
@@ -75,6 +90,7 @@ namespace AnKuchen.Development
             ui.List2.ScrollTo(6, ScrollToType.Near);
             ui.ListH.ScrollTo(3, ScrollToType.Near);
             ui.ListH2.ScrollTo(6, ScrollToType.Near);
+            */
 
             /*
             ui.List.ScrollTo(1, ScrollToType.Top);

@@ -331,7 +331,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current > top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current < bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -349,7 +349,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current < top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current > bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -692,7 +692,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current > top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current < bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -710,7 +710,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current < top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current > bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -1066,7 +1066,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current > top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current < bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -1084,7 +1084,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current < top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current > bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -1453,7 +1453,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current > top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current < bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
@@ -1471,7 +1471,7 @@ namespace AnKuchen.KuchenList
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
-                    var current = c.anchoredPosition.y;
+                    var current = c.anchoredPosition.x;
                     if (current < top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                     else if (current > bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
                 }
