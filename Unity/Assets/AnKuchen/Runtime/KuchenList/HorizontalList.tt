@@ -329,14 +329,17 @@ namespace AnKuchen.KuchenList
             var anchoredPosition = c.anchoredPosition;
             var scrollRectSizeDeltaX = scrollRect.GetComponent<RectTransform>().rect.x;
             var content = contentPositions[index];
+            var contentWidth = scrollRect.content.rect.width;
+            var viewportWidth = viewportRectTransformCache.rect.width;
+            if (viewportWidth > contentWidth) return;
 
             if (c.pivot.x > 1f - 0.0001f)
             {
-                var p = - scrollRectSizeDeltaX + (scrollRect.content.rect.width - content.Item1 - content.Item2);
-                var limitMin = viewportRectTransformCache.rect.width / 2f;
-                var limitMax = - limitMin + scrollRect.content.rect.width;
+                var p = - scrollRectSizeDeltaX + (contentWidth - content.Item1 - content.Item2);
+                var limitMin = viewportWidth / 2f;
+                var limitMax = - limitMin + contentWidth;
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
-                var bottom = Mathf.Clamp(p - viewportRectTransformCache.rect.width + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p - viewportWidth + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
@@ -351,10 +354,10 @@ namespace AnKuchen.KuchenList
             if (c.pivot.x < 0f + 0.0001f)
             {
                 var p = scrollRectSizeDeltaX - content.Item1;
-                var limitMax = - viewportRectTransformCache.rect.width / 2f;
-                var limitMin = - limitMax - scrollRect.content.rect.width;
+                var limitMax = - viewportWidth / 2f;
+                var limitMin = - limitMax - contentWidth;
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
-                var bottom = Mathf.Clamp(p + viewportRectTransformCache.rect.width - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p + viewportWidth - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) c.anchoredPosition = new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) c.anchoredPosition = new Vector2(bottom, anchoredPosition.y);
