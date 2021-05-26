@@ -14,22 +14,26 @@ using Object = UnityEngine.Object;
 namespace AnKuchen.KuchenList
 {
 <# for (var t = 1; t <= 4; ++t) { #>
-    public class HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>
+    public class HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> : IKuchenList
         <#= string.Join(" ", Enumerable.Range(1, t).Select(i => $"where T{i} : IMappedObject, new()")) #>
     {
         private readonly ScrollRect scrollRect;
 <# for (var i = 1; i <= t; ++i) { #>
         private readonly T<#= i #> original<#= i #>;
 <# } #>
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> contents = new List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>>();
-        private readonly List<float> contentPositions = new List<float>();
+        private readonly List<(float, float)> contentPositions = new List<(float, float)>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -126,8 +130,8 @@ namespace AnKuchen.KuchenList
             var displayMaxIndex = int.MinValue;
             for (var i = 0; i < contentPositions.Count; ++i)
             {
-                if (start > contentPositions[i]) continue;
-                if (contentPositions[i] > end) break;
+                if (start > contentPositions[i].Item1) continue;
+                if (contentPositions[i].Item1 > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
@@ -165,7 +169,7 @@ namespace AnKuchen.KuchenList
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
 <# for (var i = 1; i <= t; ++i) { #>
-                if (content.Callback<#= i #> != null) (newObject, newMappedObject) = GetOrCreateNewObject(original<#= i #>, content.Callback<#= i #>, contentPositions[i]);
+                if (content.Callback<#= i #> != null) (newObject, newMappedObject) = GetOrCreateNewObject(original<#= i #>, content.Callback<#= i #>, contentPositions[i].Item1);
 <# } #>
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
@@ -215,7 +219,7 @@ namespace AnKuchen.KuchenList
                 if (spacing == null && i != 0) spacing = Spacing;
 
                 calcPosition += spacing ?? 0f;
-                contentPositions.Add(calcPosition);
+                contentPositions.Add((calcPosition, elementSize));
                 calcPosition += elementSize;
 
                 prevElementName = elementName;
@@ -235,8 +239,6 @@ namespace AnKuchen.KuchenList
                 if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(scrollRectSizeDeltaX, anchoredPosition.y);
                 scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.x > 1f - 0.0001f) c.anchoredPosition = new Vector2(Mathf.Max(anchoredPosition.x, viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
-            if (c.pivot.x < 0f + 0.0001f) c.anchoredPosition = new Vector2(Mathf.Min(anchoredPosition.x, -viewportRectTransformCache.rect.width / 2f), anchoredPosition.y);
         }
 
         private void CollectObject(IMappedObject target)
@@ -277,12 +279,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit()
+        public IListContentEditor<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> Edit(EditMode editMode = EditMode.Clear)
         {
-            return new ListContentEditor(this);
+            return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>
         {
             private readonly HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent;
             public List<UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>>> Contents { get; set; }
@@ -290,13 +292,15 @@ namespace AnKuchen.KuchenList
             public Margin Margin { get; set; }
             public int SpareElement { get; set; }
 
-            public ListContentEditor(HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent)
+            public ListContentEditor(HorizontalList<<#= string.Join(", ", Enumerable.Range(1, t).Select(i => $"T{i}")) #>> parent, EditMode editMode)
             {
                 this.parent = parent;
                 Contents = parent.contents;
                 Spacing = parent.Spacing;
                 Margin = parent.margin;
                 SpareElement = parent.SpareElement;
+
+                if (editMode == EditMode.Clear) Contents.Clear();
             }
 
             public void Dispose()
@@ -319,6 +323,64 @@ namespace AnKuchen.KuchenList
                 }
                 cachedObject.Value.Clear();
             }
+        }
+
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var c = scrollRect.content;
+            var anchoredPosition = c.anchoredPosition;
+            var scrollRectSizeDeltaX = scrollRect.GetComponent<RectTransform>().rect.x;
+            var content = contentPositions[index];
+            var contentWidth = scrollRect.content.rect.width;
+            var viewportWidth = viewportRectTransformCache.rect.width;
+            if (viewportWidth > contentWidth) return null;
+
+            if (c.pivot.x > 1f - 0.0001f)
+            {
+                var p = - scrollRectSizeDeltaX + (contentWidth - content.Item1 - content.Item2);
+                var limitMin = viewportWidth / 2f;
+                var limitMax = - limitMin + contentWidth;
+                var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p - viewportWidth + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
+                else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.x;
+                    if (current > top) return new Vector2(top, anchoredPosition.y);
+                    else if (current < bottom) return new Vector2(bottom, anchoredPosition.y);
+                    return null;
+                }
+            }
+
+            if (c.pivot.x < 0f + 0.0001f)
+            {
+                var p = scrollRectSizeDeltaX - content.Item1;
+                var limitMax = - viewportWidth / 2f;
+                var limitMin = - limitMax - contentWidth;
+                var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p + viewportWidth - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
+                else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.x;
+                    if (current < top) return new Vector2(top, anchoredPosition.y);
+                    else if (current > bottom) return new Vector2(bottom, anchoredPosition.y);
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
+            scrollRect.velocity = Vector2.zero;
         }
     }
 

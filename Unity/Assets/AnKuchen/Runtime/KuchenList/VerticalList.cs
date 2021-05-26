@@ -10,20 +10,24 @@ using Object = UnityEngine.Object;
 
 namespace AnKuchen.KuchenList
 {
-    public class VerticalList<T1>
+    public class VerticalList<T1> : IKuchenList
         where T1 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1>> contents = new List<UIFactory<T1>>();
-        private readonly List<float> contentPositions = new List<float>();
+        private readonly List<(float, float)> contentPositions = new List<(float, float)>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -113,8 +117,8 @@ namespace AnKuchen.KuchenList
             var displayMaxIndex = int.MinValue;
             for (var i = 0; i < contentPositions.Count; ++i)
             {
-                if (start > contentPositions[i]) continue;
-                if (contentPositions[i] > end) break;
+                if (start > contentPositions[i].Item1) continue;
+                if (contentPositions[i].Item1 > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
@@ -151,7 +155,7 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i].Item1);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
@@ -198,7 +202,7 @@ namespace AnKuchen.KuchenList
                 if (spacing == null && i != 0) spacing = Spacing;
 
                 calcPosition += spacing ?? 0f;
-                contentPositions.Add(calcPosition);
+                contentPositions.Add((calcPosition, elementSize));
                 calcPosition += elementSize;
 
                 prevElementName = elementName;
@@ -218,8 +222,6 @@ namespace AnKuchen.KuchenList
                 if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, scrollRectSizeDeltaY);
                 scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.y > 1f - 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
-            if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
         }
 
         private void CollectObject(IMappedObject target)
@@ -258,12 +260,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1>
         {
             private readonly VerticalList<T1> parent;
             public List<UIFactory<T1>> Contents { get; set; }
@@ -303,23 +305,85 @@ namespace AnKuchen.KuchenList
                 cachedObject.Value.Clear();
             }
         }
+
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var c = scrollRect.content;
+            var anchoredPosition = c.anchoredPosition;
+            var scrollRectSizeDeltaY = scrollRect.GetComponent<RectTransform>().rect.y;
+            var content = contentPositions[index];
+            var contentHeight = scrollRect.content.rect.height;
+            var viewportHeight = viewportRectTransformCache.rect.height;
+            if (viewportHeight > contentHeight) return null;
+
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                var p = -scrollRectSizeDeltaY + content.Item1;
+                var limitMin = viewportHeight / 2f;
+                var limitMax = - limitMin + contentHeight;
+                var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                var p = scrollRectSizeDeltaY - (contentHeight - content.Item1 - content.Item2);
+                var limitMax = - viewportHeight / 2f;
+                var limitMin = - limitMax - contentHeight;
+                var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
+            scrollRect.velocity = Vector2.zero;
+        }
     }
 
-    public class VerticalList<T1, T2>
+    public class VerticalList<T1, T2> : IKuchenList
         where T1 : IMappedObject, new() where T2 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private readonly T2 original2;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2>> contents = new List<UIFactory<T1, T2>>();
-        private readonly List<float> contentPositions = new List<float>();
+        private readonly List<(float, float)> contentPositions = new List<(float, float)>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -414,8 +478,8 @@ namespace AnKuchen.KuchenList
             var displayMaxIndex = int.MinValue;
             for (var i = 0; i < contentPositions.Count; ++i)
             {
-                if (start > contentPositions[i]) continue;
-                if (contentPositions[i] > end) break;
+                if (start > contentPositions[i].Item1) continue;
+                if (contentPositions[i].Item1 > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
@@ -452,8 +516,8 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
-                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i]);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i].Item1);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i].Item1);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
@@ -505,7 +569,7 @@ namespace AnKuchen.KuchenList
                 if (spacing == null && i != 0) spacing = Spacing;
 
                 calcPosition += spacing ?? 0f;
-                contentPositions.Add(calcPosition);
+                contentPositions.Add((calcPosition, elementSize));
                 calcPosition += elementSize;
 
                 prevElementName = elementName;
@@ -525,8 +589,6 @@ namespace AnKuchen.KuchenList
                 if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, scrollRectSizeDeltaY);
                 scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.y > 1f - 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
-            if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
         }
 
         private void CollectObject(IMappedObject target)
@@ -566,12 +628,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1, T2> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1, T2>
         {
             private readonly VerticalList<T1, T2> parent;
             public List<UIFactory<T1, T2>> Contents { get; set; }
@@ -611,24 +673,86 @@ namespace AnKuchen.KuchenList
                 cachedObject.Value.Clear();
             }
         }
+
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var c = scrollRect.content;
+            var anchoredPosition = c.anchoredPosition;
+            var scrollRectSizeDeltaY = scrollRect.GetComponent<RectTransform>().rect.y;
+            var content = contentPositions[index];
+            var contentHeight = scrollRect.content.rect.height;
+            var viewportHeight = viewportRectTransformCache.rect.height;
+            if (viewportHeight > contentHeight) return null;
+
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                var p = -scrollRectSizeDeltaY + content.Item1;
+                var limitMin = viewportHeight / 2f;
+                var limitMax = - limitMin + contentHeight;
+                var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                var p = scrollRectSizeDeltaY - (contentHeight - content.Item1 - content.Item2);
+                var limitMax = - viewportHeight / 2f;
+                var limitMin = - limitMax - contentHeight;
+                var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
+            scrollRect.velocity = Vector2.zero;
+        }
     }
 
-    public class VerticalList<T1, T2, T3>
+    public class VerticalList<T1, T2, T3> : IKuchenList
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
         private readonly T1 original1;
         private readonly T2 original2;
         private readonly T3 original3;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2, T3>> contents = new List<UIFactory<T1, T2, T3>>();
-        private readonly List<float> contentPositions = new List<float>();
+        private readonly List<(float, float)> contentPositions = new List<(float, float)>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -728,8 +852,8 @@ namespace AnKuchen.KuchenList
             var displayMaxIndex = int.MinValue;
             for (var i = 0; i < contentPositions.Count; ++i)
             {
-                if (start > contentPositions[i]) continue;
-                if (contentPositions[i] > end) break;
+                if (start > contentPositions[i].Item1) continue;
+                if (contentPositions[i].Item1 > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
@@ -766,9 +890,9 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
-                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i]);
-                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3, contentPositions[i]);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i].Item1);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i].Item1);
+                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3, contentPositions[i].Item1);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
@@ -825,7 +949,7 @@ namespace AnKuchen.KuchenList
                 if (spacing == null && i != 0) spacing = Spacing;
 
                 calcPosition += spacing ?? 0f;
-                contentPositions.Add(calcPosition);
+                contentPositions.Add((calcPosition, elementSize));
                 calcPosition += elementSize;
 
                 prevElementName = elementName;
@@ -845,8 +969,6 @@ namespace AnKuchen.KuchenList
                 if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, scrollRectSizeDeltaY);
                 scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.y > 1f - 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
-            if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
         }
 
         private void CollectObject(IMappedObject target)
@@ -887,12 +1009,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1, T2, T3> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1, T2, T3>
         {
             private readonly VerticalList<T1, T2, T3> parent;
             public List<UIFactory<T1, T2, T3>> Contents { get; set; }
@@ -932,9 +1054,67 @@ namespace AnKuchen.KuchenList
                 cachedObject.Value.Clear();
             }
         }
+
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var c = scrollRect.content;
+            var anchoredPosition = c.anchoredPosition;
+            var scrollRectSizeDeltaY = scrollRect.GetComponent<RectTransform>().rect.y;
+            var content = contentPositions[index];
+            var contentHeight = scrollRect.content.rect.height;
+            var viewportHeight = viewportRectTransformCache.rect.height;
+            if (viewportHeight > contentHeight) return null;
+
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                var p = -scrollRectSizeDeltaY + content.Item1;
+                var limitMin = viewportHeight / 2f;
+                var limitMax = - limitMin + contentHeight;
+                var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                var p = scrollRectSizeDeltaY - (contentHeight - content.Item1 - content.Item2);
+                var limitMax = - viewportHeight / 2f;
+                var limitMin = - limitMax - contentHeight;
+                var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
+            scrollRect.velocity = Vector2.zero;
+        }
     }
 
-    public class VerticalList<T1, T2, T3, T4>
+    public class VerticalList<T1, T2, T3, T4> : IKuchenList
         where T1 : IMappedObject, new() where T2 : IMappedObject, new() where T3 : IMappedObject, new() where T4 : IMappedObject, new()
     {
         private readonly ScrollRect scrollRect;
@@ -942,15 +1122,19 @@ namespace AnKuchen.KuchenList
         private readonly T2 original2;
         private readonly T3 original3;
         private readonly T4 original4;
-        private (string Name, float Size)[] originalInfoCache;
+        private readonly (string Name, float Size)[] originalInfoCache;
         private List<UIFactory<T1, T2, T3, T4>> contents = new List<UIFactory<T1, T2, T3, T4>>();
-        private readonly List<float> contentPositions = new List<float>();
+        private readonly List<(float, float)> contentPositions = new List<(float, float)>();
         private readonly Dictionary<int, IMappedObject> createdObjects = new Dictionary<int, IMappedObject>();
         private readonly Dictionary<Type, List<IMappedObject>> cachedObjects = new Dictionary<Type, List<IMappedObject>>();
         private readonly RectTransform viewportRectTransformCache;
         private readonly ListAdditionalInfo additionalInfo;
         public float Spacing { get; private set; }
         public int SpareElement { get; private set; }
+        public IReadOnlyDictionary<int, IMappedObject> CreatedObjects => createdObjects;
+        public int ContentsCount => contents.Count;
+        public ScrollRect ScrollRect => scrollRect;
+        public RectTransform ContentRectTransform => scrollRect.content;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -1055,8 +1239,8 @@ namespace AnKuchen.KuchenList
             var displayMaxIndex = int.MinValue;
             for (var i = 0; i < contentPositions.Count; ++i)
             {
-                if (start > contentPositions[i]) continue;
-                if (contentPositions[i] > end) break;
+                if (start > contentPositions[i].Item1) continue;
+                if (contentPositions[i].Item1 > end) break;
                 displayMinIndex = Mathf.Min(displayMinIndex, i);
                 displayMaxIndex = Mathf.Max(displayMaxIndex, i);
             }
@@ -1093,10 +1277,10 @@ namespace AnKuchen.KuchenList
                 RectTransform newObject = null;
                 IMappedObject newMappedObject = null;
                 var content = contents[i];
-                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i]);
-                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i]);
-                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3, contentPositions[i]);
-                if (content.Callback4 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original4, content.Callback4, contentPositions[i]);
+                if (content.Callback1 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original1, content.Callback1, contentPositions[i].Item1);
+                if (content.Callback2 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original2, content.Callback2, contentPositions[i].Item1);
+                if (content.Callback3 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original3, content.Callback3, contentPositions[i].Item1);
+                if (content.Callback4 != null) (newObject, newMappedObject) = GetOrCreateNewObject(original4, content.Callback4, contentPositions[i].Item1);
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
@@ -1158,7 +1342,7 @@ namespace AnKuchen.KuchenList
                 if (spacing == null && i != 0) spacing = Spacing;
 
                 calcPosition += spacing ?? 0f;
-                contentPositions.Add(calcPosition);
+                contentPositions.Add((calcPosition, elementSize));
                 calcPosition += elementSize;
 
                 prevElementName = elementName;
@@ -1178,8 +1362,6 @@ namespace AnKuchen.KuchenList
                 if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, scrollRectSizeDeltaY);
                 scrollRect.velocity = Vector2.zero;
             }
-            if (c.pivot.y > 1f - 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Max(anchoredPosition.y, viewportRectTransformCache.rect.height / 2f));
-            if (c.pivot.y < 0f + 0.0001f) c.anchoredPosition = new Vector2(anchoredPosition.x, Mathf.Min(anchoredPosition.y, -viewportRectTransformCache.rect.height / 2f));
         }
 
         private void CollectObject(IMappedObject target)
@@ -1221,12 +1403,12 @@ namespace AnKuchen.KuchenList
             return (newRectTransform, newObject);
         }
 
-        public ListContentEditor Edit(EditMode editMode = EditMode.Clear)
+        public IListContentEditor<T1, T2, T3, T4> Edit(EditMode editMode = EditMode.Clear)
         {
             return new ListContentEditor(this, editMode);
         }
 
-        public class ListContentEditor : IDisposable
+        public class ListContentEditor : IListContentEditor<T1, T2, T3, T4>
         {
             private readonly VerticalList<T1, T2, T3, T4> parent;
             public List<UIFactory<T1, T2, T3, T4>> Contents { get; set; }
@@ -1265,6 +1447,64 @@ namespace AnKuchen.KuchenList
                 }
                 cachedObject.Value.Clear();
             }
+        }
+
+        public Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var c = scrollRect.content;
+            var anchoredPosition = c.anchoredPosition;
+            var scrollRectSizeDeltaY = scrollRect.GetComponent<RectTransform>().rect.y;
+            var content = contentPositions[index];
+            var contentHeight = scrollRect.content.rect.height;
+            var viewportHeight = viewportRectTransformCache.rect.height;
+            if (viewportHeight > contentHeight) return null;
+
+            if (c.pivot.y > 1f - 0.0001f)
+            {
+                var p = -scrollRectSizeDeltaY + content.Item1;
+                var limitMin = viewportHeight / 2f;
+                var limitMax = - limitMin + contentHeight;
+                var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p - viewportHeight + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current > top) return new Vector2(anchoredPosition.x, top);
+                    else if (current < bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            if (c.pivot.y < 0f + 0.0001f)
+            {
+                var p = scrollRectSizeDeltaY - (contentHeight - content.Item1 - content.Item2);
+                var limitMax = - viewportHeight / 2f;
+                var limitMin = - limitMax - contentHeight;
+                var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
+                var bottom = Mathf.Clamp(p + viewportHeight - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+
+                if (type == ScrollToType.Top) return new Vector2(anchoredPosition.x, top);
+                else if (type == ScrollToType.Bottom) return new Vector2(anchoredPosition.x, bottom);
+                else if (type == ScrollToType.Near)
+                {
+                    var current = c.anchoredPosition.y;
+                    if (current < top) return new Vector2(anchoredPosition.x, top);
+                    else if (current > bottom) return new Vector2(anchoredPosition.x, bottom);
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        public void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f)
+        {
+            var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
+            if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
+            scrollRect.velocity = Vector2.zero;
         }
     }
 
