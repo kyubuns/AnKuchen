@@ -19,8 +19,8 @@ namespace AnKuchen.KuchenLayout.Layouter
             {
                 var rectTransform = e.Get<RectTransform>();
                 rectTransform.anchoredPosition = position;
-                position.x += rectTransform.sizeDelta.x;
-                position.x += margin;
+                position.x -= rectTransform.sizeDelta.x;
+                position.x -= margin;
             }
         }
     }
