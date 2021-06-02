@@ -32,6 +32,11 @@ namespace AnKuchen.KuchenLayout
             return new LayoutEditor(this, editMode);
         }
 
+        public void Clear()
+        {
+            UpdateContents(new List<T>());
+        }
+
         private void UpdateContents(List<T> newElements)
         {
             foreach (var element in Elements)
