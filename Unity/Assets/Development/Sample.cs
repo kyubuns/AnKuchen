@@ -64,10 +64,10 @@ namespace AnKuchen.Development
 
             yield return new WaitForSeconds(2.0f);
 
-            ui.List.ScrollTo(8, ScrollToType.Top);
-            ui.List2.ScrollTo(1, ScrollToType.Top);
-            ui.ListH.ScrollTo(8, ScrollToType.Top);
-            ui.ListH2.ScrollTo(1, ScrollToType.Top);
+            ui.List.ScrollTo(5, ScrollToType.Center);
+            ui.List2.ScrollTo(5, ScrollToType.Center);
+            ui.ListH.ScrollTo(5, ScrollToType.Center);
+            ui.ListH2.ScrollTo(5, ScrollToType.Center);
 
             yield return new WaitForSeconds(2.0f);
 

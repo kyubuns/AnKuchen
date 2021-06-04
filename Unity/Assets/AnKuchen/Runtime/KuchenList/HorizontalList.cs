@@ -328,9 +328,11 @@ namespace AnKuchen.KuchenList
                 var limitMax = - limitMin + contentWidth;
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportWidth + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p - (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -347,9 +349,11 @@ namespace AnKuchen.KuchenList
                 var limitMin = - limitMax - contentWidth;
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportWidth - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p + (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -701,9 +705,11 @@ namespace AnKuchen.KuchenList
                 var limitMax = - limitMin + contentWidth;
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportWidth + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p - (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -720,9 +726,11 @@ namespace AnKuchen.KuchenList
                 var limitMin = - limitMax - contentWidth;
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportWidth - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p + (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -1087,9 +1095,11 @@ namespace AnKuchen.KuchenList
                 var limitMax = - limitMin + contentWidth;
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportWidth + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p - (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -1106,9 +1116,11 @@ namespace AnKuchen.KuchenList
                 var limitMin = - limitMax - contentWidth;
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportWidth - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p + (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -1486,9 +1498,11 @@ namespace AnKuchen.KuchenList
                 var limitMax = - limitMin + contentWidth;
                 var top = Mathf.Clamp(p - Spacing - additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p - viewportWidth + content.Item2 + Spacing + additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p - (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;
@@ -1505,9 +1519,11 @@ namespace AnKuchen.KuchenList
                 var limitMin = - limitMax - contentWidth;
                 var top = Mathf.Clamp(p + Spacing + additionalSpacing, limitMin, limitMax);
                 var bottom = Mathf.Clamp(p + viewportWidth - content.Item2 - Spacing - additionalSpacing, limitMin, limitMax);
+                var center = Mathf.Clamp(p + (viewportWidth - content.Item2) / 2f, limitMin, limitMax);
 
                 if (type == ScrollToType.Top) return new Vector2(top, anchoredPosition.y);
                 else if (type == ScrollToType.Bottom) return new Vector2(bottom, anchoredPosition.y);
+                else if (type == ScrollToType.Center) return new Vector2(center, anchoredPosition.y);
                 else if (type == ScrollToType.Near)
                 {
                     var current = c.anchoredPosition.x;

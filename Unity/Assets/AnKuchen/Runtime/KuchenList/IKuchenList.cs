@@ -25,6 +25,7 @@ namespace AnKuchen.KuchenList
         Top,
         Bottom,
         Near,
+        Center,
     }
 
     public interface IListContentEditor<T1> : IDisposable where T1 : IMappedObject
