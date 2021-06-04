@@ -1,5 +1,6 @@
 using AnKuchen.Map;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AnKuchen.KuchenLayout.Layouter
 {
@@ -10,6 +11,12 @@ namespace AnKuchen.KuchenLayout.Layouter
         public TopToBottomLayouter(float margin)
         {
             this.margin = margin;
+        }
+
+        public TopToBottomLayouter(VerticalLayoutGroup layout)
+        {
+            layout.enabled = false;
+            margin = layout.spacing;
         }
 
         public void Layout(IMapper original, IMapper[] elements)

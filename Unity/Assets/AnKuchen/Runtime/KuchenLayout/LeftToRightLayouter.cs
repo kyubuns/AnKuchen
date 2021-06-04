@@ -1,5 +1,6 @@
 using AnKuchen.Map;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AnKuchen.KuchenLayout.Layouter
 {
@@ -10,6 +11,12 @@ namespace AnKuchen.KuchenLayout.Layouter
         public LeftToRightLayouter(float margin = 0f)
         {
             this.margin = margin;
+        }
+
+        public LeftToRightLayouter(HorizontalLayoutGroup layout)
+        {
+            layout.enabled = false;
+            margin = layout.spacing;
         }
 
         public void Layout(IMapper original, IMapper[] elements)
