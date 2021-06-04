@@ -28,6 +28,7 @@ namespace AnKuchen.KuchenList
         public int ContentsCount => contents.Count;
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
+        public Action<int, IMappedObject> OnCreateObject { get; set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -164,6 +165,7 @@ namespace AnKuchen.KuchenList
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
+                OnCreateObject?.Invoke(i, newMappedObject);
             }
         }
 
@@ -393,6 +395,7 @@ namespace AnKuchen.KuchenList
         public int ContentsCount => contents.Count;
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
+        public Action<int, IMappedObject> OnCreateObject { get; set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -535,6 +538,7 @@ namespace AnKuchen.KuchenList
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
+                OnCreateObject?.Invoke(i, newMappedObject);
             }
         }
 
@@ -771,6 +775,7 @@ namespace AnKuchen.KuchenList
         public int ContentsCount => contents.Count;
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
+        public Action<int, IMappedObject> OnCreateObject { get; set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -919,6 +924,7 @@ namespace AnKuchen.KuchenList
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
+                OnCreateObject?.Invoke(i, newMappedObject);
             }
         }
 
@@ -1162,6 +1168,7 @@ namespace AnKuchen.KuchenList
         public int ContentsCount => contents.Count;
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
+        public Action<int, IMappedObject> OnCreateObject { get; set; }
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -1316,6 +1323,7 @@ namespace AnKuchen.KuchenList
                 if (content.Spacer != null) continue;
                 if (newObject == null) throw new Exception($"newObject == null");
                 createdObjects[i] = newMappedObject;
+                OnCreateObject?.Invoke(i, newMappedObject);
             }
         }
 
