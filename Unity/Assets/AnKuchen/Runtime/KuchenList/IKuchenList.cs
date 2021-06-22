@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AnKuchen.Map;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AnKuchen.KuchenList
 {
@@ -12,6 +13,8 @@ namespace AnKuchen.KuchenList
         IReadOnlyDictionary<int, IMappedObject> CreatedObjects { get; }
         int ContentsCount { get; }
         IReadonlyMargin Margin { get; }
+        ScrollRect ScrollRect { get; }
+        Action<int, IMappedObject> OnCreateObject { get; set; }
 
         float NormalizedPosition { get; set; }
 
