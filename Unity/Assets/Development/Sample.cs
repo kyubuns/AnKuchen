@@ -69,12 +69,28 @@ namespace AnKuchen.Development
             ui.ListH.ScrollTo(5, ScrollToType.Center);
             ui.ListH2.ScrollTo(5, ScrollToType.Center);
 
+            using (var editor = ui.Layout.Edit())
+            {
+                var a = editor.Create();
+                a.Text.text = "d";
+
+                var b = editor.Create();
+                b.Text.text = "e";
+
+                var c = editor.Create();
+                c.Text.text = "f";
+            }
+
             yield return new WaitForSeconds(2.0f);
 
             ui.List.ScrollTo(6, ScrollToType.Near);
             ui.List2.ScrollTo(3, ScrollToType.Near);
             ui.ListH.ScrollTo(6, ScrollToType.Near);
             ui.ListH2.ScrollTo(3, ScrollToType.Near);
+
+            using (var editor = ui.Layout.Edit(EditMode.DontClear))
+            {
+            }
 
             /*
             yield return new WaitForSeconds(2.0f);
