@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AnKuchen.Extensions;
 using AnKuchen.KuchenLayout.Layouter;
+using AnKuchen.KuchenList;
 using AnKuchen.Map;
 using Object = UnityEngine.Object;
 
@@ -13,6 +14,7 @@ namespace AnKuchen.KuchenLayout
         private readonly T original;
         private readonly ILayouter layouter;
         private List<T> elements;
+        private readonly List<T> cachedElements;
 
         public T[] Elements => elements.ToArray();
 
@@ -23,18 +25,37 @@ namespace AnKuchen.KuchenLayout
             this.original = original;
             this.layouter = layouter;
             this.elements = new List<T>();
+            this.cachedElements = new List<T>();
 
             this.original.Mapper.Get().SetActive(false);
         }
 
         public LayoutEditor Edit(EditMode editMode = EditMode.Clear)
         {
-            return new LayoutEditor(this, editMode);
+            if (editMode == EditMode.Clear)
+            {
+                foreach (var element in Elements)
+                {
+                    (element as IReusableMappedObject)?.Deactivate();
+                    element.Mapper.Get().SetActive(false);
+                    cachedElements.Add(element);
+                }
+                elements.Clear();
+            }
+            return new LayoutEditor(this);
         }
 
-        public void Clear()
+        public void Clear(bool purgeCache = false)
         {
             UpdateContents(new List<T>());
+            if (purgeCache)
+            {
+                foreach (var element in cachedElements)
+                {
+                    Object.Destroy(element.Mapper.Get());
+                }
+                cachedElements.Clear();
+            }
         }
 
         private void UpdateContents(List<T> newElements)
@@ -42,7 +63,9 @@ namespace AnKuchen.KuchenLayout
             foreach (var element in Elements)
             {
                 if (newElements.Contains(element)) continue;
-                Object.Destroy(element.Mapper.Get());
+                (element as IReusableMappedObject)?.Deactivate();
+                element.Mapper.Get().SetActive(false);
+                cachedElements.Add(element);
             }
 
             elements = newElements;
@@ -54,20 +77,27 @@ namespace AnKuchen.KuchenLayout
             public List<T> Elements { get; }
             private readonly Layout<T> parent;
 
-            public LayoutEditor(Layout<T> parent, EditMode editMode)
+            public LayoutEditor(Layout<T> parent)
             {
                 this.parent = parent;
                 Elements = parent.elements.ToList();
-
-                if (editMode == EditMode.Clear) Elements.Clear();
             }
 
             public T Create()
             {
-                var newObject = parent.original.Duplicate();
+                T newObject;
+                if (parent.cachedElements.Count > 0)
+                {
+                    newObject = parent.cachedElements[0];
+                    parent.cachedElements.RemoveAt(0);
+                }
+                else
+                {
+                    newObject = parent.original.Duplicate();
+                }
                 newObject.Mapper.Get().SetActive(true);
-                parent.elements.Add(newObject);
                 Elements.Add(newObject);
+                (newObject as IReusableMappedObject)?.Activate();
                 return newObject;
             }
 
