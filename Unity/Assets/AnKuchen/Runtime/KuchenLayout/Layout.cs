@@ -5,6 +5,7 @@ using AnKuchen.Extensions;
 using AnKuchen.KuchenLayout.Layouter;
 using AnKuchen.KuchenList;
 using AnKuchen.Map;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace AnKuchen.KuchenLayout
@@ -36,8 +37,9 @@ namespace AnKuchen.KuchenLayout
             {
                 foreach (var element in Elements)
                 {
-                    (element as IReusableMappedObject)?.Deactivate();
-                    element.Mapper.Get().SetActive(false);
+                    var gameObject = element.Mapper.Get();
+                    gameObject.GetComponent<LayoutElement>().Deactivate();
+                    gameObject.SetActive(false);
                     cachedElements.Add(element);
                 }
                 elements.Clear();
@@ -63,8 +65,9 @@ namespace AnKuchen.KuchenLayout
             foreach (var element in Elements)
             {
                 if (newElements.Contains(element)) continue;
-                (element as IReusableMappedObject)?.Deactivate();
-                element.Mapper.Get().SetActive(false);
+                var gameObject = element.Mapper.Get();
+                gameObject.GetComponent<LayoutElement>().Deactivate();
+                gameObject.SetActive(false);
                 cachedElements.Add(element);
             }
 
@@ -86,18 +89,26 @@ namespace AnKuchen.KuchenLayout
             public T Create()
             {
                 T newObject;
+                LayoutElement layoutElement;
                 if (parent.cachedElements.Count > 0)
                 {
                     newObject = parent.cachedElements[0];
                     parent.cachedElements.RemoveAt(0);
+                    layoutElement = newObject.Mapper.Get().GetComponent<LayoutElement>();
                 }
                 else
                 {
                     newObject = parent.original.Duplicate();
+                    layoutElement = newObject.Mapper.Get().AddComponent<LayoutElement>();
                 }
+
                 newObject.Mapper.Get().SetActive(true);
                 Elements.Add(newObject);
-                (newObject as IReusableMappedObject)?.Activate();
+                if (newObject is IReusableMappedObject reusableMappedObject)
+                {
+                    reusableMappedObject.Activate();
+                    layoutElement.ReusableMappedObject = reusableMappedObject;
+                }
                 return newObject;
             }
 
@@ -105,6 +116,22 @@ namespace AnKuchen.KuchenLayout
             {
                 parent.UpdateContents(Elements);
             }
+        }
+    }
+
+    public class LayoutElement : MonoBehaviour
+    {
+        public IReusableMappedObject ReusableMappedObject { get; set; }
+
+        public void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        public void Deactivate()
+        {
+            ReusableMappedObject?.Deactivate();
+            ReusableMappedObject = null;
         }
     }
 }
