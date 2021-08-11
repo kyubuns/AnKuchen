@@ -21,6 +21,9 @@ namespace AnKuchen.KuchenList
         Vector2? CalcScrollPosition(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f);
         void ScrollTo(int index, ScrollToType type = ScrollToType.Top, float additionalSpacing = 0f);
         void DestroyCachedGameObjects();
+
+        void UpdateAllElements();
+        void UpdateElement(int index);
     }
 
     public enum ScrollToType

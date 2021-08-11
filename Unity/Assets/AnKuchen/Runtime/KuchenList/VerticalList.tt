@@ -383,6 +383,23 @@ namespace AnKuchen.KuchenList
             if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
         }
+
+        public void UpdateAllElements()
+        {
+            foreach (var tmp in createdObjects)
+            {
+                var map = tmp.Value;
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+        }
+
+        public void UpdateElement(int index)
+        {
+            if (!createdObjects.ContainsKey(index)) return;
+            CollectObject(createdObjects[index]);
+            createdObjects.Remove(index);
+        }
     }
 
 <# } #>

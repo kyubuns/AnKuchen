@@ -374,6 +374,23 @@ namespace AnKuchen.KuchenList
             if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
         }
+
+        public void UpdateAllElements()
+        {
+            foreach (var tmp in createdObjects)
+            {
+                var map = tmp.Value;
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+        }
+
+        public void UpdateElement(int index)
+        {
+            if (!createdObjects.ContainsKey(index)) return;
+            CollectObject(createdObjects[index]);
+            createdObjects.Remove(index);
+        }
     }
 
     public class HorizontalList<T1, T2> : IKuchenList
@@ -752,6 +769,23 @@ namespace AnKuchen.KuchenList
             var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
             if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
+        }
+
+        public void UpdateAllElements()
+        {
+            foreach (var tmp in createdObjects)
+            {
+                var map = tmp.Value;
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+        }
+
+        public void UpdateElement(int index)
+        {
+            if (!createdObjects.ContainsKey(index)) return;
+            CollectObject(createdObjects[index]);
+            createdObjects.Remove(index);
         }
     }
 
@@ -1144,6 +1178,23 @@ namespace AnKuchen.KuchenList
             var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
             if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
+        }
+
+        public void UpdateAllElements()
+        {
+            foreach (var tmp in createdObjects)
+            {
+                var map = tmp.Value;
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+        }
+
+        public void UpdateElement(int index)
+        {
+            if (!createdObjects.ContainsKey(index)) return;
+            CollectObject(createdObjects[index]);
+            createdObjects.Remove(index);
         }
     }
 
@@ -1549,6 +1600,23 @@ namespace AnKuchen.KuchenList
             var scrollPosition = CalcScrollPosition(index, type, additionalSpacing);
             if (scrollPosition != null) ContentRectTransform.anchoredPosition = scrollPosition.Value;
             scrollRect.velocity = Vector2.zero;
+        }
+
+        public void UpdateAllElements()
+        {
+            foreach (var tmp in createdObjects)
+            {
+                var map = tmp.Value;
+                CollectObject(map);
+            }
+            createdObjects.Clear();
+        }
+
+        public void UpdateElement(int index)
+        {
+            if (!createdObjects.ContainsKey(index)) return;
+            CollectObject(createdObjects[index]);
+            createdObjects.Remove(index);
         }
     }
 
