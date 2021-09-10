@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace AnKuchen.KuchenLayout
 {
-    public class Layout<T> where T : IMappedObject, new()
+    public class Layout<T> : IMappedObjectList where T : IMappedObject, new()
     {
         private readonly T original;
         private readonly ILayouter layouter;
@@ -18,6 +18,7 @@ namespace AnKuchen.KuchenLayout
         private readonly List<T> cachedElements;
 
         public T[] Elements => elements.ToArray();
+        public IMappedObject[] MappedObjects => new[] { (IMappedObject) original };
 
         public Layout(T original, ILayouter layouter = null)
         {

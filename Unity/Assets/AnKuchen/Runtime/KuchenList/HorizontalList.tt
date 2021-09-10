@@ -35,6 +35,11 @@ namespace AnKuchen.KuchenList
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
         public Action<int, IMappedObject> OnCreateObject { get; set; }
+        public IMappedObject[] MappedObjects => new[]{
+<# for (var i = 1; i <= t; ++i) { #>
+            (IMappedObject) original<#= i #>,
+<# } #>
+        };
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;

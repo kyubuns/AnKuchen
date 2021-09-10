@@ -45,6 +45,12 @@ namespace AnKuchen.Editor
                         continue;
                     }
 
+                    if (value is IMappedObjectList mappedObjectList)
+                    {
+                        testTargets.AddRange(mappedObjectList.MappedObjects);
+                        continue;
+                    }
+
                     if (value is IEnumerable<IMappedObject> mappedObjects)
                     {
                         testTargets.AddRange(mappedObjects);

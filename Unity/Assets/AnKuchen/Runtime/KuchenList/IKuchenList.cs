@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace AnKuchen.KuchenList
 {
-    public interface IKuchenList
+    public interface IKuchenList : IMappedObjectList
     {
         float Spacing { get; }
         int SpareElement { get; }

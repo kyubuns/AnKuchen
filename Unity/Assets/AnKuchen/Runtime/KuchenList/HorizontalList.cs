@@ -29,6 +29,9 @@ namespace AnKuchen.KuchenList
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
         public Action<int, IMappedObject> OnCreateObject { get; set; }
+        public IMappedObject[] MappedObjects => new[]{
+            (IMappedObject) original1,
+        };
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -413,6 +416,10 @@ namespace AnKuchen.KuchenList
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
         public Action<int, IMappedObject> OnCreateObject { get; set; }
+        public IMappedObject[] MappedObjects => new[]{
+            (IMappedObject) original1,
+            (IMappedObject) original2,
+        };
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -810,6 +817,11 @@ namespace AnKuchen.KuchenList
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
         public Action<int, IMappedObject> OnCreateObject { get; set; }
+        public IMappedObject[] MappedObjects => new[]{
+            (IMappedObject) original1,
+            (IMappedObject) original2,
+            (IMappedObject) original3,
+        };
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -1220,6 +1232,12 @@ namespace AnKuchen.KuchenList
         public ScrollRect ScrollRect => scrollRect;
         public RectTransform ContentRectTransform => scrollRect.content;
         public Action<int, IMappedObject> OnCreateObject { get; set; }
+        public IMappedObject[] MappedObjects => new[]{
+            (IMappedObject) original1,
+            (IMappedObject) original2,
+            (IMappedObject) original3,
+            (IMappedObject) original4,
+        };
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
