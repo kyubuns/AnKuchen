@@ -36,8 +36,7 @@ namespace AnKuchen.KuchenLayout
         {
             if (editMode == EditMode.Clear)
             {
-                // Reverseして頭から詰めていくことで、同じ場所に表示される要素は同じGameObjectが割り当てられる可能性を高くする
-                foreach (var element in Elements.Reverse())
+                foreach (var element in Elements)
                 {
                     var gameObject = element.Mapper.Get();
                     gameObject.GetComponent<LayoutElement>().Deactivate();
