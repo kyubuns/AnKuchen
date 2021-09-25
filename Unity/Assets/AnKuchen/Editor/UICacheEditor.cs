@@ -181,32 +181,38 @@ namespace AnKuchen.Editor
             return (text, templateName);
         }
 
+        private static readonly Dictionary<Type, string[]> ClassNamesCache = new Dictionary<Type, string[]>();
         private static string[] GetAllClassNames(Type type)
         {
-            var result = new HashSet<string>();
-            result.Add(type.Name);
-
-            void GetInterface(Type t)
+            if (!ClassNamesCache.ContainsKey(type))
             {
-                foreach (var i in t.GetInterfaces())
+                var result = new HashSet<string>();
+                result.Add(type.Name);
+
+                void GetInterface(Type t)
                 {
-                    result.Add(i.Name);
-                    GetInterface(i);
+                    foreach (var i in t.GetInterfaces())
+                    {
+                        result.Add(i.Name);
+                        GetInterface(i);
+                    }
                 }
+
+                void GetBase(Type t)
+                {
+                    if (t.BaseType != null)
+                    {
+                        result.Add(t.BaseType.Name);
+                        GetInterface(t.BaseType);
+                    }
+                }
+
+                GetInterface(type);
+                GetBase(type);
+                ClassNamesCache[type] = result.ToArray();
             }
 
-            void GetBase(Type t)
-            {
-                if (t.BaseType != null)
-                {
-                    result.Add(t.BaseType.Name);
-                    GetInterface(t.BaseType);
-                }
-            }
-
-            GetInterface(type);
-            GetBase(type);
-            return result.ToArray();
+            return ClassNamesCache[type];
         }
 
         private static UIStringElement[] CreateStringCache(Transform parent)
