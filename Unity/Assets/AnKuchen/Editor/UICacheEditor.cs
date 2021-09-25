@@ -8,7 +8,6 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace AnKuchen.Editor
 {
@@ -125,7 +124,8 @@ namespace AnKuchen.Editor
                 if (e.Path.Length == 0) continue;
                 foreach (var component in e.GameObject.GetComponents<Component>())
                 {
-                    if (!targetTypes.Contains(component.GetType().Name)) continue;
+                    var names = GetAllClassNames(component.GetType());
+                    if (names.All(name => !targetTypes.Contains(name))) continue;
 
                     var uniquePath = e.Path.Concat(new[] { "." }).ToArray();
                     while (uniquePath.Length > 1)
@@ -179,6 +179,34 @@ namespace AnKuchen.Editor
             }
             text += "}\n";
             return (text, templateName);
+        }
+
+        private static string[] GetAllClassNames(Type type)
+        {
+            var result = new HashSet<string>();
+            result.Add(type.Name);
+
+            void GetInterface(Type t)
+            {
+                foreach (var i in t.GetInterfaces())
+                {
+                    result.Add(i.Name);
+                    GetInterface(i);
+                }
+            }
+
+            void GetBase(Type t)
+            {
+                if (t.BaseType != null)
+                {
+                    result.Add(t.BaseType.Name);
+                    GetInterface(t.BaseType);
+                }
+            }
+
+            GetInterface(type);
+            GetBase(type);
+            return result.ToArray();
         }
 
         private static UIStringElement[] CreateStringCache(Transform parent)
