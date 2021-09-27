@@ -36,7 +36,8 @@ namespace AnKuchen.KuchenLayout
         {
             if (editMode == EditMode.Clear)
             {
-                foreach (var element in Elements)
+                // Reverseして頭から詰めていくことで、同じ場所に同じ要素を表示した場合に同じGameObjectが使用されるようになる
+                foreach (var element in Elements.Reverse())
                 {
                     var gameObject = element.Mapper.Get();
                     gameObject.GetComponent<LayoutElement>().Deactivate();
