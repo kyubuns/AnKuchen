@@ -224,18 +224,18 @@ public class Sample : MonoBehaviour
                 if (Random.Range(0, 2) == 0)
                 {
                     var i1 = i;
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>((ListElements1 x) =>
+                    editor.Add((ListElements1 x) =>
                     {
                         x.LineText.text = $"Test {i1}";
-                    }));
+                    });
                 }
                 else
                 {
-                    editor.Contents.Add(new UIFactory<ListElements1, ListElements2>((ListElements2 x) =>
+                    editor.Add((ListElements2 x) =>
                     {
                         x.Background.color = Random.ColorHSV();
                         x.Button.onClick.AddListener(() => Debug.Log("Click Button"));
-                    }));
+                    });
                 }
             }
         }
