@@ -144,70 +144,32 @@ namespace AnKuchen.Development
         {
             using (var editor = ui.List.Edit())
             {
-                Hoge(editor, 0);
+                Hoge(editor, 2);
             }
 
             using (var editor = ui.List2.Edit())
             {
-                Hoge(editor, 0);
+                Hoge(editor, 2);
             }
 
             using (var editor = ui.ListH.Edit())
             {
-                Hoge(editor, 0);
+                Hoge(editor, 2);
             }
 
             using (var editor = ui.ListH2.Edit())
             {
-                Hoge(editor, 0);
+                Hoge(editor, 2);
             }
         }
 
         private void Hoge(IListContentEditor<ListElements1, ListElements2> editor, int num)
         {
-            editor.Contents = new List<UIFactory<ListElements1, ListElements2>>
+            for (var i = 0; i < 10; ++i)
             {
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.0";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.1";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.2";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.3";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.4";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.5";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.6";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.7";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.8";
-                }),
-                new UIFactory<ListElements1, ListElements2>(x =>
-                {
-                    x.Text.text = "No.9";
-                }),
-            };
+                var i1 = i;
+                editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Text.text = $"No.{i1}"));
+            }
             for (var i = 0; i < num; ++i)
             {
                 editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));

@@ -298,7 +298,7 @@ MonoBehaviour:
   specialSpacings:
   - item1: Element1
     item2: Element2
-    spacing: 100
+    spacing: 30
 --- !u!114 &59245676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2077,7 +2077,7 @@ MonoBehaviour:
   specialSpacings:
   - item1: Element1
     item2: Element2
-    spacing: 100
+    spacing: 30
 --- !u!114 &747977265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2565,7 +2565,7 @@ MonoBehaviour:
   specialSpacings:
   - item1: Element1
     item2: Element2
-    spacing: 100
+    spacing: 30
 --- !u!1 &1023887462
 GameObject:
   m_ObjectHideFlags: 0
@@ -4222,7 +4222,7 @@ MonoBehaviour:
   specialSpacings:
   - item1: Element1
     item2: Element2
-    spacing: 100
+    spacing: 30
 --- !u!114 &2083415917
 MonoBehaviour:
   m_ObjectHideFlags: 0
