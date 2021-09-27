@@ -318,6 +318,14 @@ namespace AnKuchen.KuchenList
                 parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
+
+<# for (var i = 1; i <= t; ++i) { #>
+            public void Add(Action<<#= $"T{i}" #>> factory)
+            {
+                Contents.Add(new UIFactory<<#= string.Join(", ", Enumerable.Range(1, t).Select(j => $"T{j}")) #>>(factory));
+            }
+
+<# } #>
         }
 
         public void DestroyCachedGameObjects()

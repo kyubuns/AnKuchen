@@ -297,6 +297,12 @@ namespace AnKuchen.KuchenList
                 parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
+
+            public void Add(Action<T1> factory)
+            {
+                Contents.Add(new UIFactory<T1>(factory));
+            }
+
         }
 
         public void DestroyCachedGameObjects()
@@ -692,6 +698,17 @@ namespace AnKuchen.KuchenList
                 parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
+
+            public void Add(Action<T1> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2>(factory));
+            }
+
+            public void Add(Action<T2> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2>(factory));
+            }
+
         }
 
         public void DestroyCachedGameObjects()
@@ -1101,6 +1118,22 @@ namespace AnKuchen.KuchenList
                 parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
+
+            public void Add(Action<T1> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3>(factory));
+            }
+
+            public void Add(Action<T2> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3>(factory));
+            }
+
+            public void Add(Action<T3> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3>(factory));
+            }
+
         }
 
         public void DestroyCachedGameObjects()
@@ -1524,6 +1557,27 @@ namespace AnKuchen.KuchenList
                 parent.SpareElement = SpareElement;
                 parent.UpdateListContents();
             }
+
+            public void Add(Action<T1> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3, T4>(factory));
+            }
+
+            public void Add(Action<T2> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3, T4>(factory));
+            }
+
+            public void Add(Action<T3> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3, T4>(factory));
+            }
+
+            public void Add(Action<T4> factory)
+            {
+                Contents.Add(new UIFactory<T1, T2, T3, T4>(factory));
+            }
+
         }
 
         public void DestroyCachedGameObjects()
