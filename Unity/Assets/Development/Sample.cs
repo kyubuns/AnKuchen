@@ -168,11 +168,11 @@ namespace AnKuchen.Development
             for (var i = 0; i < 10; ++i)
             {
                 var i1 = i;
-                editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Text.text = $"No.{i1}"));
+                editor.Add(x => x.Text.text = $"No.{i1}");
             }
             for (var i = 0; i < num; ++i)
             {
-                editor.Contents.Add(new UIFactory<ListElements1, ListElements2>(x => x.Image.color = Color.blue));
+                editor.Add(x => x.Image.color = Color.blue);
             }
         }
     }

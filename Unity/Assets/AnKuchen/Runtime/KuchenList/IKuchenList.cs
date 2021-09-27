@@ -40,6 +40,7 @@ namespace AnKuchen.KuchenList
         float Spacing { get; set; }
         Margin Margin { get; set; }
         int SpareElement { get; set; }
+        void Add(Action<T1> factory);
     }
 
     public interface IListContentEditor<T1, T2> : IDisposable where T1 : IMappedObject where T2 : IMappedObject
@@ -48,6 +49,8 @@ namespace AnKuchen.KuchenList
         float Spacing { get; set; }
         Margin Margin { get; set; }
         int SpareElement { get; set; }
+        void Add(Action<T1> factory);
+        void Add(Action<T2> factory);
     }
 
     public interface IListContentEditor<T1, T2, T3> : IDisposable where T1 : IMappedObject where T2 : IMappedObject where T3 : IMappedObject
@@ -56,6 +59,9 @@ namespace AnKuchen.KuchenList
         float Spacing { get; set; }
         Margin Margin { get; set; }
         int SpareElement { get; set; }
+        void Add(Action<T1> factory);
+        void Add(Action<T2> factory);
+        void Add(Action<T3> factory);
     }
 
     public interface IListContentEditor<T1, T2, T3, T4> : IDisposable where T1 : IMappedObject where T2 : IMappedObject where T3 : IMappedObject where T4 : IMappedObject
@@ -64,5 +70,9 @@ namespace AnKuchen.KuchenList
         float Spacing { get; set; }
         Margin Margin { get; set; }
         int SpareElement { get; set; }
+        void Add(Action<T1> factory);
+        void Add(Action<T2> factory);
+        void Add(Action<T3> factory);
+        void Add(Action<T4> factory);
     }
 }
