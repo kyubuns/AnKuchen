@@ -12,13 +12,14 @@ namespace AnKuchen.KuchenLayout
 {
     public class Layout<T> : IMappedObjectList where T : IMappedObject, new()
     {
+        public T Original => original;
+        public T[] Elements => elements.ToArray();
+        public IMappedObject[] MappedObjects => new[] { (IMappedObject) original };
+
         private readonly T original;
         private readonly ILayouter layouter;
         private List<T> elements;
         private readonly List<T> cachedElements;
-
-        public T[] Elements => elements.ToArray();
-        public IMappedObject[] MappedObjects => new[] { (IMappedObject) original };
 
         public Layout(T original, ILayouter layouter = null)
         {
