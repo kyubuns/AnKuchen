@@ -41,6 +41,10 @@ namespace AnKuchen.KuchenList
 <# } #>
         };
 
+<# for (var i = 1; i <= t; ++i) { #>
+        public T<#= i #> Original<#= i #> => original<#= i #>;
+<# } #>
+
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 

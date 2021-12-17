@@ -33,6 +33,8 @@ namespace AnKuchen.KuchenList
             (IMappedObject) original1,
         };
 
+        public T1 Original1 => original1;
+
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
@@ -426,6 +428,9 @@ namespace AnKuchen.KuchenList
             (IMappedObject) original1,
             (IMappedObject) original2,
         };
+
+        public T1 Original1 => original1;
+        public T2 Original2 => original2;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -839,6 +844,10 @@ namespace AnKuchen.KuchenList
             (IMappedObject) original2,
             (IMappedObject) original3,
         };
+
+        public T1 Original1 => original1;
+        public T2 Original2 => original2;
+        public T3 Original3 => original3;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
@@ -1271,6 +1280,11 @@ namespace AnKuchen.KuchenList
             (IMappedObject) original3,
             (IMappedObject) original4,
         };
+
+        public T1 Original1 => original1;
+        public T2 Original2 => original2;
+        public T3 Original3 => original3;
+        public T4 Original4 => original4;
 
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
