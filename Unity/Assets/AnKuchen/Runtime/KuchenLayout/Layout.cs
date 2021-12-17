@@ -124,6 +124,7 @@ namespace AnKuchen.KuchenLayout
                 parent.elements = Elements;
                 parent.layouter.Layout(parent.original.Mapper, parent.Elements.Select(x => x.Mapper).ToArray());
                 foreach (var a in inactiveMarked) a.SetActive(false);
+                inactiveMarked.Clear();
             }
         }
     }
