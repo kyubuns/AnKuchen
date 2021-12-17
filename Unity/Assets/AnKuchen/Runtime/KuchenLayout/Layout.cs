@@ -35,6 +35,7 @@ namespace AnKuchen.KuchenLayout
 
         public LayoutEditor Edit(EditMode editMode = EditMode.Clear)
         {
+            var inactiveMarked = new HashSet<GameObject>();
             if (editMode == EditMode.Clear)
             {
                 // Reverseして頭から詰めていくことで、同じ場所に同じ要素を表示した場合に同じGameObjectが使用されるようになる
@@ -42,17 +43,24 @@ namespace AnKuchen.KuchenLayout
                 {
                     var gameObject = element.Mapper.Get();
                     gameObject.GetComponent<LayoutElement>().Deactivate();
-                    gameObject.SetActive(false);
+                    inactiveMarked.Add(gameObject);
                     cachedElements.Insert(0, element);
                 }
                 elements.Clear();
             }
-            return new LayoutEditor(this);
+            return new LayoutEditor(this, inactiveMarked);
         }
 
         public void Clear(bool purgeCache = false)
         {
-            UpdateContents(new List<T>());
+            foreach (var element in Elements)
+            {
+                var gameObject = element.Mapper.Get();
+                gameObject.GetComponent<LayoutElement>().Deactivate();
+                gameObject.SetActive(false);
+                cachedElements.Add(element);
+            }
+
             if (purgeCache)
             {
                 foreach (var element in cachedElements)
@@ -63,29 +71,16 @@ namespace AnKuchen.KuchenLayout
             }
         }
 
-        private void UpdateContents(List<T> newElements)
-        {
-            foreach (var element in Elements)
-            {
-                if (newElements.Contains(element)) continue;
-                var gameObject = element.Mapper.Get();
-                gameObject.GetComponent<LayoutElement>().Deactivate();
-                gameObject.SetActive(false);
-                cachedElements.Add(element);
-            }
-
-            elements = newElements;
-            layouter.Layout(original.Mapper, Elements.Select(x => x.Mapper).ToArray());
-        }
-
         public class LayoutEditor : IDisposable
         {
             public List<T> Elements { get; }
             private readonly Layout<T> parent;
+            private readonly HashSet<GameObject> inactiveMarked;
 
-            public LayoutEditor(Layout<T> parent)
+            public LayoutEditor(Layout<T> parent, HashSet<GameObject> inactiveMarked)
             {
                 this.parent = parent;
+                this.inactiveMarked = inactiveMarked;
                 Elements = parent.elements.ToList();
             }
 
@@ -105,7 +100,16 @@ namespace AnKuchen.KuchenLayout
                     layoutElement = newObject.Mapper.Get().AddComponent<LayoutElement>();
                 }
 
-                newObject.Mapper.Get().SetActive(true);
+                var newGameObject = newObject.Mapper.Get();
+                if (inactiveMarked.Contains(newGameObject))
+                {
+                    inactiveMarked.Remove(newGameObject);
+                }
+                else
+                {
+                    newGameObject.SetActive(true);
+                }
+
                 Elements.Add(newObject);
                 if (newObject is IReusableMappedObject reusableMappedObject)
                 {
@@ -117,7 +121,9 @@ namespace AnKuchen.KuchenLayout
 
             public void Dispose()
             {
-                parent.UpdateContents(Elements);
+                parent.elements = Elements;
+                parent.layouter.Layout(parent.original.Mapper, parent.Elements.Select(x => x.Mapper).ToArray());
+                foreach (var a in inactiveMarked) a.SetActive(false);
             }
         }
     }
