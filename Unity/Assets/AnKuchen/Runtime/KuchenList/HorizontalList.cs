@@ -38,6 +38,8 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
+        private readonly HashSet<GameObject> inactiveMarked = new HashSet<GameObject>();
+
         public float NormalizedPosition
         {
             get => scrollRect.horizontalNormalizedPosition;
@@ -111,10 +113,44 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
+        // RectTransformUtility.CalculateRelativeRectTransformBoundsを使うと、
+        // inactiveMarkedの分だけズレてしまうので自前実装
+        private Bounds CalculateRelativeRectTransformBounds(Transform root, Transform child)
+        {
+            var componentsInChildren = new List<RectTransform>();
+            componentsInChildren.Add(child.GetComponent<RectTransform>());
+            foreach (Transform a in child)
+            {
+                if (inactiveMarked.Contains(a.gameObject)) continue;
+                componentsInChildren.Add(a.GetComponent<RectTransform>());
+            }
+
+            if ((uint) componentsInChildren.Count <= 0U)
+                return new Bounds(Vector3.zero, Vector3.zero);
+            var vector31 = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            var vector32 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            var worldToLocalMatrix = root.worldToLocalMatrix;
+            var index1 = 0;
+            for (var length = componentsInChildren.Count; index1 < length; ++index1)
+            {
+                componentsInChildren[index1].GetWorldCorners(KuchenListInternal.ReuseCorners);
+                for (var index2 = 0; index2 < 4; ++index2)
+                {
+                    var lhs = worldToLocalMatrix.MultiplyPoint3x4(KuchenListInternal.ReuseCorners[index2]);
+                    vector31 = Vector3.Min(lhs, vector31);
+                    vector32 = Vector3.Max(lhs, vector32);
+                }
+            }
+
+            var rectTransformBounds = new Bounds(vector31, Vector3.zero);
+            rectTransformBounds.Encapsulate(vector32);
+            return rectTransformBounds;
+        }
+
         private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
-            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var contentRect = CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
             var start = contentRect.max.x - displayRect.max.x;
             var displayRectWidth = displayRect.width;
             var end = start + displayRectWidth;
@@ -172,6 +208,9 @@ namespace AnKuchen.KuchenList
                 createdObjects[i] = newMappedObject;
                 OnCreateObject?.Invoke(i, newMappedObject);
             }
+
+            foreach (var a in inactiveMarked) a.SetActive(false);
+            inactiveMarked.Clear();
         }
 
         private void UpdateListContents()
@@ -239,7 +278,7 @@ namespace AnKuchen.KuchenList
         private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
-            target.Mapper.Get().SetActive(false);
+            inactiveMarked.Add(target.Mapper.Get());
 
             if (target is T1) cachedObjects[typeof(T1)].Add(target);
         }
@@ -260,7 +299,15 @@ namespace AnKuchen.KuchenList
 
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
-            newObject.Mapper.Get().SetActive(true);
+            var newGameObject = newObject.Mapper.Get();
+            if (inactiveMarked.Contains(newGameObject))
+            {
+                inactiveMarked.Remove(newGameObject);
+            }
+            else
+            {
+                newGameObject.SetActive(true);
+            }
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
@@ -435,6 +482,8 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
+        private readonly HashSet<GameObject> inactiveMarked = new HashSet<GameObject>();
+
         public float NormalizedPosition
         {
             get => scrollRect.horizontalNormalizedPosition;
@@ -513,10 +562,44 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
+        // RectTransformUtility.CalculateRelativeRectTransformBoundsを使うと、
+        // inactiveMarkedの分だけズレてしまうので自前実装
+        private Bounds CalculateRelativeRectTransformBounds(Transform root, Transform child)
+        {
+            var componentsInChildren = new List<RectTransform>();
+            componentsInChildren.Add(child.GetComponent<RectTransform>());
+            foreach (Transform a in child)
+            {
+                if (inactiveMarked.Contains(a.gameObject)) continue;
+                componentsInChildren.Add(a.GetComponent<RectTransform>());
+            }
+
+            if ((uint) componentsInChildren.Count <= 0U)
+                return new Bounds(Vector3.zero, Vector3.zero);
+            var vector31 = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            var vector32 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            var worldToLocalMatrix = root.worldToLocalMatrix;
+            var index1 = 0;
+            for (var length = componentsInChildren.Count; index1 < length; ++index1)
+            {
+                componentsInChildren[index1].GetWorldCorners(KuchenListInternal.ReuseCorners);
+                for (var index2 = 0; index2 < 4; ++index2)
+                {
+                    var lhs = worldToLocalMatrix.MultiplyPoint3x4(KuchenListInternal.ReuseCorners[index2]);
+                    vector31 = Vector3.Min(lhs, vector31);
+                    vector32 = Vector3.Max(lhs, vector32);
+                }
+            }
+
+            var rectTransformBounds = new Bounds(vector31, Vector3.zero);
+            rectTransformBounds.Encapsulate(vector32);
+            return rectTransformBounds;
+        }
+
         private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
-            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var contentRect = CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
             var start = contentRect.max.x - displayRect.max.x;
             var displayRectWidth = displayRect.width;
             var end = start + displayRectWidth;
@@ -575,6 +658,9 @@ namespace AnKuchen.KuchenList
                 createdObjects[i] = newMappedObject;
                 OnCreateObject?.Invoke(i, newMappedObject);
             }
+
+            foreach (var a in inactiveMarked) a.SetActive(false);
+            inactiveMarked.Clear();
         }
 
         private void UpdateListContents()
@@ -647,7 +733,7 @@ namespace AnKuchen.KuchenList
         private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
-            target.Mapper.Get().SetActive(false);
+            inactiveMarked.Add(target.Mapper.Get());
 
             if (target is T1) cachedObjects[typeof(T1)].Add(target);
             if (target is T2) cachedObjects[typeof(T2)].Add(target);
@@ -669,7 +755,15 @@ namespace AnKuchen.KuchenList
 
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
-            newObject.Mapper.Get().SetActive(true);
+            var newGameObject = newObject.Mapper.Get();
+            if (inactiveMarked.Contains(newGameObject))
+            {
+                inactiveMarked.Remove(newGameObject);
+            }
+            else
+            {
+                newGameObject.SetActive(true);
+            }
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
@@ -852,6 +946,8 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
+        private readonly HashSet<GameObject> inactiveMarked = new HashSet<GameObject>();
+
         public float NormalizedPosition
         {
             get => scrollRect.horizontalNormalizedPosition;
@@ -935,10 +1031,44 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
+        // RectTransformUtility.CalculateRelativeRectTransformBoundsを使うと、
+        // inactiveMarkedの分だけズレてしまうので自前実装
+        private Bounds CalculateRelativeRectTransformBounds(Transform root, Transform child)
+        {
+            var componentsInChildren = new List<RectTransform>();
+            componentsInChildren.Add(child.GetComponent<RectTransform>());
+            foreach (Transform a in child)
+            {
+                if (inactiveMarked.Contains(a.gameObject)) continue;
+                componentsInChildren.Add(a.GetComponent<RectTransform>());
+            }
+
+            if ((uint) componentsInChildren.Count <= 0U)
+                return new Bounds(Vector3.zero, Vector3.zero);
+            var vector31 = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            var vector32 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            var worldToLocalMatrix = root.worldToLocalMatrix;
+            var index1 = 0;
+            for (var length = componentsInChildren.Count; index1 < length; ++index1)
+            {
+                componentsInChildren[index1].GetWorldCorners(KuchenListInternal.ReuseCorners);
+                for (var index2 = 0; index2 < 4; ++index2)
+                {
+                    var lhs = worldToLocalMatrix.MultiplyPoint3x4(KuchenListInternal.ReuseCorners[index2]);
+                    vector31 = Vector3.Min(lhs, vector31);
+                    vector32 = Vector3.Max(lhs, vector32);
+                }
+            }
+
+            var rectTransformBounds = new Bounds(vector31, Vector3.zero);
+            rectTransformBounds.Encapsulate(vector32);
+            return rectTransformBounds;
+        }
+
         private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
-            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var contentRect = CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
             var start = contentRect.max.x - displayRect.max.x;
             var displayRectWidth = displayRect.width;
             var end = start + displayRectWidth;
@@ -998,6 +1128,9 @@ namespace AnKuchen.KuchenList
                 createdObjects[i] = newMappedObject;
                 OnCreateObject?.Invoke(i, newMappedObject);
             }
+
+            foreach (var a in inactiveMarked) a.SetActive(false);
+            inactiveMarked.Clear();
         }
 
         private void UpdateListContents()
@@ -1075,7 +1208,7 @@ namespace AnKuchen.KuchenList
         private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
-            target.Mapper.Get().SetActive(false);
+            inactiveMarked.Add(target.Mapper.Get());
 
             if (target is T1) cachedObjects[typeof(T1)].Add(target);
             if (target is T2) cachedObjects[typeof(T2)].Add(target);
@@ -1098,7 +1231,15 @@ namespace AnKuchen.KuchenList
 
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
-            newObject.Mapper.Get().SetActive(true);
+            var newGameObject = newObject.Mapper.Get();
+            if (inactiveMarked.Contains(newGameObject))
+            {
+                inactiveMarked.Remove(newGameObject);
+            }
+            else
+            {
+                newGameObject.SetActive(true);
+            }
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;
@@ -1289,6 +1430,8 @@ namespace AnKuchen.KuchenList
         private Margin margin = new Margin();
         public IReadonlyMargin Margin => margin;
 
+        private readonly HashSet<GameObject> inactiveMarked = new HashSet<GameObject>();
+
         public float NormalizedPosition
         {
             get => scrollRect.horizontalNormalizedPosition;
@@ -1377,10 +1520,44 @@ namespace AnKuchen.KuchenList
             createdObjects.Clear();
         }
 
+        // RectTransformUtility.CalculateRelativeRectTransformBoundsを使うと、
+        // inactiveMarkedの分だけズレてしまうので自前実装
+        private Bounds CalculateRelativeRectTransformBounds(Transform root, Transform child)
+        {
+            var componentsInChildren = new List<RectTransform>();
+            componentsInChildren.Add(child.GetComponent<RectTransform>());
+            foreach (Transform a in child)
+            {
+                if (inactiveMarked.Contains(a.gameObject)) continue;
+                componentsInChildren.Add(a.GetComponent<RectTransform>());
+            }
+
+            if ((uint) componentsInChildren.Count <= 0U)
+                return new Bounds(Vector3.zero, Vector3.zero);
+            var vector31 = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            var vector32 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            var worldToLocalMatrix = root.worldToLocalMatrix;
+            var index1 = 0;
+            for (var length = componentsInChildren.Count; index1 < length; ++index1)
+            {
+                componentsInChildren[index1].GetWorldCorners(KuchenListInternal.ReuseCorners);
+                for (var index2 = 0; index2 < 4; ++index2)
+                {
+                    var lhs = worldToLocalMatrix.MultiplyPoint3x4(KuchenListInternal.ReuseCorners[index2]);
+                    vector31 = Vector3.Min(lhs, vector31);
+                    vector32 = Vector3.Max(lhs, vector32);
+                }
+            }
+
+            var rectTransformBounds = new Bounds(vector31, Vector3.zero);
+            rectTransformBounds.Encapsulate(vector32);
+            return rectTransformBounds;
+        }
+
         private void UpdateView()
         {
             var displayRect = viewportRectTransformCache.rect;
-            var contentRect = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
+            var contentRect = CalculateRelativeRectTransformBounds(viewportRectTransformCache, scrollRect.content);
             var start = contentRect.max.x - displayRect.max.x;
             var displayRectWidth = displayRect.width;
             var end = start + displayRectWidth;
@@ -1441,6 +1618,9 @@ namespace AnKuchen.KuchenList
                 createdObjects[i] = newMappedObject;
                 OnCreateObject?.Invoke(i, newMappedObject);
             }
+
+            foreach (var a in inactiveMarked) a.SetActive(false);
+            inactiveMarked.Clear();
         }
 
         private void UpdateListContents()
@@ -1523,7 +1703,7 @@ namespace AnKuchen.KuchenList
         private void CollectObject(IMappedObject target)
         {
             if (target is IReusableMappedObject reusable) reusable.Deactivate();
-            target.Mapper.Get().SetActive(false);
+            inactiveMarked.Add(target.Mapper.Get());
 
             if (target is T1) cachedObjects[typeof(T1)].Add(target);
             if (target is T2) cachedObjects[typeof(T2)].Add(target);
@@ -1547,7 +1727,15 @@ namespace AnKuchen.KuchenList
 
             var newRectTransform = newObject.Mapper.Get<RectTransform>();
             newRectTransform.SetParent(scrollRect.content);
-            newObject.Mapper.Get().SetActive(true);
+            var newGameObject = newObject.Mapper.Get();
+            if (inactiveMarked.Contains(newGameObject))
+            {
+                inactiveMarked.Remove(newGameObject);
+            }
+            else
+            {
+                newGameObject.SetActive(true);
+            }
 
             var p = newRectTransform.anchoredPosition;
             var r = newRectTransform.rect;

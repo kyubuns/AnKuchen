@@ -22,4 +22,9 @@ namespace AnKuchen.KuchenList
         void DeactivateAll();
         void UpdateView();
     }
+
+    public static class KuchenListInternal
+    {
+        public static readonly Vector3[] ReuseCorners = new Vector3[4];
+    }
 }
