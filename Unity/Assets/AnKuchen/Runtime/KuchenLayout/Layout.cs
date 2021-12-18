@@ -60,6 +60,7 @@ namespace AnKuchen.KuchenLayout
                 gameObject.SetActive(false);
                 cachedElements.Add(element);
             }
+            elements.Clear();
 
             if (purgeCache)
             {
