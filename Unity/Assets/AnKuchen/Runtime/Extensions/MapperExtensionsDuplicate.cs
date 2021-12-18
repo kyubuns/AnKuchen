@@ -16,7 +16,7 @@ namespace AnKuchen.Extensions
                 uiCache.Copy(self);
             }
 
-            var clone = Object.Instantiate(rootObject, rootObject.transform.parent, true);
+            var clone = Object.Instantiate(rootObject, rootObject.transform.parent);
             return clone.GetComponent<UICache>();
         }
 
