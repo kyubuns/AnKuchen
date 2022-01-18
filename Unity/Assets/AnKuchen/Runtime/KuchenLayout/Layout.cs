@@ -123,7 +123,9 @@ namespace AnKuchen.KuchenLayout
             public void Dispose()
             {
                 parent.elements = Elements;
-                parent.layouter.Layout(parent.original.Mapper, parent.Elements.Select(x => x.Mapper).ToArray());
+                var mappers = parent.Elements.Select(x => x.Mapper).ToArray();
+                foreach (var m in mappers) m.Get().transform.SetAsLastSibling();
+                parent.layouter.Layout(parent.original.Mapper, mappers);
                 foreach (var a in inactiveMarked) a.SetActive(false);
                 inactiveMarked.Clear();
             }
