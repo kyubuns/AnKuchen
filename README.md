@@ -19,7 +19,7 @@ Sample GameObject
 ### Get Button
 
 You can get a component from a GameObject simply by specifying its name.  
-If there is only one "HogeButton" under the UICache, the same code will work regardless of where the HogeButton is located.
+If there is only one `HogeButton` under the UICache, the same code will work regardless of where the HogeButton is located.
 
 ```csharp
 public class Sample : MonoBehaviour
@@ -35,9 +35,9 @@ public class Sample : MonoBehaviour
 
 ### Get Text under the HogeButton
 
-Look at the image above." There are four GameObjects named "Text".  
+Look at the image above. There are four GameObjects named `Text`.  
 If you want to get the Text under the HogeButton, you can do this.  
-As before, it works whether the HogeButton is directly under the Root or not.
+As before, it works whether the `HogeButton` is directly under the `Root` or not.
 
 ```csharp
 var hogeButtonText = root.Get<Text>("HogeButton/Text");
@@ -130,7 +130,7 @@ public class UIElements : IMappedObject
 
 ### Duplicate with type
 
-You can still use Duplicate and Layouter, even if you have the type. Don't worry.
+You can still use `Duplicate` and `Layouter`, even if you have the type. Don't worry.
 
 ```csharp
 public void Start()
@@ -323,7 +323,7 @@ public class ListElements2 : IReusableMappedObject
 
 ## Setup
 
-- Install "AnKuchen"
+- Install `AnKuchen`
 - Add a UICacheComponent to the Root of the UI and press the Update button.
   - We recommend that you automate the process of pressing the Update button to fit your workflow.
 - To update, rewrite the Hash in Packages/packages-lock.json.
