@@ -27,5 +27,10 @@ namespace AnKuchen.Extensions
             newObject.Initialize(newMapper);
             return newObject;
         }
+
+        public static void Destroy(this IMappedObject self)
+        {
+            Object.Destroy(self.Mapper.Get());
+        }
     }
 }
