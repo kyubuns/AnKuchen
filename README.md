@@ -177,20 +177,6 @@ public class ButtonElements : IMappedObject
 }
 ```
 
-### Translation
-
-Sometimes you want to put a message in all the Text all together.
-
-```csharp
-root.SetText(new Dictionary<string, string>
-{
-    { "./Text", "Title" },
-    { "HogeButton/Text", "Hoge" },
-    { "FugaButton/Text", "Fuga" },
-    { "PiyoButton/Text", "Piyo" },
-});
-```
-
 ### Testing
 
 Someone changed the Prefab after I made the type!  
