@@ -214,8 +214,8 @@ namespace AnKuchen.Development
             scrollRectH.content = contentH;
             ListH = new HorizontalList<ListElements1, ListElements2>(
                 scrollRectH,
-                mapper.GetChild<ListElements1>("H_List/Element1"),
-                mapper.GetChild<ListElements2>("H_List/Element2")
+                mapper.Map<ListElements1>("H_List/Element1"),
+                mapper.Map<ListElements2>("H_List/Element2")
             );
 
             var scrollRectH2 = mapper.Get<ScrollRect>("H_List2");
@@ -223,8 +223,8 @@ namespace AnKuchen.Development
             scrollRectH2.content = contentH2;
             ListH2 = new HorizontalList<ListElements1, ListElements2>(
                 scrollRectH2,
-                mapper.GetChild<ListElements1>("H_List2/Element1"),
-                mapper.GetChild<ListElements2>("H_List2/Element2")
+                mapper.Map<ListElements1>("H_List2/Element1"),
+                mapper.Map<ListElements2>("H_List2/Element2")
             );
 
             var scrollRect = mapper.Get<ScrollRect>("List");
@@ -232,8 +232,8 @@ namespace AnKuchen.Development
             scrollRect.content = content;
             List = new VerticalList<ListElements1, ListElements2>(
                 scrollRect,
-                mapper.GetChild<ListElements1>("List/Element1"),
-                mapper.GetChild<ListElements2>("List/Element2")
+                mapper.Map<ListElements1>("List/Element1"),
+                mapper.Map<ListElements2>("List/Element2")
             );
 
             var scrollRect2 = mapper.Get<ScrollRect>("List2");
@@ -241,12 +241,12 @@ namespace AnKuchen.Development
             scrollRect2.content = content2;
             List2 = new VerticalList<ListElements1, ListElements2>(
                 scrollRect2,
-                mapper.GetChild<ListElements1>("List2/Element1"),
-                mapper.GetChild<ListElements2>("List2/Element2")
+                mapper.Map<ListElements1>("List2/Element1"),
+                mapper.Map<ListElements2>("List2/Element2")
             );
 
             Layout = new Layout<LayoutItem>(
-                mapper.GetChild<LayoutItem>("LayoutGroup/Item"),
+                mapper.Map<LayoutItem>("LayoutGroup/Item"),
                 new TopToBottomLayouter(10f)
             );
         }

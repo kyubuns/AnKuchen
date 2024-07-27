@@ -157,7 +157,7 @@ public class UIElements : IMappedObject
     public void Initialize(IMapper mapper)
     {
         Mapper = mapper;
-        HogeButton = new Layout<ButtonElements>(mapper.GetChild<ButtonElements>("HogeButton"));
+        HogeButton = new Layout<ButtonElements>(mapper.Map<ButtonElements>("HogeButton"));
     }
 }
 
@@ -241,8 +241,8 @@ public class UIElements : IMappedObject
         Mapper = mapper;
         List = new VerticalList<ListElements1, ListElements2>(
             mapper.Get<ScrollRect>("List"),
-            mapper.GetChild<ListElements1>("Element1"),
-            mapper.GetChild<ListElements2>("Element2")
+            mapper.Map<ListElements1>("Element1"),
+            mapper.Map<ListElements2>("Element2")
         );
     }
 }

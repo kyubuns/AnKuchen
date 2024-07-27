@@ -14,7 +14,13 @@ namespace AnKuchen.Map
         GameObject[] GetAll(uint[] objectPath);
         T Get<T>(string objectPath) where T : Component;
         T Get<T>(uint[] objectPath) where T : Component;
+        T Map<T>(string rootObjectPath) where T : IMappedObject, new();
+        T Map<T>(uint[] rootObjectPath) where T : IMappedObject, new();
+
+        [Obsolete("Use Map<T> instead")]
         T GetChild<T>(string rootObjectPath) where T : IMappedObject, new();
+
+        [Obsolete("Use Map<T> instead")]
         T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new();
 
         IMapper GetMapper(string rootObjectPath);

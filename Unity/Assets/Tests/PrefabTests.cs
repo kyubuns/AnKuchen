@@ -50,7 +50,7 @@ namespace Tests
                 Mapper = mapper;
                 Root = mapper.Get();
                 Text = mapper.Get<Text>("./Text");
-                HogeButton = mapper.GetChild<ButtonElements>("HogeButton");
+                HogeButton = mapper.Map<ButtonElements>("HogeButton");
             }
         }
 
@@ -91,7 +91,7 @@ namespace Tests
                 Mapper = mapper;
                 Root = mapper.Get();
                 Text = mapper.Get<Text>("./Text");
-                HogeButton = mapper.GetChild<ButtonElementsDummy>("HogeButton");
+                HogeButton = mapper.Map<ButtonElementsDummy>("HogeButton");
             }
         }
 

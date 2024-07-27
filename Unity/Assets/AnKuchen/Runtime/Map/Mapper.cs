@@ -113,12 +113,12 @@ namespace AnKuchen.Map
             return component;
         }
 
-        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
+        public T Map<T>(string rootObjectPath) where T : IMappedObject, new()
         {
             var hash = ToHash(rootObjectPath);
             try
             {
-                return GetChild<T>(hash);
+                return Map<T>(hash);
             }
             catch (AnKuchenNotFoundException e)
             {
@@ -132,7 +132,7 @@ namespace AnKuchen.Map
             }
         }
 
-        public T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new()
+        public T Map<T>(uint[] rootObjectPath) where T : IMappedObject, new()
         {
             IMapper newMapper;
             try
@@ -153,6 +153,18 @@ namespace AnKuchen.Map
             var newObject = new T();
             newObject.Initialize(newMapper);
             return newObject;
+        }
+
+        [Obsolete("Use Map<T> instead")]
+        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
+        {
+            return Map<T>(rootObjectPath);
+        }
+
+        [Obsolete("Use Map<T> instead")]
+        public T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new()
+        {
+            return Map<T>(rootObjectPath);
         }
 
         public IMapper GetMapper(string rootObjectPath)

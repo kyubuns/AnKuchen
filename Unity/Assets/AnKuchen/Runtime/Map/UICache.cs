@@ -90,16 +90,28 @@ namespace AnKuchen.Map
             return cachedMapper.GetMapper(rootObjectPath);
         }
 
-        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
+        public T Map<T>(string rootObjectPath) where T : IMappedObject, new()
         {
             if (cachedMapper == null) cachedMapper = new Mapper(gameObject, Elements);
-            return cachedMapper.GetChild<T>(rootObjectPath);
+            return cachedMapper.Map<T>(rootObjectPath);
         }
 
-        public T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new()
+        public T Map<T>(uint[] rootObjectPath) where T : IMappedObject, new()
         {
             if (cachedMapper == null) cachedMapper = new Mapper(gameObject, Elements);
-            return cachedMapper.GetChild<T>(rootObjectPath);
+            return cachedMapper.Map<T>(rootObjectPath);
+        }
+
+        [Obsolete("Use Map<T> instead")]
+        public T GetChild<T>(string rootObjectPath) where T : IMappedObject, new()
+        {
+            return Map<T>(rootObjectPath);
+        }
+
+        [Obsolete("Use Map<T> instead")]
+        public T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new()
+        {
+            return Map<T>(rootObjectPath);
         }
 
         public CachedObject[] GetRawElements()
