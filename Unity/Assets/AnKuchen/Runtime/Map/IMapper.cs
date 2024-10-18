@@ -1,32 +1,33 @@
 ﻿using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace AnKuchen.Map
 {
     public interface IMapper
     {
-        GameObject Get();
-        T Get<T>() where T : Component;
+        [MustUseReturnValue] GameObject Get();
+        [MustUseReturnValue] T Get<T>() where T : Component;
 
-        GameObject Get(string objectPath);
-        GameObject Get(uint[] objectPath);
-        GameObject[] GetAll(string objectPath);
-        GameObject[] GetAll(uint[] objectPath);
-        T Get<T>(string objectPath) where T : Component;
-        T Get<T>(uint[] objectPath) where T : Component;
-        T Map<T>(string rootObjectPath) where T : IMappedObject, new();
-        T Map<T>(uint[] rootObjectPath) where T : IMappedObject, new();
-
-        [Obsolete("Use Map<T> instead")]
-        T GetChild<T>(string rootObjectPath) where T : IMappedObject, new();
+        [MustUseReturnValue] GameObject Get(string objectPath);
+        [MustUseReturnValue] GameObject Get(uint[] objectPath);
+        [MustUseReturnValue] GameObject[] GetAll(string objectPath);
+        [MustUseReturnValue] GameObject[] GetAll(uint[] objectPath);
+        [MustUseReturnValue] T Get<T>(string objectPath) where T : Component;
+        [MustUseReturnValue] T Get<T>(uint[] objectPath) where T : Component;
+        [MustUseReturnValue] T Map<T>(string rootObjectPath) where T : IMappedObject, new();
+        [MustUseReturnValue] T Map<T>(uint[] rootObjectPath) where T : IMappedObject, new();
 
         [Obsolete("Use Map<T> instead")]
-        T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new();
+        [MustUseReturnValue] T GetChild<T>(string rootObjectPath) where T : IMappedObject, new();
 
-        IMapper GetMapper(string rootObjectPath);
-        IMapper GetMapper(uint[] rootObjectPath);
+        [Obsolete("Use Map<T> instead")]
+        [MustUseReturnValue] T GetChild<T>(uint[] rootObjectPath) where T : IMappedObject, new();
 
-        CachedObject[] GetRawElements();
+        [MustUseReturnValue] IMapper GetMapper(string rootObjectPath);
+        [MustUseReturnValue] IMapper GetMapper(uint[] rootObjectPath);
+
+        [MustUseReturnValue] CachedObject[] GetRawElements();
         void Copy(IMapper other);
     }
 
