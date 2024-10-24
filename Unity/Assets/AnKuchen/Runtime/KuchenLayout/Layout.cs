@@ -51,6 +51,20 @@ namespace AnKuchen.KuchenLayout
             return new LayoutEditor(this, inactiveMarked);
         }
 
+        public IReadOnlyList<T> Create(int count, EditMode editMode = EditMode.Clear)
+        {
+            var list = new List<T>();
+            using (var editor = Edit(editMode))
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    list.Add(editor.Create());
+                }
+            }
+
+            return list;
+        }
+
         public void Clear(bool purgeCache = false)
         {
             foreach (var element in Elements)
