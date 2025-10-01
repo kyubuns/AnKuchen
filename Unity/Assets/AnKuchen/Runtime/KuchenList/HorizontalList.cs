@@ -121,7 +121,7 @@ namespace AnKuchen.KuchenList
             componentsInChildren.Add(child.GetComponent<RectTransform>());
             foreach (Transform a in child)
             {
-                if (inactiveMarked.Contains(a.gameObject)) continue;
+                if (inactiveMarked.Contains(a.gameObject) || !a.gameObject.activeSelf) continue;
                 componentsInChildren.Add(a.GetComponent<RectTransform>());
             }
 
@@ -570,7 +570,7 @@ namespace AnKuchen.KuchenList
             componentsInChildren.Add(child.GetComponent<RectTransform>());
             foreach (Transform a in child)
             {
-                if (inactiveMarked.Contains(a.gameObject)) continue;
+                if (inactiveMarked.Contains(a.gameObject) || !a.gameObject.activeSelf) continue;
                 componentsInChildren.Add(a.GetComponent<RectTransform>());
             }
 
@@ -1039,7 +1039,7 @@ namespace AnKuchen.KuchenList
             componentsInChildren.Add(child.GetComponent<RectTransform>());
             foreach (Transform a in child)
             {
-                if (inactiveMarked.Contains(a.gameObject)) continue;
+                if (inactiveMarked.Contains(a.gameObject) || !a.gameObject.activeSelf) continue;
                 componentsInChildren.Add(a.GetComponent<RectTransform>());
             }
 
@@ -1528,7 +1528,7 @@ namespace AnKuchen.KuchenList
             componentsInChildren.Add(child.GetComponent<RectTransform>());
             foreach (Transform a in child)
             {
-                if (inactiveMarked.Contains(a.gameObject)) continue;
+                if (inactiveMarked.Contains(a.gameObject) || !a.gameObject.activeSelf) continue;
                 componentsInChildren.Add(a.GetComponent<RectTransform>());
             }
 
