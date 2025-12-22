@@ -22,7 +22,9 @@ namespace AnKuchen.Map
 
         public T Get<T>() where T : Component
         {
-            return root.GetComponent<T>();
+            var component = root.GetComponent<T>();
+            if (component == null) throw new AnKuchenNotFoundException(string.Empty, typeof(T));
+            return component;
         }
 
         private bool SequenceEqual<T>(T[] a, T[] b) where T : IEquatable<T>
