@@ -55,25 +55,34 @@ namespace AnKuchen.Editor
         private static void CreateCacheAndMarkDirty(UICache uiCache)
         {
             var elements = uiCache.Elements ?? new CachedObject[] { };
-            var prev = CalcHash(elements);
             uiCache.CreateCache();
-            var now = CalcHash(uiCache.Elements);
-            if (prev != now) MarkDirty();
+            if (!CacheEquals(elements, uiCache.Elements))
+            {
+                MarkDirty();
+            }
         }
 
-        private static uint CalcHash(CachedObject[] objects)
+        private static bool CacheEquals(CachedObject[] previous, CachedObject[] current)
         {
-            var l = new List<uint> { (uint) objects.Length };
-            foreach (var a in objects)
+            if (previous.Length != current.Length)
             {
-                l.Add((uint) a.GameObject.GetInstanceID());
-                l.Add((uint) a.Path.Length);
-                foreach (var b in a.Path)
+                return false;
+            }
+
+            for (var i = 0; i < previous.Length; i++)
+            {
+                // EntityIdを32bitのハッシュに縮めず、オブジェクトの同一性を比較する。
+#if UNITY_6000_7_OR_NEWER
+                var sameObject = previous[i].GameObject.GetEntityId() == current[i].GameObject.GetEntityId();
+#else
+                var sameObject = previous[i].GameObject.GetInstanceID() == current[i].GameObject.GetInstanceID();
+#endif
+                if (!sameObject || !previous[i].Path.SequenceEqual(current[i].Path))
                 {
-                    l.Add(b);
+                    return false;
                 }
             }
-            return FastHash.CalculateHash(l.ToArray());
+            return true;
         }
 
         private static void MarkDirty()
